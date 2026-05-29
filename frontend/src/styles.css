@@ -1,0 +1,126 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-ring-offset-background: hsl(var(--background));
+  --color-link: hsl(var(--link));
+
+  /* Brand tokens — alias to primary for backwards compat */
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-border: var(--brand-border);
+  --color-brand-foreground: var(--brand-foreground);
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 142 62% 27%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 142 55% 40%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 142 62% 27%;
+  --accent-foreground: 0 0% 100%;
+  --link: 199 89% 60%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 142 62% 27%;
+  --surface-elevated: 210 40% 96%;
+
+  --gradient-hero: radial-gradient(ellipse at top, hsl(142 62% 27% / 0.18), transparent 60%);
+  --gradient-cta: linear-gradient(135deg, hsl(142 62% 27%), hsl(142 55% 18%));
+  --shadow-card: 0 4px 24px -8px hsl(222 47% 11% / 0.08);
+  --shadow-lift: 0 12px 32px -8px hsl(222 47% 11% / 0.18);
+
+  /* Brand aliases → primary green family */
+  --brand: hsl(142 62% 27%);
+  --brand-dark: hsl(142 62% 18%);
+  --brand-light: hsl(142 50% 94%);
+  --brand-muted: hsl(142 50% 97%);
+  --brand-border: hsl(142 35% 78%);
+  --brand-foreground: hsl(0 0% 100%);
+}
+
+.dark {
+  --background: 222 51% 8%;
+  --foreground: 210 40% 96%;
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 96%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 142 55% 38%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 142 60% 50%;
+  --secondary: 217 32% 17%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 217 32% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 142 55% 38%;
+  --accent-foreground: 0 0% 100%;
+  --link: 199 89% 60%;
+  --destructive: 0 62% 45%;
+  --destructive-foreground: 210 40% 96%;
+  --border: 217 32% 17%;
+  --input: 217 32% 17%;
+  --ring: 142 55% 38%;
+  --surface-elevated: 217 32% 17%;
+
+  --gradient-hero: radial-gradient(ellipse at top, hsl(142 55% 38% / 0.22), transparent 60%);
+  --gradient-cta: linear-gradient(135deg, hsl(142 55% 38%), hsl(222 51% 8%));
+  --shadow-card: 0 4px 24px -8px hsl(0 0% 0% / 0.4);
+  --shadow-lift: 0 16px 40px -12px hsl(142 60% 30% / 0.35);
+
+  --brand: hsl(142 55% 38%);
+  --brand-dark: hsl(142 60% 28%);
+  --brand-light: hsl(142 40% 16%);
+  --brand-muted: hsl(142 40% 12%);
+  --brand-border: hsl(142 30% 28%);
+  --brand-foreground: hsl(0 0% 100%);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+}
