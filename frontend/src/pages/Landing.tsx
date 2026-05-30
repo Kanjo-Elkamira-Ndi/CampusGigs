@@ -12,6 +12,7 @@ import { RotatingWords } from "@/components/landing/RotatingWords";
 import { SearchWidget } from "@/components/landing/SearchWidget";
 import { FloatingExpertCards } from "@/components/landing/FloatingExpertCards";
 import { TrustBar } from "@/components/landing/TrustBar";
+import { ExpertiseSection } from "@/components/landing/ExpertiseSection";
 
 const HOW_WORKER = [
   { n: 1, t: "Create your free profile", d: "Add your university, skills and a few past gigs." },
@@ -102,6 +103,9 @@ export function Landing() {
 
       {/* ── TRUST BAR ── */}
       <TrustBar />
+
+      {/* ── WHAT YOU CAN FIND ── */}
+      <ExpertiseSection />
 
       {/* ── HOW IT WORKS ── */}
       <section id="how" className="grid md:grid-cols-2">
