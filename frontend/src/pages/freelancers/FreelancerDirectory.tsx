@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { FreelancerGrid } from "@/components/freelancers/FreelancerGrid";
@@ -6,9 +5,7 @@ import { mockUsers } from "@/lib/mockData";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/freelancers")({ component: FreelancerDirectory });
-
-function FreelancerDirectory() {
+export function FreelancerDirectory() {
   const [uniIds, setUniIds] = useState<string[]>([]);
   const [skill, setSkill] = useState("");
   const [minRating, setMinRating] = useState(0);

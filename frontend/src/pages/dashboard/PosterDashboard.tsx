@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
@@ -16,11 +16,7 @@ import { toast } from "sonner";
 import { getDeadlineLabel } from "@/lib/utils";
 import type { Gig } from "@/types";
 
-export const Route = createFileRoute("/dashboard/poster")({
-  component: () => <ProtectedRoute><PosterDashboard /></ProtectedRoute>,
-});
-
-function PosterDashboard() {
+function PosterDashboardContent() {
   const user = useAuthStore((s) => s.user)!;
   const [active, setActive] = useState<Gig | null>(null);
   const myGigs = mockGigs.slice(0, 6);
@@ -107,7 +103,7 @@ function PosterDashboard() {
                       <Button size="sm" variant="ghost" onClick={() => toast("Declined")}>
                         <XIcon size={14} className="mr-1" /> Decline
                       </Button>
-                      <Link to="/profile/$id" params={{ id: a.worker.id }} className="ml-auto text-xs text-[color:var(--brand-dark)] dark:text-brand hover:underline self-center">
+                      <Link to={`/profile/${a.worker.id}`} className="ml-auto text-xs text-[color:var(--brand-dark)] dark:text-brand hover:underline self-center">
                         View profile
                       </Link>
                     </div>
@@ -120,4 +116,8 @@ function PosterDashboard() {
       </Sheet>
     </PageWrapper>
   );
+}
+
+export function PosterDashboard() {
+  return <ProtectedRoute><PosterDashboardContent /></ProtectedRoute>;
 }

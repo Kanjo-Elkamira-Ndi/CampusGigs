@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { Star } from "lucide-react";
 import { format } from "date-fns";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -12,18 +12,15 @@ import { GigCard } from "@/components/gigs/GigCard";
 import { useAuthStore } from "@/store/authStore";
 import { EmptyState } from "@/components/shared/EmptyState";
 
-export const Route = createFileRoute("/profile/$id")({ component: Profile });
-
-function Profile() {
-  const { id } = Route.useParams();
+export function Profile() {
+  const { id } = useParams<{ id: string }>();
   const me = useAuthStore((s) => s.user);
-  const user = findUser(id);
-  if (!user) return <Navigate to="/" />;
+  const user = findUser(id ?? "");
+  if (!user) return <Navigate to="/" replace />;
   const isMe = me?.id === user.id;
   const reviews = mockReviews.slice(0, 6);
   const gigs = gigsByPoster(user.id);
 
-  // simple rating breakdown
   const buckets = [5, 4, 3, 2, 1].map((s) => ({
     s, count: reviews.filter((r) => Math.round(r.rating) === s).length,
   }));

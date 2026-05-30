@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -11,10 +11,6 @@ import { mockApplications, mockGigs } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/shared/EmptyState";
 
-export const Route = createFileRoute("/dashboard/")({
-  component: () => <ProtectedRoute><WorkerDashboard /></ProtectedRoute>,
-});
-
 function CountUp({ value }: { value: number }) {
   const mv = useMotionValue(0);
   const s = useSpring(mv, { stiffness: 80, damping: 18 });
@@ -23,7 +19,7 @@ function CountUp({ value }: { value: number }) {
   return <motion.span>{t}</motion.span>;
 }
 
-function WorkerDashboard() {
+function WorkerDashboardContent() {
   const user = useAuthStore((s) => s.user)!;
   const [tab, setTab] = useState<"ALL" | "PENDING" | "ACCEPTED" | "COMPLETED">("ALL");
   const apps = mockApplications.slice(0, 6);
@@ -81,4 +77,8 @@ function WorkerDashboard() {
       </DashboardShell>
     </PageWrapper>
   );
+}
+
+export function WorkerDashboard() {
+  return <ProtectedRoute><WorkerDashboardContent /></ProtectedRoute>;
 }

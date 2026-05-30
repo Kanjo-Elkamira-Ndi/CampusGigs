@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, MapPin, Calendar, Users, Star } from "lucide-react";
 import { useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -14,16 +14,14 @@ import { useAuthStore } from "@/store/authStore";
 import { ApplyModal } from "@/components/applications/ApplyModal";
 import { GigCard } from "@/components/gigs/GigCard";
 
-export const Route = createFileRoute("/gigs/$id")({ component: GigDetail });
-
-function GigDetail() {
-  const { id } = Route.useParams();
-  const gig = findGig(id);
+export function GigDetail() {
+  const { id } = useParams<{ id: string }>();
+  const gig = findGig(id ?? "");
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [applyOpen, setApplyOpen] = useState(false);
 
-  if (!gig) return <Navigate to="/gigs" />;
+  if (!gig) return <Navigate to="/gigs" replace />;
   const d = getDeadlineLabel(gig.deadline);
   const isOwn = user?.id === gig.poster.id;
   const otherFromPoster = gigsByPoster(gig.poster.id).filter((g) => g.id !== gig.id).slice(0, 3);
@@ -34,7 +32,7 @@ function GigDetail() {
         <nav className="text-xs text-muted-foreground flex items-center gap-1 mb-4">
           <Link to="/gigs" className="hover:underline">Find work</Link>
           <ChevronRight size={12} />
-          <Link to="/gigs" search={{ category: gig.category }} className="hover:underline">{gig.category}</Link>
+          <Link to={`/gigs?category=${encodeURIComponent(gig.category)}`} className="hover:underline">{gig.category}</Link>
           <ChevronRight size={12} />
           <span className="truncate">{gig.title}</span>
         </nav>
@@ -81,7 +79,7 @@ function GigDetail() {
                   <Link to="/login">Sign up to apply</Link>
                 </Button>
               ) : isOwn ? (
-                <Button onClick={() => navigate({ to: "/dashboard/poster" })} className="w-full mt-4">
+                <Button onClick={() => navigate("/dashboard/poster")} className="w-full mt-4">
                   Manage applicants
                 </Button>
               ) : (
@@ -96,7 +94,7 @@ function GigDetail() {
               <div className="flex items-center gap-3">
                 <Avatar id={gig.poster.id} name={gig.poster.fullName} size={44} />
                 <div className="min-w-0">
-                  <Link to="/profile/$id" params={{ id: gig.poster.id }} className="font-semibold hover:underline truncate block">
+                  <Link to={`/profile/${gig.poster.id}`} className="font-semibold hover:underline truncate block">
                     {gig.poster.fullName}
                   </Link>
                   <div className="text-xs text-muted-foreground">{gig.poster.universityName}</div>
@@ -106,7 +104,7 @@ function GigDetail() {
                 <Star size={12} className="fill-amber-400 text-amber-400" />
                 {gig.poster.avgRating.toFixed(1)} · {gig.poster.hiredCount}× hired
               </div>
-              <Link to="/profile/$id" params={{ id: gig.poster.id }} className="mt-3 inline-block text-sm text-[color:var(--brand-dark)] dark:text-brand hover:underline">
+              <Link to={`/profile/${gig.poster.id}`} className="mt-3 inline-block text-sm text-[color:var(--brand-dark)] dark:text-brand hover:underline">
                 View profile →
               </Link>
             </div>

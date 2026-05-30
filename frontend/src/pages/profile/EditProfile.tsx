@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -14,11 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { Avatar } from "@/components/shared/Avatar";
 
-export const Route = createFileRoute("/profile/edit")({
-  component: () => <ProtectedRoute><EditProfile /></ProtectedRoute>,
-});
-
-function EditProfile() {
+function EditProfileContent() {
   const user = useAuthStore((s) => s.user)!;
   const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
@@ -48,7 +44,7 @@ function EditProfile() {
       skills, avatarUrl: d.avatarUrl || undefined,
     }, "mock-token");
     toast.success("Profile updated");
-    navigate({ to: "/profile/$id", params: { id: user.id } });
+    navigate("/profile/" + user.id);
   };
 
   const avatarPreview = watch("avatarUrl");
@@ -98,10 +94,14 @@ function EditProfile() {
           </div>
           <div className="flex gap-2">
             <Button type="submit" className="bg-brand hover:bg-[color:var(--brand-dark)] text-white">Save changes</Button>
-            <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={() => navigate("/profile/" + user.id)}>Cancel</Button>
           </div>
         </form>
       </div>
     </PageWrapper>
   );
+}
+
+export function EditProfile() {
+  return <ProtectedRoute><EditProfileContent /></ProtectedRoute>;
 }

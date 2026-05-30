@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, GraduationCap } from "lucide-react";
@@ -8,8 +8,6 @@ import { FreelancerCard } from "@/components/freelancers/FreelancerCard";
 import { CATEGORY_META } from "@/lib/constants";
 import { mockGigs, mockUsers } from "@/lib/mockData";
 import { Avatar } from "@/components/shared/Avatar";
-
-export const Route = createFileRoute("/")({ component: Landing });
 
 const HOW_WORKER = [
   { n: 1, t: "Create your free profile", d: "Add your university, skills and a few past gigs." },
@@ -22,7 +20,7 @@ const HOW_POSTER = [
   { n: 3, t: "Hire and finish the job", d: "Pay only when you're happy with the work." },
 ];
 
-function Landing() {
+export function Landing() {
   const [mode, setMode] = useState<"worker" | "poster">("worker");
   const featured = mockUsers.filter((u) => u.role === "WORKER").slice(0, 4);
   const latest = mockGigs.slice(0, 3);
@@ -31,7 +29,6 @@ function Landing() {
   const catCount = (cat: string) => mockGigs.filter((g) => g.category === cat).length;
   return (
     <PageWrapper>
-      {/* Hero */}
       <section className="bg-gradient-to-b from-brand-light/60 to-background dark:from-brand-light/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
           <div>
@@ -98,7 +95,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Dual how-it-works */}
       <section id="how" className="grid md:grid-cols-2">
         <div className="px-6 md:px-12 py-14 bg-card">
           <div className="max-w-md mx-auto md:mx-0 md:ml-auto md:mr-12">
@@ -142,7 +138,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Stats */}
       <section className="bg-brand text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-3 gap-4 text-center">
           {[
@@ -158,7 +153,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Category grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
         <div className="flex items-end justify-between mb-6">
           <h2 className="text-2xl font-bold">Browse by category</h2>
@@ -170,8 +164,7 @@ function Landing() {
             return (
               <Link
                 key={cat}
-                to="/gigs"
-                search={{ category: cat }}
+                to={`/gigs?category=${encodeURIComponent(cat)}`}
                 className="rounded-xl border border-border bg-card p-5 hover:border-primary hover:shadow-[var(--shadow-card)] transition-all flex items-center gap-3"
               >
                 <div className={`w-12 h-12 rounded-full ${m.bg} ${m.text} grid place-items-center`}>
@@ -187,7 +180,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Latest gigs */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
         <div className="flex items-end justify-between mb-3">
           <h2 className="text-2xl font-bold">Latest gigs across Cameroon</h2>
@@ -198,7 +190,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Browse talent */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
         <div className="flex items-end justify-between mb-6">
           <h2 className="text-2xl font-bold">Talented students you can hire</h2>
@@ -209,7 +200,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
         <h2 className="text-2xl font-bold mb-6">What students are saying</h2>
         <div className="grid md:grid-cols-3 gap-4">
@@ -235,7 +225,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Worker CTA banner */}
       <section className="bg-brand text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 text-center">
           <h2 className="text-3xl font-bold">Ready to earn on campus?</h2>

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { mockThreads } from "@/lib/mockData";
@@ -7,11 +7,7 @@ import { ChatWindow } from "@/components/chat/ChatWindow";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/messages/")({
-  component: () => <ProtectedRoute><Messages /></ProtectedRoute>,
-});
-
-function Messages() {
+function MessagesContent() {
   const [activeId, setActiveId] = useState(mockThreads[0].id);
   const active = mockThreads.find((t) => t.id === activeId)!;
   return (
@@ -47,4 +43,8 @@ function Messages() {
       </div>
     </PageWrapper>
   );
+}
+
+export function Messages() {
+  return <ProtectedRoute><MessagesContent /></ProtectedRoute>;
 }

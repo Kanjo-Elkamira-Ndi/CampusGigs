@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, Navigate } from "@tanstack/react-router";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -12,21 +12,17 @@ import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/register")({ component: RegisterPage });
-
-function RegisterPage() {
+export function RegisterPage() {
   const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
   const [role, setRole] = useState<"WORKER" | "POSTER">("WORKER");
-  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<RegisterInput>({
+  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: { role: "WORKER" },
   });
-  const pw = watch("password") ?? "";
-  const strength = Math.min(4, Math.floor(pw.length / 3));
 
-  if (user) return <Navigate to="/dashboard" />;
+  if (user) return <Navigate to="/dashboard" replace />;
 
   const onSubmit = async (data: RegisterInput) => {
     await new Promise((r) => setTimeout(r, 300));
@@ -47,7 +43,7 @@ function RegisterPage() {
       "mock-token",
     );
     toast.success("Welcome to Campus Gigs! 🎉");
-    navigate({ to: data.role === "POSTER" ? "/dashboard/poster" : "/dashboard" });
+    navigate(data.role === "POSTER" ? "/dashboard/poster" : "/dashboard");
   };
 
   return (
@@ -80,11 +76,6 @@ function RegisterPage() {
             <div>
               <label className="text-sm font-medium">Password</label>
               <Input type="password" {...register("password")} placeholder="At least 8 characters" />
-              <div className="mt-1 grid grid-cols-4 gap-1">
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className={cn("h-1 rounded", i < strength ? "bg-brand" : "bg-muted")} />
-                ))}
-              </div>
               {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>}
             </div>
             <div>

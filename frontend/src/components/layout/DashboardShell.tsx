@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { Avatar } from "@/components/shared/Avatar";
 import { useAuthStore } from "@/store/authStore";
@@ -10,20 +10,21 @@ interface Props { role: "WORKER" | "POSTER"; children: ReactNode; }
 export function DashboardShell({ role, children }: Props) {
   const user = useAuthStore((s) => s.user)!;
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const path = useRouterState({ select: (s) => s.location.pathname });
+  const location = useLocation();
+  const path = location.pathname;
 
   const links = role === "WORKER" ? [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/gigs", label: "Browse gigs", icon: Search },
     { to: "/dashboard", label: "My applications", icon: FileText },
     { to: "/messages", label: "Messages", icon: MessageSquare },
-    { to: "/profile/$id", label: "Profile", icon: User, params: { id: user.id } },
+    { to: "/profile/" + user.id, label: "Profile", icon: User },
   ] : [
     { to: "/dashboard/poster", label: "Dashboard", icon: LayoutDashboard },
     { to: "/gigs/new", label: "Post a gig", icon: Briefcase },
     { to: "/freelancers", label: "Browse talent", icon: Search },
     { to: "/messages", label: "Messages", icon: MessageSquare },
-    { to: "/profile/$id", label: "Profile", icon: User, params: { id: user.id } },
+    { to: "/profile/" + user.id, label: "Profile", icon: User },
   ];
 
   return (
@@ -45,8 +46,7 @@ export function DashboardShell({ role, children }: Props) {
             return (
               <Link
                 key={l.label}
-                to={l.to as any}
-                params={l.params as any}
+                to={l.to}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted",
                   active && "border-l-2 border-brand bg-brand-light/60 dark:bg-brand-light/20 font-medium",

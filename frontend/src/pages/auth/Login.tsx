@@ -1,5 +1,4 @@
-import { createFileRoute, Link, useNavigate, Navigate } from "@tanstack/react-router";
-import { z } from "zod";
+import { Link, useNavigate, Navigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -12,24 +11,18 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { mockUsers } from "@/lib/mockData";
 
-const searchSchema = z.object({ from: z.string().optional() });
-
-export const Route = createFileRoute("/login")({
-  validateSearch: (s) => searchSchema.parse(s),
-  component: LoginPage,
-});
-
-function LoginPage() {
+export function LoginPage() {
   const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
-  const { from } = Route.useSearch();
+  const [searchParams] = useSearchParams();
+  const from = searchParams.get("from");
   const [showPw, setShowPw] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
   });
 
-  if (user) return <Navigate to={(from as any) ?? "/dashboard"} />;
+  if (user) return <Navigate to={from ?? "/dashboard"} replace />;
 
   const onSubmit = async (data: LoginInput) => {
     await new Promise((r) => setTimeout(r, 300));
@@ -40,7 +33,7 @@ function LoginPage() {
     const found = mockUsers.find((u) => u.email === data.email) ?? mockUsers[2];
     setAuth(found, "mock-token");
     toast.success(`Welcome back, ${found.fullName.split(" ")[0]}!`);
-    navigate({ to: (from as any) ?? "/dashboard" });
+    navigate(from ?? "/dashboard");
   };
 
   return (

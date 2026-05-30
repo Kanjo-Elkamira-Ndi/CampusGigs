@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,11 +16,7 @@ import { useAuthStore } from "@/store/authStore";
 import type { Gig, GigCategory } from "@/types";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/gigs/new")({
-  component: () => <ProtectedRoute><PostGig /></ProtectedRoute>,
-});
-
-function PostGig() {
+function PostGigForm() {
   const user = useAuthStore((s) => s.user)!;
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -34,7 +30,7 @@ function PostGig() {
   const onStep2 = (d: PostGigStep2) => { setS2(d); setStep(3); };
   const submit = () => {
     toast.success("Your gig is live! 🎉");
-    navigate({ to: "/gigs" });
+    navigate("/gigs");
   };
 
   const preview: Gig | null = s1 && s2 ? {
@@ -155,4 +151,8 @@ function PostGig() {
       </div>
     </PageWrapper>
   );
+}
+
+export function PostGig() {
+  return <ProtectedRoute><PostGigForm /></ProtectedRoute>;
 }

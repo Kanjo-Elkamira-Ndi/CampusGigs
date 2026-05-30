@@ -1,7 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Filter as FilterIcon, X } from "lucide-react";
-import { z } from "zod";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { GigFilters, defaultFilters, type FiltersState } from "@/components/gigs/GigFilters";
 import { GigListRow } from "@/components/gigs/GigListRow";
@@ -12,24 +11,13 @@ import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-const searchSchema = z.object({
-  category: z.string().optional(),
-  university: z.string().optional(),
-  easyApply: z.boolean().optional(),
-});
-
-export const Route = createFileRoute("/gigs/")({
-  validateSearch: (s) => searchSchema.parse(s),
-  component: GigFeed,
-});
-
-function GigFeed() {
-  const sp = Route.useSearch();
+export function GigFeed() {
+  const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<FiltersState>({
     ...defaultFilters,
-    category: (sp.category as FiltersState["category"]) ?? null,
-    universityId: sp.university ?? null,
-    easyApply: !!sp.easyApply,
+    category: (searchParams.get("category") as FiltersState["category"]) ?? null,
+    universityId: searchParams.get("university") ?? null,
+    easyApply: searchParams.get("easyApply") === "true",
   });
   const [loading] = useState(false);
 

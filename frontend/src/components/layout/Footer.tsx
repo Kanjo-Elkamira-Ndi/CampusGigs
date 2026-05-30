@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 export function Footer() {
   return (
     <footer className="border-t border-border bg-muted/40 mt-16">

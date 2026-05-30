@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
@@ -39,16 +39,16 @@ export function Navbar() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuItem onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })}>
+                <DropdownMenuItem onClick={() => navigate("/profile/" + user.id)}>
                   My profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate({ to: user.role === "POSTER" ? "/dashboard/poster" : "/dashboard" })}>
+                <DropdownMenuItem onClick={() => navigate(user.role === "POSTER" ? "/dashboard/poster" : "/dashboard")}>
                   Dashboard
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate({ to: "/messages" })}>Messages</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate({ to: "/profile/edit" })}>Edit profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/messages")}>Messages</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile/edit")}>Edit profile</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { clearAuth(); navigate({ to: "/" }); }}>
+                <DropdownMenuItem onClick={() => { clearAuth(); navigate("/"); }}>
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -77,7 +77,7 @@ export function Navbar() {
             <ThemeToggle />
             {user ? (
               <button
-                onClick={() => { clearAuth(); setOpen(false); navigate({ to: "/" }); }}
+                onClick={() => { clearAuth(); setOpen(false); navigate("/"); }}
                 className="ml-auto px-3 py-1.5 rounded-md bg-white/10"
               >
                 Log out
