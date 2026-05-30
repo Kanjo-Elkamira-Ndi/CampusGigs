@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import type { Gig } from "@/types";
 import { CategoryIconCircle, GigBadge } from "./GigBadge";
 import { formatBudget, getDeadlineLabel } from "@/lib/utils";
@@ -8,8 +8,7 @@ export function GigCard({ gig }: { gig: Gig }) {
   const d = getDeadlineLabel(gig.deadline);
   return (
     <Link
-      to="/gigs/$id"
-      params={{ id: gig.id }}
+      to={"/gigs/" + gig.id}
       className="block rounded-xl border border-border p-4 hover:border-brand hover:shadow-sm transition-all bg-card"
     >
       <div className="flex items-start gap-3">

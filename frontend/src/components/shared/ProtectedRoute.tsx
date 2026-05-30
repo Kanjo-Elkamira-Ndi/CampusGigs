@@ -1,12 +1,12 @@
-import { Navigate, useRouterState } from "@tanstack/react-router";
+import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuthStore } from "@/store/authStore";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const user = useAuthStore((s) => s.user);
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const location = useLocation();
   if (!user) {
-    return <Navigate to="/login" search={{ from: pathname }} />;
+    return <Navigate to={"/login?from=" + encodeURIComponent(location.pathname)} replace />;
   }
   return <>{children}</>;
 }

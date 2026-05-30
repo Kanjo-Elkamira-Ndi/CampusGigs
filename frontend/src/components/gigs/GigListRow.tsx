@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Clock, MapPin } from "lucide-react";
 import type { Gig } from "@/types";
@@ -19,8 +19,7 @@ export function GigListRow({ gig }: { gig: Gig }) {
   return (
     <motion.div whileHover={{ x: 2 }} transition={{ duration: 0.12 }} className="group">
       <Link
-        to="/gigs/$id"
-        params={{ id: gig.id }}
+        to={"/gigs/" + gig.id}
         className="flex items-start gap-4 p-5 border-b border-border hover:bg-muted/40 hover:border-l-2 hover:border-l-brand transition-colors"
       >
         <CategoryIconCircle category={gig.category} />

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import type { PublicUser } from "@/types";
@@ -61,7 +61,7 @@ export function FreelancerCard({ user, variant = "default" }: Props) {
       </div>
       <div className="mt-4 flex gap-2">
         <Button asChild className="flex-1 bg-brand hover:bg-[color:var(--brand-dark)] text-white">
-          <Link to="/profile/$id" params={{ id: user.id }}>View profile</Link>
+          <Link to={"/profile/" + user.id}>View profile</Link>
         </Button>
         <Button variant="outline" className="flex-1">Contact</Button>
       </div>

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import type { Application, AppStatus } from "@/types";
 import { CategoryIconCircle } from "@/components/gigs/GigBadge";
 import { cn, timeAgo } from "@/lib/utils";
@@ -16,7 +16,7 @@ export function ApplicationRow({ application }: { application: Application }) {
     <div className="flex items-center gap-4 p-4 border-b border-border hover:bg-muted/40">
       <CategoryIconCircle category={a.gig.category} size={36} />
       <div className="flex-1 min-w-0">
-        <Link to="/gigs/$id" params={{ id: a.gig.id }} className="font-medium text-sm hover:underline truncate block">
+        <Link to={"/gigs/" + a.gig.id} className="font-medium text-sm hover:underline truncate block">
           {a.gig.title}
         </Link>
         <div className="text-xs text-muted-foreground">
@@ -24,7 +24,7 @@ export function ApplicationRow({ application }: { application: Application }) {
         </div>
       </div>
       <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-medium", STATUS[a.status])}>{a.status}</span>
-      <Link to="/gigs/$id" params={{ id: a.gig.id }} className="text-xs text-[color:var(--brand-dark)] dark:text-brand hover:underline">
+      <Link to={"/gigs/" + a.gig.id} className="text-xs text-[color:var(--brand-dark)] dark:text-brand hover:underline">
         View gig
       </Link>
     </div>
