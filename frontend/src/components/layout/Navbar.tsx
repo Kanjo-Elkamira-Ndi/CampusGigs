@@ -25,22 +25,22 @@ export function Navbar() {
     <header
       className="fixed top-0 z-50 w-full transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? "rgba(0, 21, 46, 0.85)" : "transparent",
+        backgroundColor: scrolled ? "var(--nav-bg)" : "transparent",
         backdropFilter: scrolled ? "blur(12px)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+        borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl text-white">
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 text-sm">🎓</span>
+        <Link to="/" className="flex items-center gap-2 font-bold text-xl" style={{ color: "var(--foreground)" }}>
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm" style={{ backgroundColor: "var(--muted)", color: "var(--muted-foreground)" }}>🎓</span>
           Campus Gigs
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1 text-sm text-white/80">
-          <Link to="/gigs" className="px-3 py-2 rounded-md hover:bg-white/10 hover:text-white transition-colors">Find Work</Link>
-          <Link to="/freelancers" className="px-3 py-2 rounded-md hover:bg-white/10 hover:text-white transition-colors">Hire Talent</Link>
-          <a href="/#how" className="px-3 py-2 rounded-md hover:bg-white/10 hover:text-white transition-colors">How It Works</a>
+        <nav className="hidden md:flex items-center gap-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
+          <Link to="/gigs" className="px-3 py-2 rounded-md hover:bg-[var(--muted)] transition-colors" style={{ color: "var(--muted-foreground)" }}>Find Work</Link>
+          <Link to="/freelancers" className="px-3 py-2 rounded-md hover:bg-[var(--muted)] transition-colors" style={{ color: "var(--muted-foreground)" }}>Hire Talent</Link>
+          <a href="/#how" className="px-3 py-2 rounded-md hover:bg-[var(--muted)] transition-colors" style={{ color: "var(--muted-foreground)" }}>How It Works</a>
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -48,7 +48,7 @@ export function Navbar() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-white/10 text-white">
+                <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-[var(--muted)] transition-colors" style={{ color: "var(--foreground)" }}>
                   <Avatar id={user.id} name={user.fullName} size={28} />
                   <span className="text-sm font-medium">{user.fullName.split(" ")[0]}</span>
                 </button>
@@ -70,11 +70,11 @@ export function Navbar() {
             </DropdownMenu>
           ) : (
             <>
-              <Link to="/login" className="text-sm text-white/80 hover:text-white px-3 py-1.5 transition-colors">Log in</Link>
+              <Link to="/login" className="text-sm px-3 py-1.5 transition-colors" style={{ color: "var(--muted-foreground)" }}>Log in</Link>
               <Link
                 to="/register"
-                className="text-sm px-4 py-1.5 rounded-lg font-medium text-white transition-all"
-                style={{ backgroundColor: "var(--brand)" }}
+                className="text-sm px-4 py-1.5 rounded-lg font-medium transition-all"
+                style={{ backgroundColor: "var(--brand)", color: "var(--brand-foreground)" }}
               >
                 Sign Up
               </Link>
@@ -82,29 +82,30 @@ export function Navbar() {
           )}
         </div>
 
-        <button className="md:hidden p-2 text-white" onClick={() => setOpen((v) => !v)} aria-label="Menu">
+        <button className="md:hidden p-2" style={{ color: "var(--foreground)" }} onClick={() => setOpen((v) => !v)} aria-label="Menu">
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-white/10 px-4 py-3 space-y-1 text-white/80 text-sm bg-[#00152E]">
-          <Link to="/gigs" onClick={() => setOpen(false)} className="block py-2 hover:text-white">Find Work</Link>
-          <Link to="/freelancers" onClick={() => setOpen(false)} className="block py-2 hover:text-white">Hire Talent</Link>
-          <a href="/#how" onClick={() => setOpen(false)} className="block py-2 hover:text-white">How It Works</a>
-          <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+        <div className="md:hidden border-t px-4 py-3 space-y-1 text-sm" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)", color: "var(--muted-foreground)" }}>
+          <Link to="/gigs" onClick={() => setOpen(false)} className="block py-2" style={{ color: "var(--muted-foreground)" }}>Find Work</Link>
+          <Link to="/freelancers" onClick={() => setOpen(false)} className="block py-2" style={{ color: "var(--muted-foreground)" }}>Hire Talent</Link>
+          <a href="/#how" onClick={() => setOpen(false)} className="block py-2" style={{ color: "var(--muted-foreground)" }}>How It Works</a>
+          <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: "var(--border)" }}>
             <ThemeToggle />
             {user ? (
               <button
                 onClick={() => { clearAuth(); setOpen(false); navigate("/"); }}
-                className="ml-auto px-3 py-1.5 rounded-md bg-white/10 text-white"
+                className="ml-auto px-3 py-1.5 rounded-md"
+                style={{ backgroundColor: "var(--muted)", color: "var(--muted-foreground)" }}
               >
                 Log out
               </button>
             ) : (
               <div className="ml-auto flex gap-2">
-                <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-md bg-white/10 text-white">Log in</Link>
-                <Link to="/register" onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-md text-white" style={{ backgroundColor: "var(--brand)" }}>Sign Up</Link>
+                <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-md" style={{ backgroundColor: "var(--muted)", color: "var(--muted-foreground)" }}>Log in</Link>
+                <Link to="/register" onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-md" style={{ backgroundColor: "var(--brand)", color: "var(--brand-foreground)" }}>Sign Up</Link>
               </div>
             )}
           </div>

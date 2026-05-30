@@ -36,7 +36,7 @@ export function Landing() {
   return (
     <PageWrapper>
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden -mt-16" style={{ minHeight: "calc(90vh + 4rem)", backgroundColor: "#00152E" }}>
+      <section className="relative overflow-hidden -mt-16" style={{ minHeight: "calc(90vh + 4rem)", backgroundColor: "var(--hero-bg)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16" style={{ minHeight: "calc(90vh + 4rem)" }}>
           <div className="grid lg:grid-cols-2 gap-20 items-center" style={{ minHeight: "90vh" }}>
             {/* Left column */}
@@ -49,9 +49,9 @@ export function Landing() {
                 <span
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border mb-6"
                   style={{
-                    color: "rgba(255,255,255,0.7)",
-                    borderColor: "rgba(255,255,255,0.12)",
-                    backgroundColor: "rgba(255,255,255,0.04)",
+                    color: "var(--text-secondary)",
+                    borderColor: "var(--card-border)",
+                    backgroundColor: "var(--card-bg)",
                   }}
                 >
                   <GraduationCap size={13} /> Trusted by students across Cameroon
@@ -62,7 +62,8 @@ export function Landing() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] text-white"
+                className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05]"
+                style={{ color: "var(--foreground)" }}
               >
                 Hire trusted student<br />
                 <RotatingWords />
@@ -73,7 +74,7 @@ export function Landing() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="mt-6 text-base sm:text-lg leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.55)", maxWidth: "28rem" }}
+                style={{ color: "var(--text-secondary)", maxWidth: "28rem" }}
               >
                 Connect with verified university students ready to help with tutoring, household tasks, events, creative projects and technical work.
               </motion.p>
@@ -109,22 +110,22 @@ export function Landing() {
 
       {/* ── HOW IT WORKS ── */}
       <section id="how" className="grid md:grid-cols-2">
-        <div className="px-6 md:px-12 py-16" style={{ backgroundColor: "#0A1F3B" }}>
+        <div className="px-6 md:px-12 py-16" style={{ backgroundColor: "var(--section-bg)" }}>
           <div className="max-w-md mx-auto md:mx-0 md:ml-auto md:mr-12">
             <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--brand)" }}>For students</span>
-            <h2 className="text-3xl font-bold mt-2 text-white">Turn free time into income</h2>
+            <h2 className="text-3xl font-bold mt-2" style={{ color: "var(--foreground)" }}>Turn free time into income</h2>
             <ol className="mt-6 space-y-5">
               {HOW_WORKER.map((s) => (
                 <li key={s.n} className="flex gap-4">
                   <span
                     className="shrink-0 w-8 h-8 rounded-full grid place-items-center text-sm font-bold"
-                    style={{ backgroundColor: "rgba(15, 139, 255, 0.12)", color: "var(--brand)" }}
+                    style={{ backgroundColor: "var(--badge-bg)", color: "var(--brand)" }}
                   >
                     {s.n}
                   </span>
                   <div>
-                    <div className="font-semibold text-white">{s.t}</div>
-                    <div className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>{s.d}</div>
+                    <div className="font-semibold" style={{ color: "var(--foreground)" }}>{s.t}</div>
+                    <div className="text-sm" style={{ color: "var(--text-secondary)" }}>{s.d}</div>
                   </div>
                 </li>
               ))}
@@ -138,22 +139,22 @@ export function Landing() {
             </Link>
           </div>
         </div>
-        <div className="px-6 md:px-12 py-16" style={{ backgroundColor: "#00152E" }}>
+        <div className="px-6 md:px-12 py-16" style={{ backgroundColor: "var(--section-alt)" }}>
           <div className="max-w-md mx-auto md:mx-0 md:mr-auto md:ml-12">
             <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--brand)" }}>For posters</span>
-            <h2 className="text-3xl font-bold mt-2 text-white">Get things done on campus</h2>
+            <h2 className="text-3xl font-bold mt-2" style={{ color: "var(--foreground)" }}>Get things done on campus</h2>
             <ol className="mt-6 space-y-5">
               {HOW_POSTER.map((s) => (
                 <li key={s.n} className="flex gap-4">
                   <span
                     className="shrink-0 w-8 h-8 rounded-full grid place-items-center text-sm font-bold"
-                    style={{ backgroundColor: "rgba(15, 139, 255, 0.12)", color: "var(--brand)" }}
+                    style={{ backgroundColor: "var(--badge-bg)", color: "var(--brand)" }}
                   >
                     {s.n}
                   </span>
                   <div>
-                    <div className="font-semibold text-white">{s.t}</div>
-                    <div className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>{s.d}</div>
+                    <div className="font-semibold" style={{ color: "var(--foreground)" }}>{s.t}</div>
+                    <div className="text-sm" style={{ color: "var(--text-secondary)" }}>{s.d}</div>
                   </div>
                 </li>
               ))}
@@ -170,7 +171,7 @@ export function Landing() {
       </section>
 
       {/* ── STATS ── */}
-      <section style={{ backgroundColor: "#0A1F3B" }}>
+      <section style={{ backgroundColor: "var(--section-bg)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid grid-cols-3 gap-4 text-center">
           {[
             ["1,200+", "Students"],
@@ -178,8 +179,8 @@ export function Landing() {
             ["3,400+", "Gigs posted"],
           ].map(([n, l]) => (
             <div key={l}>
-              <div className="text-3xl md:text-4xl font-bold text-white">{n}</div>
-              <div className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{l}</div>
+              <div className="text-3xl md:text-4xl font-bold" style={{ color: "var(--foreground)" }}>{n}</div>
+              <div className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>{l}</div>
             </div>
           ))}
         </div>
@@ -188,7 +189,7 @@ export function Landing() {
       {/* ── CATEGORY GRID ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="flex items-end justify-between mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">Browse by category</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>Browse by category</h2>
           <Link to="/gigs" className="text-sm hover:underline" style={{ color: "var(--brand)" }}>See all gigs →</Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -200,16 +201,16 @@ export function Landing() {
                 to={`/gigs?category=${encodeURIComponent(cat)}`}
                 className="rounded-xl p-5 flex items-center gap-3 transition-all hover:scale-[1.02]"
                 style={{
-                  backgroundColor: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  backgroundColor: "var(--card-bg)",
+                  border: "1px solid var(--card-border)",
                 }}
               >
                 <div className={`w-12 h-12 rounded-full ${m.bg} ${m.text} grid place-items-center`}>
                   <Icon size={22} />
                 </div>
                 <div>
-                  <div className="font-semibold text-white">{cat}</div>
-                  <div className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>{catCount(cat)} gigs open</div>
+                  <div className="font-semibold" style={{ color: "var(--foreground)" }}>{cat}</div>
+                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>{catCount(cat)} gigs open</div>
                 </div>
               </Link>
             );
@@ -220,14 +221,14 @@ export function Landing() {
       {/* ── LATEST GIGS ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
         <div className="flex items-end justify-between mb-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">Latest gigs across Cameroon</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>Latest gigs across Cameroon</h2>
           <Link to="/gigs" className="text-sm hover:underline" style={{ color: "var(--brand)" }}>See all →</Link>
         </div>
         <div
           className="rounded-xl overflow-hidden"
           style={{
-            border: "1px solid rgba(255,255,255,0.08)",
-            backgroundColor: "rgba(255,255,255,0.02)",
+            border: "1px solid var(--card-border)",
+            backgroundColor: "var(--card-bg)",
           }}
         >
           {latest.map((g) => <GigListRow key={g.id} gig={g} />)}
@@ -237,7 +238,7 @@ export function Landing() {
       {/* ── BROWSE TALENT ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
         <div className="flex items-end justify-between mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">Talented students you can hire</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>Talented students you can hire</h2>
           <Link to="/freelancers" className="text-sm hover:underline" style={{ color: "var(--brand)" }}>Browse all talent →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -247,7 +248,7 @@ export function Landing() {
 
       {/* ── TESTIMONIALS ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-8">What students are saying</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-8" style={{ color: "var(--foreground)" }}>What students are saying</h2>
         <div className="grid md:grid-cols-3 gap-4">
           {[
             { u: mockUsers[0], q: "Earned XAF 60,000 last semester tutoring. Paid my hostel rent." },
@@ -258,19 +259,19 @@ export function Landing() {
               key={u.id}
               className="rounded-xl p-6"
               style={{
-                border: "1px solid rgba(255,255,255,0.08)",
-                backgroundColor: "rgba(255,255,255,0.02)",
+                border: "1px solid var(--card-border)",
+                backgroundColor: "var(--card-bg)",
               }}
             >
               <div className="flex items-center gap-1 mb-3">
                 {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} className="fill-amber-400 text-amber-400" />)}
               </div>
-              <p className="text-sm leading-relaxed text-white/70">"{q}"</p>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>"{q}"</p>
               <div className="mt-4 flex items-center gap-3">
                 <Avatar id={u.id} name={u.fullName} size={36} />
                 <div>
-                  <div className="font-medium text-sm text-white">{u.fullName}</div>
-                  <div className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>{u.universityName}</div>
+                  <div className="font-medium text-sm" style={{ color: "var(--foreground)" }}>{u.fullName}</div>
+                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>{u.universityName}</div>
                 </div>
               </div>
             </div>
@@ -279,10 +280,10 @@ export function Landing() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section style={{ backgroundColor: "#0A1F3B" }}>
+      <section style={{ backgroundColor: "var(--section-bg)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <h2 className="text-3xl font-bold text-white">Ready to earn on campus?</h2>
-          <p className="mt-2" style={{ color: "rgba(255,255,255,0.55)" }}>Join 1,200+ students already getting paid for their skills.</p>
+          <h2 className="text-3xl font-bold" style={{ color: "var(--foreground)" }}>Ready to earn on campus?</h2>
+          <p className="mt-2" style={{ color: "var(--text-secondary)" }}>Join 1,200+ students already getting paid for their skills.</p>
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
             <Link
               to="/register"
@@ -295,8 +296,8 @@ export function Landing() {
               to="/gigs"
               className="px-6 py-2.5 rounded-lg font-semibold transition-all"
               style={{
-                color: "rgba(255,255,255,0.8)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                color: "var(--foreground)",
+                border: "1px solid var(--card-border)",
               }}
             >
               Browse gigs

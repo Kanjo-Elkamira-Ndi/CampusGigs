@@ -14,7 +14,10 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       aria-label="Toggle theme"
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-white/10 transition-colors"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+      style={{ color: "var(--muted-foreground)" }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--muted)"}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
     >
       {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
     </button>
