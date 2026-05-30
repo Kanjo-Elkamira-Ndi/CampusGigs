@@ -27,7 +27,7 @@ function AppContent() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
-      <div className="flex-1">
+      <div className="flex-1 pt-16">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<LoginPage />} />
