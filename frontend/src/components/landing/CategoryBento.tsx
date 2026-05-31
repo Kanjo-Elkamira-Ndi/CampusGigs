@@ -95,8 +95,8 @@ function BentoCard({
       className={`group relative rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 ${className}`}
       style={{
         background: `linear-gradient(135deg, ${gradient.from}, ${gradient.via}, ${gradient.to})`,
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: `0 4px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.06)`,
+        border: "1px solid var(--card-border)",
+        boxShadow: `0 4px 24px rgba(0,0,0,0.12)`,
       }}
     >
       <div
@@ -145,8 +145,8 @@ function FloatingTutorCard({
       transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
       className="flex items-center gap-2.5 rounded-xl px-3 py-2"
       style={{
-        backgroundColor: "rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        backgroundColor: "var(--card-surface-sm)",
+        border: "1px solid var(--card-chip-border)",
       }}
     >
       <div
@@ -158,9 +158,9 @@ function FloatingTutorCard({
         {name.charAt(0)}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-medium text-white truncate">{name}</div>
+        <div className="text-[13px] font-medium truncate" style={{ color: "var(--card-text)" }}>{name}</div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-white/50">{skill}</span>
+          <span className="text-[10px]" style={{ color: "var(--card-text-muted)" }}>{skill}</span>
         </div>
       </div>
       <StarRating rating={rating} />
@@ -180,9 +180,9 @@ function SectionHeader() {
       <div
         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium mb-4"
         style={{
-          border: "1px solid rgba(255,255,255,0.08)",
-          backgroundColor: "rgba(255,255,255,0.04)",
-          color: "rgba(255,255,255,0.6)",
+          border: "1px solid var(--card-border)",
+          backgroundColor: "var(--card-surface-xs)",
+          color: "var(--card-text-sub)",
         }}
       >
         <Sparkles size={12} />
@@ -215,7 +215,7 @@ function LargeAcademicCard() {
       <div className="flex items-start justify-between mb-3">
         <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "var(--card-surface)" }}
         >
           <GraduationCap size={24} style={{ color: g.accent }} />
         </div>
@@ -227,23 +227,23 @@ function LargeAcademicCard() {
         </motion.div>
       </div>
 
-      <h3 className="text-xl sm:text-2xl font-bold text-white">Academic Support</h3>
-      <p className="mt-2 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+      <h3 className="text-xl sm:text-2xl font-bold" style={{ color: "var(--card-text)" }}>Academic Support</h3>
+      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--card-text-sub)" }}>
         Connect with top-performing students across Cameroon for tutoring, exam prep, language coaching, and academic guidance.
       </p>
 
       <div className="mt-4 flex gap-5">
         <div>
-          <div className="text-lg font-bold text-white">1,200+</div>
-          <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.45)" }}>Active Tutors</div>
+          <div className="text-lg font-bold" style={{ color: "var(--card-text)" }}>1,200+</div>
+          <div className="text-[11px]" style={{ color: "var(--card-text-muted)" }}>Active Tutors</div>
         </div>
         <div>
-          <div className="text-lg font-bold text-white">350+</div>
-          <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.45)" }}>Jobs Completed</div>
+          <div className="text-lg font-bold" style={{ color: "var(--card-text)" }}>350+</div>
+          <div className="text-[11px]" style={{ color: "var(--card-text-muted)" }}>Jobs Completed</div>
         </div>
         <div>
-          <div className="text-lg font-bold text-white">4.9</div>
-          <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.45)" }}>Avg Rating</div>
+          <div className="text-lg font-bold" style={{ color: "var(--card-text)" }}>4.9</div>
+          <div className="text-[11px]" style={{ color: "var(--card-text-muted)" }}>Avg Rating</div>
         </div>
       </div>
 
@@ -272,14 +272,14 @@ function MediumHouseholdCard() {
       <div className="flex items-start justify-between mb-3">
         <div
           className="w-11 h-11 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "var(--card-surface)" }}
         >
           <Home size={22} style={{ color: g.accent }} />
         </div>
       </div>
 
-      <h3 className="text-lg font-bold text-white">Household Services</h3>
-      <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+      <h3 className="text-lg font-bold" style={{ color: "var(--card-text)" }}>Household Services</h3>
+      <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "var(--card-text-sub)" }}>
         Hire trusted students to help with everyday tasks around your home or dorm.
       </p>
 
@@ -289,9 +289,9 @@ function MediumHouseholdCard() {
             key={s}
             className="px-2.5 py-1 rounded-lg text-[12px] font-medium"
             style={{
-              backgroundColor: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              color: "rgba(255,255,255,0.8)",
+              backgroundColor: "var(--card-surface-sm)",
+              border: "1px solid var(--card-chip-border)",
+              color: "var(--card-chip-text)",
             }}
           >
             {s}
@@ -301,13 +301,13 @@ function MediumHouseholdCard() {
 
       <div
         className="mt-3 rounded-xl px-4 py-2.5 flex items-center gap-2 text-sm"
-        style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+        style={{ backgroundColor: "var(--card-surface-xs)" }}
       >
         <div
           className="w-2 h-2 rounded-full animate-pulse"
           style={{ backgroundColor: g.accent }}
         />
-        <span className="text-white/70">500+ active student workers</span>
+        <span style={{ color: "var(--card-text-sub)" }}>500+ active student workers</span>
       </div>
 
       <Link
@@ -329,14 +329,14 @@ function MediumDigitalCard() {
       <div className="flex items-start justify-between mb-3">
         <div
           className="w-11 h-11 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "var(--card-surface)" }}
         >
           <Laptop size={22} style={{ color: g.accent }} />
         </div>
       </div>
 
-      <h3 className="text-lg font-bold text-white">Digital & Creative</h3>
-      <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+      <h3 className="text-lg font-bold" style={{ color: "var(--card-text)" }}>Digital & Creative</h3>
+      <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "var(--card-text-sub)" }}>
         Find skilled students for design, development, content creation, and more.
       </p>
 
@@ -346,8 +346,8 @@ function MediumDigitalCard() {
             key={s}
             className="px-2.5 py-1 rounded-lg text-[12px] font-medium"
             style={{
-              backgroundColor: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              backgroundColor: "var(--card-surface-sm)",
+              border: "1px solid var(--card-chip-border)",
               color: g.accent,
             }}
           >
@@ -358,10 +358,10 @@ function MediumDigitalCard() {
 
       <div
         className="mt-3 rounded-xl px-4 py-2.5 flex items-center gap-2 text-sm"
-        style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+        style={{ backgroundColor: "var(--card-surface-xs)" }}
       >
         <Star size={13} className="fill-amber-400 text-amber-400" />
-        <span className="text-white/70">4.8 average rating across all skills</span>
+        <span style={{ color: "var(--card-text-sub)" }}>4.8 average rating across all skills</span>
       </div>
 
       <Link
@@ -395,7 +395,7 @@ function SmallCard({
       <div className="flex items-center justify-between mb-3">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "var(--card-surface)" }}
         >
           <Icon size={20} style={{ color: gradient.accent }} />
         </div>
@@ -408,8 +408,8 @@ function SmallCard({
         </motion.div>
       </div>
 
-      <h4 className="text-base font-bold text-white">{title}</h4>
-      <p className="mt-1 text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>{metric}</p>
+      <h4 className="text-base font-bold" style={{ color: "var(--card-text)" }}>{title}</h4>
+      <p className="mt-1 text-xs" style={{ color: "var(--card-text-muted)" }}>{metric}</p>
 
       <Link
         to={linkTo}

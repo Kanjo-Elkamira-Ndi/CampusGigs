@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, GraduationCap } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { GigListRow } from "@/components/gigs/GigListRow";
-import { FreelancerCard } from "@/components/freelancers/FreelancerCard";
 import { CategoryBento } from "@/components/landing/CategoryBento";
+import { TalentShowcase } from "@/components/landing/TalentShowcase";
+import { GigsShowcase } from "@/components/landing/GigsShowcase";
 import { mockGigs, mockUsers } from "@/lib/mockData";
 import { Avatar } from "@/components/shared/Avatar";
 import { RotatingWords } from "@/components/landing/RotatingWords";
@@ -25,8 +25,8 @@ const HOW_POSTER = [
 ];
 
 export function Landing() {
-  const latest = mockGigs.slice(0, 3);
-  const browseTalent = mockUsers.filter((u) => u.role === "WORKER").slice(0, 4);
+  const latest = mockGigs.filter((g) => g.status === "OPEN").slice(0, 5);
+  const browseTalent = mockUsers.filter((u) => u.role === "WORKER");
 
   return (
     <PageWrapper>
@@ -184,33 +184,11 @@ export function Landing() {
       {/* ── CATEGORY BENTO ── */}
       <CategoryBento />
 
-      {/* ── LATEST GIGS ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="flex items-end justify-between mb-4">
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>Latest gigs across Cameroon</h2>
-          <Link to="/gigs" className="text-sm hover:underline" style={{ color: "var(--brand)" }}>See all →</Link>
-        </div>
-        <div
-          className="rounded-xl overflow-hidden"
-          style={{
-            border: "1px solid var(--card-border)",
-            backgroundColor: "var(--card-bg)",
-          }}
-        >
-          {latest.map((g) => <GigListRow key={g.id} gig={g} />)}
-        </div>
-      </section>
+      {/* ── GIGS SHOWCASE ── */}
+      <GigsShowcase gigs={latest} />
 
       {/* ── BROWSE TALENT ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="flex items-end justify-between mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>Talented students you can hire</h2>
-          <Link to="/freelancers" className="text-sm hover:underline" style={{ color: "var(--brand)" }}>Browse all talent →</Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {browseTalent.map((u) => <FreelancerCard key={u.id} user={u} />)}
-        </div>
-      </section>
+      <TalentShowcase talents={browseTalent} />
 
       {/* ── TESTIMONIALS ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">

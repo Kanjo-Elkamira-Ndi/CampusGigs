@@ -75,6 +75,14 @@
   --text-secondary: rgba(0, 0, 0, 0.5);
   --text-muted: rgba(0, 0, 0, 0.45);
   --badge-bg: rgba(15, 139, 255, 0.10);
+  --card-text: #1A1A2E;
+  --card-text-sub: rgba(0, 0, 0, 0.55);
+  --card-text-muted: rgba(0, 0, 0, 0.45);
+  --card-surface: rgba(0, 0, 0, 0.06);
+  --card-surface-sm: rgba(0, 0, 0, 0.04);
+  --card-surface-xs: rgba(0, 0, 0, 0.03);
+  --card-chip-text: rgba(0, 0, 0, 0.7);
+  --card-chip-border: rgba(0, 0, 0, 0.06);
 }
 
 .dark {
@@ -113,6 +121,14 @@
   --text-secondary: rgba(255, 255, 255, 0.55);
   --text-muted: rgba(255, 255, 255, 0.45);
   --badge-bg: rgba(15, 139, 255, 0.12);
+  --card-text: #FFFFFF;
+  --card-text-sub: rgba(255, 255, 255, 0.55);
+  --card-text-muted: rgba(255, 255, 255, 0.45);
+  --card-surface: rgba(255, 255, 255, 0.08);
+  --card-surface-sm: rgba(255, 255, 255, 0.06);
+  --card-surface-xs: rgba(255, 255, 255, 0.04);
+  --card-chip-text: rgba(255, 255, 255, 0.8);
+  --card-chip-border: rgba(255, 255, 255, 0.06);
 }
 
 @layer base {
