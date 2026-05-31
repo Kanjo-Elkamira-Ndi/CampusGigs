@@ -12,6 +12,7 @@ import { SearchWidget } from "@/components/landing/SearchWidget";
 import { HeroCardStack } from "@/components/landing/HeroCardStack";
 import { TrustBar } from "@/components/landing/TrustBar";
 import { ExpertiseSection } from "@/components/landing/ExpertiseSection";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 
 const HOW_WORKER = [
   { n: 1, t: "Create your free profile", d: "Add your university, skills and a few past gigs." },
@@ -183,6 +184,9 @@ export function Landing() {
 
       {/* ── CATEGORY BENTO ── */}
       <CategoryBento />
+
+      {/* ── HOW IT WORKS ── */}
+      <HowItWorksSection />
 
       {/* ── GIGS SHOWCASE ── */}
       <GigsShowcase gigs={latest} />
