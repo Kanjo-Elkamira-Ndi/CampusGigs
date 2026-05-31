@@ -28,9 +28,8 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
 
-  /* Brand tokens - Campus Gigs green */
+  /* Brand tokens - Blue CTA */
   --color-brand: var(--brand);
   --color-brand-dark: var(--brand-dark);
   --color-brand-light: var(--brand-light);
@@ -41,61 +40,95 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.02 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 250);
-  --primary: oklch(0.52 0.18 142);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.96 0.005 250);
-  --secondary-foreground: oklch(0.2 0.02 250);
-  --muted: oklch(0.97 0.004 250);
-  --muted-foreground: oklch(0.5 0.02 250);
-  --accent: oklch(0.96 0.02 142);
-  --accent-foreground: oklch(0.2 0.02 250);
-  --destructive: oklch(0.58 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.92 0.01 250);
-  --input: oklch(0.92 0.01 250);
-  --ring: oklch(0.52 0.18 142);
+  --background: #F5F7FA;
+  --foreground: #1A1A2E;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A2E;
+  --primary: #0F8BFF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E8ECF1;
+  --secondary-foreground: #4B5563;
+  --muted: #F0F2F5;
+  --muted-foreground: #6B7280;
+  --accent: #0F8BFF;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.12);
+  --ring: #0F8BFF;
 
-  --brand: #008000;
-  --brand-dark: #006600;
-  --brand-light: #e6f7e6;
-  --brand-muted: #f0fff0;
-  --brand-border: #b3d9b3;
-  --brand-foreground: #ffffff;
+  --brand: #0F8BFF;
+  --brand-dark: #0A7AE6;
+  --brand-light: rgba(15, 139, 255, 0.10);
+  --brand-muted: rgba(15, 139, 255, 0.05);
+  --brand-border: rgba(15, 139, 255, 0.20);
+  --brand-foreground: #FFFFFF;
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --hero-bg: #E8EDF5;
+  --section-bg: #FFFFFF;
+  --section-alt: #F0F3F8;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --text-secondary: rgba(0, 0, 0, 0.5);
+  --text-muted: rgba(0, 0, 0, 0.45);
+  --badge-bg: rgba(15, 139, 255, 0.10);
+  --card-text: #1A1A2E;
+  --card-text-sub: rgba(0, 0, 0, 0.55);
+  --card-text-muted: rgba(0, 0, 0, 0.45);
+  --card-surface: rgba(0, 0, 0, 0.06);
+  --card-surface-sm: rgba(0, 0, 0, 0.04);
+  --card-surface-xs: rgba(0, 0, 0, 0.03);
+  --card-chip-text: rgba(0, 0, 0, 0.7);
+  --card-chip-border: rgba(0, 0, 0, 0.06);
 }
 
 .dark {
-  --background: oklch(0.16 0.015 250);
-  --foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.21 0.018 250);
-  --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.21 0.018 250);
-  --popover-foreground: oklch(0.97 0.005 250);
-  --primary: oklch(0.62 0.18 142);
-  --primary-foreground: oklch(0.12 0.02 250);
-  --secondary: oklch(0.27 0.02 250);
-  --secondary-foreground: oklch(0.97 0.005 250);
-  --muted: oklch(0.25 0.02 250);
-  --muted-foreground: oklch(0.7 0.02 250);
-  --accent: oklch(0.3 0.04 142);
-  --accent-foreground: oklch(0.97 0.005 250);
-  --destructive: oklch(0.68 0.2 22);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.62 0.18 142);
+  --background: #00152E;
+  --foreground: #FFFFFF;
+  --card: #0A1F3B;
+  --card-foreground: #FFFFFF;
+  --popover: #0A1F3B;
+  --popover-foreground: #FFFFFF;
+  --primary: #0F8BFF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #0A1F3B;
+  --secondary-foreground: #B4C0D0;
+  --muted: #0A1F3B;
+  --muted-foreground: #B4C0D0;
+  --accent: #0F8BFF;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #0F8BFF;
 
-  --brand: #008000;
-  --brand-dark: #006600;
-  --brand-light: #0f3a0f;
-  --brand-muted: #0a1f0a;
-  --brand-border: #1f5a1f;
-  --brand-foreground: #ffffff;
+  --brand: #0F8BFF;
+  --brand-dark: #0A7AE6;
+  --brand-light: rgba(15, 139, 255, 0.12);
+  --brand-muted: rgba(15, 139, 255, 0.06);
+  --brand-border: rgba(15, 139, 255, 0.25);
+  --brand-foreground: #FFFFFF;
+  --nav-bg: rgba(0, 21, 46, 0.85);
+  --hero-bg: #00152E;
+  --section-bg: #0A1F3B;
+  --section-alt: #00152E;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-bg: rgba(255, 255, 255, 0.02);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --badge-bg: rgba(15, 139, 255, 0.12);
+  --card-text: #FFFFFF;
+  --card-text-sub: rgba(255, 255, 255, 0.55);
+  --card-text-muted: rgba(255, 255, 255, 0.45);
+  --card-surface: rgba(255, 255, 255, 0.08);
+  --card-surface-sm: rgba(255, 255, 255, 0.06);
+  --card-surface-xs: rgba(255, 255, 255, 0.04);
+  --card-chip-text: rgba(255, 255, 255, 0.8);
+  --card-chip-border: rgba(255, 255, 255, 0.06);
 }
 
 @layer base {
@@ -104,7 +137,7 @@
     margin: 0;
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   #root {
     min-height: 100vh;
@@ -112,3 +145,10 @@
     flex-direction: column;
   }
 }
+
+/* Floating animation for expert cards */
+@keyframes float1 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-8px) rotate(0.5deg); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-12px) rotate(-0.8deg); } }
+@keyframes float3 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-6px) rotate(0.3deg); } }
+@keyframes float4 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-0.4deg); } }
+@keyframes float5 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-14px) rotate(0.6deg); } }
