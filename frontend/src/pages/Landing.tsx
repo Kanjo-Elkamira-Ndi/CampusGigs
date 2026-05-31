@@ -9,7 +9,7 @@ import { mockGigs, mockUsers } from "@/lib/mockData";
 import { Avatar } from "@/components/shared/Avatar";
 import { RotatingWords } from "@/components/landing/RotatingWords";
 import { SearchWidget } from "@/components/landing/SearchWidget";
-import { FloatingExpertCards } from "@/components/landing/FloatingExpertCards";
+import { HeroCardStack } from "@/components/landing/HeroCardStack";
 import { TrustBar } from "@/components/landing/TrustBar";
 import { ExpertiseSection } from "@/components/landing/ExpertiseSection";
 
@@ -84,14 +84,14 @@ export function Landing() {
               </motion.div>
             </div>
 
-            {/* Right column — floating cards */}
+            {/* Right column — hero card stack */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.4 }}
               className="hidden lg:block pt-24 lg:pt-0"
             >
-              <FloatingExpertCards />
+              <HeroCardStack />
             </motion.div>
           </div>
         </div>
