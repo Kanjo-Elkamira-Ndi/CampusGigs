@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, GraduationCap, CheckCircle } from "lucide-react";
+import { ArrowRight, Star, GraduationCap } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { GigListRow } from "@/components/gigs/GigListRow";
 import { FreelancerCard } from "@/components/freelancers/FreelancerCard";
-import { CATEGORY_META } from "@/lib/constants";
+import { CategoryBento } from "@/components/landing/CategoryBento";
 import { mockGigs, mockUsers } from "@/lib/mockData";
 import { Avatar } from "@/components/shared/Avatar";
 import { RotatingWords } from "@/components/landing/RotatingWords";
@@ -26,12 +25,8 @@ const HOW_POSTER = [
 ];
 
 export function Landing() {
-  const [mode, setMode] = useState<"worker" | "poster">("worker");
-  const featured = mockUsers.filter((u) => u.role === "WORKER").slice(0, 4);
   const latest = mockGigs.slice(0, 3);
   const browseTalent = mockUsers.filter((u) => u.role === "WORKER").slice(0, 4);
-  const categories = Object.entries(CATEGORY_META).slice(0, 9);
-  const catCount = (cat: string) => mockGigs.filter((g) => g.category === cat).length;
 
   return (
     <PageWrapper>
@@ -186,37 +181,8 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── CATEGORY GRID ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>Browse by category</h2>
-          <Link to="/gigs" className="text-sm hover:underline" style={{ color: "var(--brand)" }}>See all gigs →</Link>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {categories.map(([cat, m]) => {
-            const Icon = m.icon;
-            return (
-              <Link
-                key={cat}
-                to={`/gigs?category=${encodeURIComponent(cat)}`}
-                className="rounded-xl p-5 flex items-center gap-3 transition-all hover:scale-[1.02]"
-                style={{
-                  backgroundColor: "var(--card-bg)",
-                  border: "1px solid var(--card-border)",
-                }}
-              >
-                <div className={`w-12 h-12 rounded-full ${m.bg} ${m.text} grid place-items-center`}>
-                  <Icon size={22} />
-                </div>
-                <div>
-                  <div className="font-semibold" style={{ color: "var(--foreground)" }}>{cat}</div>
-                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>{catCount(cat)} gigs open</div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* ── CATEGORY BENTO ── */}
+      <CategoryBento />
 
       {/* ── LATEST GIGS ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
