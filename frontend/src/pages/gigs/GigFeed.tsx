@@ -4,25 +4,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   ArrowLeft,
+  ArrowRight,
   Sparkles,
 } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { mockGigs } from "@/lib/mockData";
-import { CATEGORY_META } from "@/lib/constants";
+
 import type { GigCategory } from "@/types";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { GigCard } from "@/components/gigs/GigCard";
 
 const CATEGORY_DESCRIPTIONS: Record<GigCategory, string> = {
-  Tutoring: "Find tutoring, exam prep, assignment guidance, and coaching",
-  Errands: "Explore cleaning, moving, laundry, and everyday tasks",
-  "Tech help": "Fix computers, install software, and get tech support",
-  Events: "Work as usher, coordinator, sound tech, or event staff",
-  Creative: "Design, video editing, content creation, and branding",
-  Delivery: "Earn with deliveries, pickups, and local transport",
-  Translation: "Translate documents between English and French",
-  Photography: "Shoot events, portraits, and graduation photos",
-  Other: "Browse miscellaneous tasks and specialized gigs",
+  Tutoring: "Find tutoring, exam preparation, assignment guidance, language coaching, and study support opportunities.",
+  Errands: "Explore cleaning, painting, laundry, moving assistance, and neighborhood service gigs.",
+  "Tech help": "Discover computer repair, software installation, printer setup, and technical troubleshooting gigs.",
+  Events: "Work as an usher, coordinator, photographer, or event support staff for local events.",
+  Creative: "Discover web development, graphic design, video editing, social media, and content creation projects.",
+  Delivery: "Earn money helping with deliveries, pickups, errands, and local transportation tasks.",
+  Translation: "Find English-French document translation, interpretation, and language service opportunities.",
+  Photography: "Find photography, videography, editing, and content production opportunities.",
+  Other: "Browse miscellaneous tasks and specialized service opportunities on campus.",
 };
 
 const CATEGORY_ORDER: GigCategory[] = [
@@ -38,6 +39,20 @@ const CATEGORY_ORDER: GigCategory[] = [
 ];
 
 const ACTIVE_GIGS = mockGigs.filter((g) => g.status !== "CANCELLED");
+
+/* ── per-category accent colors ── */
+
+const CAT_COLORS: Record<GigCategory, string> = {
+  Tutoring: "#0F8BFF",
+  Errands: "#10B981",
+  "Tech help": "#6366F1",
+  Events: "#EC4899",
+  Creative: "#8B5CF6",
+  Delivery: "#F59E0B",
+  Translation: "#14B8A6",
+  Photography: "#F97316",
+  Other: "#6B7280",
+};
 
 export function GigFeed() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -176,49 +191,65 @@ export function GigFeed() {
               )}
             </motion.div>
           ) : (
-            /* ── Category cards grid ── */
+            /* ── Category cards grid (Twine-style landing pages) ── */
             <motion.div
               key="categories"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
             >
               {CATEGORY_ORDER.map((cat, i) => {
                 const count = ACTIVE_GIGS.filter((g) => g.category === cat).length;
-                const meta = CATEGORY_META[cat];
+                const color = CAT_COLORS[cat];
+                const bg = `${color}12`;
                 return (
                   <motion.button
                     key={cat}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: i * 0.04 }}
-                    whileHover={{ y: -5 }}
-                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.4, delay: i * 0.06 }}
+                    whileHover={{ y: -6 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => selectCategory(cat)}
-                    className="flex flex-col items-start text-left rounded-2xl p-6 transition-shadow duration-200"
+                    className="flex flex-col items-start text-left rounded-3xl p-7 sm:p-8 transition-shadow duration-300"
                     style={{
                       backgroundColor: "var(--card-bg)",
                       border: "1px solid var(--card-border)",
-                      boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+                      boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
                     }}
                   >
+                    {/* large icon */}
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                      style={{ backgroundColor: meta.bg }}
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                      style={{ backgroundColor: bg, color }}
                     >
-                      <CategoryIcon category={cat} size={22} />
+                      <CategoryIcon category={cat} size={26} />
                     </div>
-                    <h3 className="text-base font-bold" style={{ color: "var(--foreground)" }}>
+
+                    {/* title */}
+                    <h3 className="text-lg font-bold leading-snug" style={{ color: "var(--foreground)" }}>
                       {cat}
                     </h3>
-                    <p className="text-xs mt-1.5 leading-relaxed line-clamp-2" style={{ color: "var(--text-secondary)" }}>
+
+                    {/* description */}
+                    <p className="text-sm leading-relaxed mt-2 flex-1" style={{ color: "var(--text-secondary)" }}>
                       {CATEGORY_DESCRIPTIONS[cat]}
                     </p>
-                    <span className="text-xs font-medium mt-3" style={{ color: "var(--brand)" }}>
-                      {count} gig{count !== 1 ? "s" : ""}
-                    </span>
+
+                    {/* cta + count */}
+                    <div className="flex items-center justify-between w-full mt-6">
+                      <span
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold transition-all"
+                        style={{ color }}
+                      >
+                        Browse {cat} <ArrowRight size={14} />
+                      </span>
+                      <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                        {count} gig{count !== 1 ? "s" : ""}
+                      </span>
+                    </div>
                   </motion.button>
                 );
               })}
