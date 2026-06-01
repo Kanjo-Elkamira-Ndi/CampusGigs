@@ -12,6 +12,7 @@ import {
 import type { Gig } from "@/types";
 import { formatBudget, getDeadlineLabel, timeAgo } from "@/lib/utils";
 import { CATEGORY_META } from "@/lib/constants";
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 
 export function GigCard({ gig }: { gig: Gig }) {
   const meta = CATEGORY_META[gig.category];
@@ -97,7 +98,7 @@ export function GigCard({ gig }: { gig: Gig }) {
                 color: meta.text,
               }}
             >
-              {meta.icon} {gig.category}
+              <CategoryIcon category={gig.category} size={11} /> {gig.category}
             </span>
             {gig.deadline && (
               <span
