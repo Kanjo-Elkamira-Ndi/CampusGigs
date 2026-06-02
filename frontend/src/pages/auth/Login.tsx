@@ -4,14 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Eye, EyeOff, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
-import { PageWrapper } from "@/components/layout/PageWrapper";
+import { motion } from "framer-motion";
 import { loginSchema, type LoginInput } from "@/lib/validators";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { mockUsers } from "@/lib/mockData";
+import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
 
-export function LoginPage() {
+export function Login() {
   const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
@@ -37,20 +38,35 @@ export function LoginPage() {
   };
 
   return (
-    <PageWrapper>
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
-          <div className="text-center">
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* Left panel */}
+      <AuthSplitPanel
+        headline={"Your campus,\nyour career."}
+        subtext="Find freelance work, hire student talent, and grow your campus career — all in one place."
+      />
+
+      {/* Right panel — form */}
+      <div className="flex items-center justify-center bg-background px-6 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-sm"
+        >
+          <div className="text-center mb-8">
             <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <GraduationCap size={24} />
             </div>
             <h1 className="text-2xl font-bold">Welcome back</h1>
             <p className="text-sm text-muted-foreground mt-1">Log in to your Campus Gigs account.</p>
           </div>
-          <Button variant="outline" className="w-full mt-6">Continue with Google</Button>
+
+          <Button variant="outline" className="w-full">Continue with Google</Button>
+
           <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
             <div className="flex-1 h-px bg-border" /> OR <div className="flex-1 h-px bg-border" />
           </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
             <div>
               <label className="text-sm font-medium">Email</label>
@@ -61,27 +77,35 @@ export function LoginPage() {
               <label className="text-sm font-medium">Password</label>
               <div className="relative">
                 <Input type={showPw ? "text" : "password"} {...register("password")} placeholder="password123" />
-                <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <button
+                  type="button"
+                  onClick={() => setShowPw((v) => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>}
             </div>
             <Button type="submit" disabled={isSubmitting} className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white">
-              Log in
+              {isSubmitting ? "Logging in…" : "Log in"}
             </Button>
           </form>
+
           <div className="text-center text-sm text-muted-foreground mt-4">
             <a href="#" className="hover:underline">Forgot password?</a>
           </div>
           <div className="text-center text-sm mt-4">
-            New here? <Link to="/register" className="text-[color:var(--brand-dark)] dark:text-brand font-medium hover:underline">Sign up</Link>
+            New here?{" "}
+            <Link to="/register" className="text-[color:var(--brand-dark)] dark:text-brand font-medium hover:underline">
+              Sign up
+            </Link>
           </div>
           <p className="text-[11px] text-center text-muted-foreground mt-6">
             Demo: any email + password <code className="px-1 bg-muted rounded">password123</code>
           </p>
-        </div>
+        </motion.div>
       </div>
-    </PageWrapper>
+    </div>
   );
 }
