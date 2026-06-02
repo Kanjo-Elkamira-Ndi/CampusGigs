@@ -9,8 +9,7 @@ import { ResultsHeader } from "@/components/talents/ResultsHeader";
 import { mockUsers } from "@/lib/mockData";
 import type { User } from "@/types";
 
-const PER_PAGE = 20;
-
+const PER_PAGE = 12;
 /* ── map user to PublicUser shape ── */
 function toPublic(u: User) {
   return {
@@ -242,7 +241,7 @@ export function FreelancerDirectory() {
             </div>
           </div>
 
-          {/* ─── results ─── */}
+          {/* ─── results grid ─── */}
           <div className="flex-1 min-w-0">
             <ResultsHeader
               totalCount={filtered.length}
@@ -259,7 +258,7 @@ export function FreelancerDirectory() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="space-y-4"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6"
                 >
                   {paged.map((user, i) => (
                     <TalentCard key={user.id} user={user} index={i} />

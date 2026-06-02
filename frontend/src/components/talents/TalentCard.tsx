@@ -38,13 +38,13 @@ export function TalentCard({ user, index = 0 }: Props) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
       whileHover={{ y: -4 }}
-      className="rounded-2xl bg-card border border-border overflow-hidden transition-all duration-300"
+      className="rounded-2xl bg-card border border-border overflow-hidden transition-all duration-300 h-full flex flex-col"
       style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
     >
-      <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 p-5 sm:p-6">
+      <div className="flex flex-col p-5 sm:p-6 h-full">
         {/* profile image */}
         <motion.div
-          className="shrink-0"
+          className="mb-4"
           whileHover={{ scale: 1.04 }}
           transition={{ duration: 0.25 }}
         >
