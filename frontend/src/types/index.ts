@@ -15,6 +15,12 @@ export interface User {
   reviewCount: number;
   hiredCount: number;
   createdAt: string;
+  hourlyRate?: number;
+  responseTime?: string;
+  availability?: "Immediately" | "This Week" | "Next Week" | "Flexible";
+  verified?: boolean;
+  experienceLevel?: "Entry" | "Intermediate" | "Expert";
+  remoteAvailable?: boolean;
 }
 
 export type PublicUser = Pick<
@@ -28,6 +34,15 @@ export type PublicUser = Pick<
   | "reviewCount"
   | "hiredCount"
   | "skills"
+  | "hourlyRate"
+  | "responseTime"
+  | "availability"
+  | "verified"
+  | "experienceLevel"
+  | "remoteAvailable"
+  | "bio"
+  | "universityId"
+  | "createdAt"
 >;
 
 export type GigStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";

@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useAuthStore } from "@/store/authStore";
 import { Landing } from "@/pages/Landing";
-import { LoginPage } from "@/pages/auth/Login";
+import { Login } from "@/pages/auth/Login";
 import { RegisterPage } from "@/pages/auth/Register";
 import { GigFeed } from "@/pages/gigs/GigFeed";
 import { GigDetail } from "@/pages/gigs/GigDetail";
@@ -30,7 +30,7 @@ function AppContent() {
       <div className="flex-1 pt-16">
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/gigs" element={<GigFeed />} />
           <Route path="/gigs/new" element={<PostGig />} />

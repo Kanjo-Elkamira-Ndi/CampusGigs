@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 
 export interface FiltersState {
   q: string;
@@ -113,7 +114,7 @@ export function GigFilters({ value, onChange, counts }: Props) {
                   value.category === cat && "border-l-2 border-brand bg-brand-light/60 dark:bg-brand-light/30 font-medium",
                 )}
               >
-                <span>{m.icon}</span>
+                <CategoryIcon category={cat as GigCategory} size={14} />
                 <span className="flex-1">{cat}</span>
                 {counts?.category?.[cat] != null && (
                   <span className="text-[11px] text-muted-foreground">{counts.category[cat]}</span>
