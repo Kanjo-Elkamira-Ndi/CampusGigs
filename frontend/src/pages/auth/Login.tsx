@@ -38,7 +38,7 @@ export function Login() {
   };
 
   return (
-    <div className="h-screen overflow-hidden grid lg:grid-cols-2">
+    <div className="h-full overflow-hidden grid lg:grid-cols-2">
       {/* Left panel */}
       <AuthSplitPanel
         headline={"Your campus,\nyour career."}
