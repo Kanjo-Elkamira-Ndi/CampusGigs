@@ -38,7 +38,7 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="h-screen overflow-hidden grid lg:grid-cols-2">
       {/* Left panel */}
       <AuthSplitPanel
         headline={"Your campus,\nyour career."}
@@ -46,7 +46,7 @@ export function Login() {
       />
 
       {/* Right panel — form */}
-      <div className="flex items-center justify-center bg-background px-6 py-12">
+      <div className="flex items-center justify-center bg-background px-6 py-12 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

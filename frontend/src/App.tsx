@@ -21,7 +21,7 @@ import { NotFound } from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function AppContent() {
+function AppLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
   useEffect(() => { hydrate(); }, [hydrate]);
   return (
@@ -30,8 +30,6 @@ function AppContent() {
       <div className="flex-1 pt-16">
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<RegisterPage />} />
           <Route path="/gigs" element={<GigFeed />} />
           <Route path="/gigs/new" element={<PostGig />} />
           <Route path="/gigs/:id" element={<GigDetail />} />
@@ -53,7 +51,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppContent />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/*" element={<AppLayout />} />
+        </Routes>
         <Toaster richColors position="top-right" />
       </BrowserRouter>
     </QueryClientProvider>
