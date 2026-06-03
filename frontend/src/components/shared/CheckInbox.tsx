@@ -1,5 +1,5 @@
 import { Mail, Lock } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export interface CheckInboxProps {
@@ -36,7 +36,7 @@ export function CheckInbox({
       )}
       <div className="text-center text-sm mt-6">
         <Link
-          to={backHref as any}
+          to={backHref}
           className="text-[color:var(--brand-dark)] dark:text-brand font-medium hover:underline"
         >
           {backLabel}

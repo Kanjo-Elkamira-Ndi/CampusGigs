@@ -1,24 +1,16 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import { Eye, EyeOff, GraduationCap } from "lucide-react";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckInbox } from "@/components/shared/CheckInbox";
 import { cn } from "@/lib/utils";
-
-const searchSchema = z.object({
-  token: z.string().optional(),
-});
-
-export const Route = createFileRoute("/auth/reset-password")({
-  validateSearch: (s) => searchSchema.parse(s),
-  component: ResetPasswordPage,
-});
+import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
 
 const schema = z
   .object({
@@ -40,8 +32,9 @@ function scorePassword(pw: string): { score: 0 | 1 | 2 | 3; label: string } {
   return { score, label: ["Weak", "Weak", "Fair", "Strong"][score] };
 }
 
-function ResetPasswordPage() {
-  const { token } = Route.useSearch();
+export function ResetPasswordPage() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [expired] = useState(token === "expired");
@@ -52,7 +45,7 @@ function ResetPasswordPage() {
 
   useEffect(() => {
     if (!token) {
-      navigate({ to: "/auth/forgot-password" });
+      navigate("/forgot-password");
       return;
     }
     const t = setTimeout(() => setLoading(false), 1000);
@@ -70,9 +63,18 @@ function ResetPasswordPage() {
   if (!token) return null;
 
   return (
-    <PageWrapper>
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
+    <div className="h-full overflow-hidden grid lg:grid-cols-2">
+      <AuthSplitPanel
+        headline="Your campus,\nyour career."
+        subtext="Find freelance work, hire student talent, and grow your campus career — all in one place."
+      />
+      <div className="flex items-center justify-start bg-background pl-12 pr-12 py-12 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-sm"
+        >
           {loading ? (
             <div className="space-y-4">
               <Skeleton className="h-12 w-12 mx-auto rounded-xl" />
@@ -97,12 +99,12 @@ function ResetPasswordPage() {
               icon="lock"
               heading="Link expired"
               body="This reset link has expired. Request a new one."
-              backHref="/auth/forgot-password"
+              backHref="/forgot-password"
               backLabel="Request new link"
             />
           ) : (
             <>
-              <div className="text-center">
+              <div className="text-center mb-8">
                 <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                   <GraduationCap size={24} />
                 </div>
@@ -111,7 +113,7 @@ function ResetPasswordPage() {
                   Choose a strong password you haven't used before.
                 </p>
               </div>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mt-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <div>
                   <label className="text-sm font-medium">New password</label>
                   <div className="relative">
@@ -177,8 +179,8 @@ function ResetPasswordPage() {
               </div>
             </>
           )}
-        </div>
+        </motion.div>
       </div>
-    </PageWrapper>
+    </div>
   );
 }

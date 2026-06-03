@@ -8,6 +8,8 @@ import { useAuthStore } from "@/store/authStore";
 import { Landing } from "@/pages/Landing";
 import { Login } from "@/pages/auth/Login";
 import { RegisterPage } from "@/pages/auth/Register";
+import { ForgotPasswordPage } from "@/pages/auth/ForgotPassword";
+import { ResetPasswordPage } from "@/pages/auth/ResetPassword";
 import { GigFeed } from "@/pages/gigs/GigFeed";
 import { GigDetail } from "@/pages/gigs/GigDetail";
 import { PostGig } from "@/pages/gigs/PostGig";
@@ -32,6 +34,8 @@ function AppLayout() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/gigs" element={<GigFeed />} />
           <Route path="/gigs/new" element={<PostGig />} />
           <Route path="/gigs/:id" element={<GigDetail />} />

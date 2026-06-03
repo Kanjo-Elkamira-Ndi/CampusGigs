@@ -1,23 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CheckInbox } from "@/components/shared/CheckInbox";
-
-export const Route = createFileRoute("/auth/forgot-password")({
-  component: ForgotPasswordPage,
-});
+import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
 
 const schema = z.object({ email: z.string().email("Enter a valid email") });
 type FormInput = z.infer<typeof schema>;
 
-function ForgotPasswordPage() {
+export function ForgotPasswordPage() {
   const [sentEmail, setSentEmail] = useState<string | null>(null);
   const [sentSet] = useState(() => new Set<string>());
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormInput>({
@@ -36,22 +33,31 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <PageWrapper>
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
+    <div className="h-full overflow-hidden grid lg:grid-cols-2">
+      <AuthSplitPanel
+        headline="Your campus,\nyour career."
+        subtext="Find freelance work, hire student talent, and grow your campus career — all in one place."
+      />
+      <div className="flex items-center justify-start bg-background pl-12 pr-12 py-12 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-sm"
+        >
           {sentEmail ? (
             <CheckInbox
               icon="mail"
               heading="Check your inbox"
               body={`We sent a reset link to ${sentEmail}. It expires in 1 hour.`}
-              backHref="/auth/forgot-password"
+              backHref="/forgot-password"
               backLabel="Try a different email"
               resendLabel="Resend email"
               onResend={() => toast.info("Already sent — check your spam folder.")}
             />
           ) : (
             <>
-              <div className="text-center">
+              <div className="text-center mb-8">
                 <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                   <GraduationCap size={24} />
                 </div>
@@ -60,7 +66,7 @@ function ForgotPasswordPage() {
                   Enter your email and we'll send you a reset link.
                 </p>
               </div>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mt-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <div>
                   <label className="text-sm font-medium">Email</label>
                   <Input type="email" {...register("email")} placeholder="you@campus.cm" />
@@ -86,8 +92,8 @@ function ForgotPasswordPage() {
               </div>
             </>
           )}
-        </div>
+        </motion.div>
       </div>
-    </PageWrapper>
+    </div>
   );
 }
