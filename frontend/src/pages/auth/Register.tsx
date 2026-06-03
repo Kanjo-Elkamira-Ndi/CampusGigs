@@ -2,15 +2,16 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Briefcase, UserPlus, GraduationCap } from "lucide-react";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { registerSchema, type RegisterInput } from "@/lib/validators";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
+import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
 
 export function RegisterPage() {
   const user = useAuthStore((s) => s.user);
@@ -47,17 +48,29 @@ export function RegisterPage() {
   };
 
   return (
-    <PageWrapper>
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
-          <div className="text-center">
+    <div className="min-h-screen grid lg:grid-cols-2">
+      <AuthSplitPanel
+        headline={"Your campus,\nyour career."}
+        subtext="Find freelance work, hire student talent, and grow your campus career — all in one place."
+      />
+
+      <div className="flex items-center justify-center bg-background px-6 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-sm"
+        >
+          <div className="text-center mb-6">
             <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <GraduationCap size={24} />
             </div>
             <h1 className="text-2xl font-bold">Join Campus Gigs</h1>
             <p className="text-sm text-muted-foreground mt-1">Free for students across Cameroon.</p>
           </div>
-          <Button variant="outline" className="w-full mt-6">Continue with Google</Button>
+
+          <Button variant="outline" className="w-full">Continue with Google</Button>
+
           <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
             <div className="flex-1 h-px bg-border" /> OR <div className="flex-1 h-px bg-border" />
           </div>
@@ -124,10 +137,13 @@ export function RegisterPage() {
           </form>
 
           <div className="text-center text-sm mt-4">
-            Already have an account? <Link to="/login" className="text-[color:var(--brand-dark)] dark:text-brand font-medium hover:underline">Log in</Link>
+            Already have an account?{" "}
+            <Link to="/login" className="text-[color:var(--brand-dark)] dark:text-brand font-medium hover:underline">
+              Log in
+            </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </PageWrapper>
+    </div>
   );
 }
