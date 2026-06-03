@@ -46,7 +46,7 @@ export function Login() {
       />
 
       {/* Right panel — form */}
-      <div className="flex items-center justify-center bg-background px-6 py-12 overflow-y-auto">
+      <div className="flex items-center justify-start bg-background pl-12 pr-12 py-12 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
