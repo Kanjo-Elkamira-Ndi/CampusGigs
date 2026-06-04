@@ -80,7 +80,7 @@ function PosterDashboardContent() {
           <motion.div {...FADE_IN} className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
               <h2 className="font-semibold text-sm">Your active gigs</h2>
-              <Link to="/dashboard/poster" className="text-xs text-primary hover:underline">Manage all →</Link>
+              <Link to="/dashboard/poster/gigs" className="text-xs text-primary hover:underline">Manage all →</Link>
             </div>
             <div className="px-2 pb-2">
               {mockPostedGigs.slice(0, 3).map((g) => (

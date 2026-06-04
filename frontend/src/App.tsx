@@ -19,6 +19,8 @@ import { WorkerDashboard } from "@/pages/dashboard/WorkerDashboard";
 import { PosterDashboard } from "@/pages/dashboard/PosterDashboard";
 import { SavedGigs } from "@/pages/dashboard/SavedGigs";
 import { MyApplicationsPage } from "@/pages/dashboard/MyApplicationsPage";
+import { PosterGigs } from "@/pages/dashboard/PosterGigs";
+import { ApplicantsPage } from "@/pages/dashboard/ApplicantsPage";
 import { Messages } from "@/pages/messages/Messages";
 import { Profile } from "@/pages/profile/Profile";
 import { EditProfile } from "@/pages/profile/EditProfile";
@@ -49,6 +51,8 @@ function AppLayout() {
           <Route path="/dashboard/saved" element={<SavedGigs />} />
           <Route path="/dashboard/applications" element={<MyApplicationsPage />} />
           <Route path="/dashboard/poster" element={<PosterDashboard />} />
+          <Route path="/dashboard/poster/gigs" element={<PosterGigs />} />
+          <Route path="/dashboard/poster/applicants" element={<ApplicantsPage />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/profile/:id" element={<Profile />} />

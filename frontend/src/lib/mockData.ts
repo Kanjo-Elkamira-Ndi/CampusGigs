@@ -300,6 +300,9 @@ export const mockApplicants = [
   { id: "ap2", name: "Ama Mensah", initials: "AM", avatarColor: "#fef3c7", gigTitle: "Design poster for council event", rating: 5.0, reviewCount: 7 },
   { id: "ap3", name: "Lionel Tchoupo", initials: "LT", avatarColor: "#ede9fe", gigTitle: "Photographer for graduation ceremony", rating: 4.6, reviewCount: 11 },
   { id: "ap4", name: "Sara Ndongo", initials: "SN", avatarColor: "#ccfbf1", gigTitle: "Help set up graduation dinner", rating: 4.7, reviewCount: 15 },
+  { id: "ap5", name: "Emmanuel Tala", initials: "ET", avatarColor: "#e6f7e6", gigTitle: "Design poster for council event", rating: 4.8, reviewCount: 14 },
+  { id: "ap6", name: "Danielle Nkwi", initials: "DN", avatarColor: "#fce7f3", gigTitle: "Python tutor for DS exam", rating: 4.9, reviewCount: 18 },
+  { id: "ap7", name: "Prisca Ewolo", initials: "PE", avatarColor: "#fff7ed", gigTitle: "Fix WiFi on Ubuntu laptop", rating: 5.0, reviewCount: 10 },
 ];
 
 export const mockPostedGigs = [
@@ -307,6 +310,9 @@ export const mockPostedGigs = [
   { id: "pg2", title: "Help move furniture to new dorm", budget: 3500, applicantCount: 5, status: "OPEN" as const, category: "Errands" as const },
   { id: "pg3", title: "Design poster for council event", budget: 4000, applicantCount: 7, status: "IN_PROGRESS" as const, category: "Creative" as const },
   { id: "pg4", title: "Fix WiFi on Ubuntu laptop", budget: 2500, applicantCount: 2, status: "OPEN" as const, category: "Tech help" as const },
+  { id: "pg5", title: "English-French report translation", budget: 8000, applicantCount: 4, status: "COMPLETED" as const, category: "Translation" as const },
+  { id: "pg6", title: "Set up sound system for cultural night", budget: 12000, applicantCount: 6, status: "COMPLETED" as const, category: "Events" as const },
+  { id: "pg7", title: "Quick courier: chemistry textbook return", budget: 1800, applicantCount: 2, status: "CANCELLED" as const, category: "Delivery" as const },
 ];
 
 export const mockDashboardApplications = [
@@ -329,14 +335,14 @@ export const mockWorkerStats = {
 };
 
 export const mockPosterStats = {
-  activeGigs: 4,
+  activeGigs: 5,
   openGigs: 3,
   inProgressGigs: 1,
   newApplicants: 7,
   applicantsToReview: 3,
-  gigsCompleted: 12,
+  gigsCompleted: 14,
   avgWorkerRating: 4.6,
-  gigsWithReviews: 8,
+  gigsWithReviews: 10,
 };
 
 export const findGig = (id: string) => mockGigs.find((g) => g.id === id);

@@ -50,9 +50,9 @@ const WORKER_NAV = [
 ] as const;
 
 const POSTER_NAV = [
-  { to: "/dashboard/poster", label: "My Gigs" },
+  { to: "/dashboard/poster/gigs", label: "My Gigs" },
   { to: "/gigs/new", label: "Post a Gig" },
-  { to: "/dashboard/poster", label: "Applicants", badge: true },
+  { to: "/dashboard/poster/applicants", label: "Applicants", badge: true },
   { to: "/messages", label: "Messages" },
   { label: "Tools", dimmed: true },
 ] as const;
@@ -67,9 +67,9 @@ const WORKER_SIDEBAR = [
 
 const POSTER_SIDEBAR = [
   { to: "/dashboard/poster", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/dashboard/poster", icon: Briefcase, label: "My Gigs" },
+  { to: "/dashboard/poster/gigs", icon: Briefcase, label: "My Gigs" },
   { to: "/gigs/new", icon: PlusCircle, label: "Post a Gig" },
-  { to: "/dashboard/poster", icon: Users, label: "Applicants", dot: true },
+  { to: "/dashboard/poster/applicants", icon: Users, label: "Applicants", dot: true },
   { to: "/messages", icon: MessageSquare, label: "Messages" },
 ] as const;
 
@@ -92,8 +92,8 @@ export function DashboardShell({ role, children }: Props) {
     { icon: DollarSign, label: "Earnings", to: "/dashboard" },
   ] : [
     { icon: User, label: "Profile", to: "/profile/" + user.id },
-    { icon: Briefcase, label: "Posted Gigs", to: "/dashboard/poster" },
-    { icon: Users, label: "Applicants", to: "/dashboard/poster" },
+    { icon: Briefcase, label: "Posted Gigs", to: "/dashboard/poster/gigs" },
+    { icon: Users, label: "Applicants", to: "/dashboard/poster/applicants" },
     { icon: StarHalf, label: "Reviews Given", to: "/profile/" + user.id },
     { icon: CreditCard, label: "Payments", to: "/dashboard/poster" },
   ];
