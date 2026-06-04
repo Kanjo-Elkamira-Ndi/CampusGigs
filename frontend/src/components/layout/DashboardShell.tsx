@@ -43,8 +43,8 @@ interface Props {
 
 const WORKER_NAV = [
   { to: "/gigs", label: "Find Gigs" },
-  { to: "/gigs", label: "Saved" },
-  { to: "/dashboard", label: "My Applications" },
+  { to: "/dashboard/saved", label: "Saved" },
+  { to: "/dashboard/applications", label: "My Applications" },
   { to: "/messages", label: "Messages" },
   { label: "Tools", dimmed: true },
 ] as const;
@@ -60,8 +60,8 @@ const POSTER_NAV = [
 const WORKER_SIDEBAR = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/gigs", icon: Search, label: "Browse Gigs" },
-  { to: "/gigs", icon: Heart, label: "Saved" },
-  { to: "/dashboard", icon: FileText, label: "Applications" },
+  { to: "/dashboard/saved", icon: Heart, label: "Saved" },
+  { to: "/dashboard/applications", icon: FileText, label: "Applications" },
   { to: "/messages", icon: MessageSquare, label: "Messages", dot: true },
 ] as const;
 

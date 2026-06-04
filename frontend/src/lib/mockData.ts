@@ -316,6 +316,8 @@ export const mockDashboardApplications = [
   { id: "da4", gigTitle: "Help set up graduation dinner", posterName: "Jules Biya", budget: 6000, status: "PENDING" as const, category: "Events" as const },
 ];
 
+export const mockSavedGigs: Gig[] = [mockGigs[0], mockGigs[2], mockGigs[4], mockGigs[7], mockGigs[9], mockGigs[11]];
+
 export const mockWorkerStats = {
   activeApplications: 4,
   applicationsAwaitingResponse: 2,

@@ -100,7 +100,7 @@ function WorkerDashboardContent() {
           <motion.div {...FADE_IN} className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
               <h2 className="font-semibold text-sm">My applications</h2>
-              <Link to="/gigs" className="text-xs text-primary hover:underline">View all →</Link>
+              <Link to="/dashboard/applications" className="text-xs text-primary hover:underline">View all →</Link>
             </div>
             <div className="px-2 pb-2">
               {apps.slice(0, 4).map((a) => (

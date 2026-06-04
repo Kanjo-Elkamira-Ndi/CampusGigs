@@ -17,6 +17,8 @@ import { PostGig } from "@/pages/gigs/PostGig";
 import { FreelancerDirectory } from "@/pages/freelancers/FreelancerDirectory";
 import { WorkerDashboard } from "@/pages/dashboard/WorkerDashboard";
 import { PosterDashboard } from "@/pages/dashboard/PosterDashboard";
+import { SavedGigs } from "@/pages/dashboard/SavedGigs";
+import { MyApplicationsPage } from "@/pages/dashboard/MyApplicationsPage";
 import { Messages } from "@/pages/messages/Messages";
 import { Profile } from "@/pages/profile/Profile";
 import { EditProfile } from "@/pages/profile/EditProfile";
@@ -44,6 +46,8 @@ function AppLayout() {
           <Route path="/gigs/:id" element={<GigDetail />} />
           <Route path="/freelancers" element={<FreelancerDirectory />} />
           <Route path="/dashboard" element={<WorkerDashboard />} />
+          <Route path="/dashboard/saved" element={<SavedGigs />} />
+          <Route path="/dashboard/applications" element={<MyApplicationsPage />} />
           <Route path="/dashboard/poster" element={<PosterDashboard />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile/edit" element={<EditProfile />} />
