@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useAuthStore } from "@/store/authStore";
+import { cn } from "@/lib/utils";
 import { Landing } from "@/pages/Landing";
 import { Login } from "@/pages/auth/Login";
 import { RegisterPage } from "@/pages/auth/Register";
@@ -25,11 +26,13 @@ const queryClient = new QueryClient();
 
 function AppLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith("/dashboard");
   useEffect(() => { hydrate(); }, [hydrate]);
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <Navbar />
-      <div className="flex-1 pt-16">
+      {!isDashboard && <Navbar />}
+      <div className={cn("flex-1", isDashboard ? "" : "pt-16")}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
@@ -48,7 +51,7 @@ function AppLayout() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-      <Footer />
+      {!isDashboard && <Footer />}
     </div>
   );
 }

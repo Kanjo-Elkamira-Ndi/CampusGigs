@@ -102,7 +102,7 @@ export function DashboardShell({ role, children }: Props) {
   const switchTarget = role === "WORKER" ? "POSTER" : "WORKER";
 
   return (
-    <div className="flex h-[calc(100vh-64px)]">
+    <div className="flex min-h-screen">
       <aside className="hidden md:flex w-[52px] shrink-0 flex-col items-center gap-1 py-3 border-r border-border bg-background">
         {sidebar.map((item) => {
           const Icon = item.icon;
