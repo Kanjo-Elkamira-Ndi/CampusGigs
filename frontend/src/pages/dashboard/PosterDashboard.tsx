@@ -28,7 +28,7 @@ const CONTAINER = {
 
 const STAT_ITEM = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
 const FADE_UP = {
@@ -52,12 +52,14 @@ function PosterDashboardContent() {
     Object.fromEntries(mockApplicants.map((a) => [a.id, "pending" as const])),
   );
 
-  const statCards = [
+  const statCards: {
+    label: string; value: string | number; delta: string; filled?: boolean; rating?: boolean;
+  }[] = [
     { label: "Active gigs", value: stats.activeGigs, delta: `${stats.openGigs} open, ${stats.inProgressGigs} in progress`, filled: true },
     { label: "New applicants", value: stats.newApplicants, delta: "Needs your review" },
     { label: "Gigs completed", value: stats.gigsCompleted, delta: "All time" },
     { label: "Avg worker rating", value: stats.avgWorkerRating.toFixed(1), delta: `Across ${stats.gigsWithReviews} gigs`, rating: true },
-  ] as const;
+  ];
 
   return (
     <PageWrapper>

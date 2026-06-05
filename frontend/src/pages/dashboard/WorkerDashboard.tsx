@@ -25,7 +25,7 @@ const CONTAINER = {
 
 const STAT_ITEM = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
 const FADE_UP = {
@@ -63,12 +63,14 @@ function WorkerDashboardContent() {
   ];
   const profilePercent = Math.round((profileItems.filter((i) => i.done).length / profileItems.length) * 100);
 
-  const statCards = [
+  const statCards: {
+    label: string; value: string | number; delta: string; filled?: boolean; formatted?: boolean; rating?: boolean;
+  }[] = [
     { label: "Active applications", value: stats.activeApplications, delta: `${stats.applicationsAwaitingResponse} awaiting response`, filled: true },
     { label: "Gigs completed", value: stats.gigsCompleted, delta: `+${stats.monthlyGigsCompleted} this month` },
     { label: "Total earned", value: `XAF ${stats.totalEarned.toLocaleString("fr-CM")}`, delta: `+${(stats.monthlyGigsCompleted * 15000).toLocaleString("fr-CM")} this month`, formatted: true },
     { label: "Your rating", value: stats.rating.toFixed(1), delta: `${stats.reviewCount} reviews`, rating: true },
-  ] as const;
+  ];
 
   return (
     <PageWrapper>
