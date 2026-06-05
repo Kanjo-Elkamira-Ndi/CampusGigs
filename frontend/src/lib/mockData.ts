@@ -283,6 +283,68 @@ export const mockThreads: ChatThread[] = [
   },
 ];
 
+export const mockMessages = [
+  { id: "dm1", senderName: "Marie Fofana", preview: "Hi! Are you available this weekend for the poster design?", time: "2 min ago", unread: true },
+  { id: "dm2", senderName: "Jules Biya", preview: "Can you help move furniture tomorrow at 3pm?", time: "1 hour ago", unread: true },
+  { id: "dm3", senderName: "Fatima Oumarou", preview: "The translation looks great. Let me know when you're free for the next one.", time: "3 hours ago", unread: false },
+];
+
+export const mockReceivedReviews = [
+  { id: "dr1", reviewerName: "Marie Fofana", initials: "MF", comment: "Incredibly patient, fixed everything in 30 minutes. Highly recommend!", rating: 5 },
+  { id: "dr2", reviewerName: "Jules Biya", initials: "JB", comment: "Showed up early and stayed late. Great energy and very professional.", rating: 4.5 },
+  { id: "dr3", reviewerName: "Fatima Oumarou", initials: "FO", comment: "Excellent quality, precise vocabulary. Would hire again.", rating: 5 },
+];
+
+export const mockApplicants = [
+  { id: "ap1", name: "Kofi Asante", initials: "KA", avatarColor: "#dbeafe", gigTitle: "Python tutor for DS exam", rating: 4.9, reviewCount: 12 },
+  { id: "ap2", name: "Ama Mensah", initials: "AM", avatarColor: "#fef3c7", gigTitle: "Design poster for council event", rating: 5.0, reviewCount: 7 },
+  { id: "ap3", name: "Lionel Tchoupo", initials: "LT", avatarColor: "#ede9fe", gigTitle: "Photographer for graduation ceremony", rating: 4.6, reviewCount: 11 },
+  { id: "ap4", name: "Sara Ndongo", initials: "SN", avatarColor: "#ccfbf1", gigTitle: "Help set up graduation dinner", rating: 4.7, reviewCount: 15 },
+  { id: "ap5", name: "Emmanuel Tala", initials: "ET", avatarColor: "#e6f7e6", gigTitle: "Design poster for council event", rating: 4.8, reviewCount: 14 },
+  { id: "ap6", name: "Danielle Nkwi", initials: "DN", avatarColor: "#fce7f3", gigTitle: "Python tutor for DS exam", rating: 4.9, reviewCount: 18 },
+  { id: "ap7", name: "Prisca Ewolo", initials: "PE", avatarColor: "#fff7ed", gigTitle: "Fix WiFi on Ubuntu laptop", rating: 5.0, reviewCount: 10 },
+];
+
+export const mockPostedGigs = [
+  { id: "pg1", title: "Python tutor for DS exam", budget: 5000, applicantCount: 3, status: "OPEN" as const, category: "Tutoring" as const },
+  { id: "pg2", title: "Help move furniture to new dorm", budget: 3500, applicantCount: 5, status: "OPEN" as const, category: "Errands" as const },
+  { id: "pg3", title: "Design poster for council event", budget: 4000, applicantCount: 7, status: "IN_PROGRESS" as const, category: "Creative" as const },
+  { id: "pg4", title: "Fix WiFi on Ubuntu laptop", budget: 2500, applicantCount: 2, status: "OPEN" as const, category: "Tech help" as const },
+  { id: "pg5", title: "English-French report translation", budget: 8000, applicantCount: 4, status: "COMPLETED" as const, category: "Translation" as const },
+  { id: "pg6", title: "Set up sound system for cultural night", budget: 12000, applicantCount: 6, status: "COMPLETED" as const, category: "Events" as const },
+  { id: "pg7", title: "Quick courier: chemistry textbook return", budget: 1800, applicantCount: 2, status: "CANCELLED" as const, category: "Delivery" as const },
+];
+
+export const mockDashboardApplications = [
+  { id: "da1", gigTitle: "Python tutor for DS exam", posterName: "Jules Biya", budget: 5000, status: "PENDING" as const, category: "Tutoring" as const },
+  { id: "da2", gigTitle: "Design poster for council event", posterName: "Marie Fofana", budget: 4000, status: "IN_PROGRESS" as const, category: "Creative" as const },
+  { id: "da3", gigTitle: "Photographer for graduation", posterName: "Marie Fofana", budget: 15000, status: "COMPLETED" as const, category: "Photography" as const },
+  { id: "da4", gigTitle: "Help set up graduation dinner", posterName: "Jules Biya", budget: 6000, status: "PENDING" as const, category: "Events" as const },
+];
+
+export const mockSavedGigs: Gig[] = [mockGigs[0], mockGigs[2], mockGigs[4], mockGigs[7], mockGigs[9], mockGigs[11]];
+
+export const mockWorkerStats = {
+  activeApplications: 4,
+  applicationsAwaitingResponse: 2,
+  gigsCompleted: 8,
+  monthlyGigsCompleted: 3,
+  totalEarned: 185000,
+  rating: 4.8,
+  reviewCount: 24,
+};
+
+export const mockPosterStats = {
+  activeGigs: 5,
+  openGigs: 3,
+  inProgressGigs: 1,
+  newApplicants: 7,
+  applicantsToReview: 3,
+  gigsCompleted: 14,
+  avgWorkerRating: 4.6,
+  gigsWithReviews: 10,
+};
+
 export const findGig = (id: string) => mockGigs.find((g) => g.id === id);
 export const findUser = (id: string) => mockUsers.find((u) => u.id === id);
 export const reviewsForUser = (userId: string) =>

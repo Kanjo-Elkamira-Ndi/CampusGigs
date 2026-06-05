@@ -28,7 +28,7 @@ export function AuthSplitPanel({
 }: AuthSplitPanelProps) {
   return (
     <div className="relative hidden lg:flex flex-col justify-between h-full overflow-hidden px-12 py-14"
-      style={{ backgroundColor: "#00152E" }}
+      style={{ backgroundColor: "var(--card)" }}
     >
       {/* Grid overlay */}
       <svg className="absolute inset-0 w-full h-full opacity-[0.05]" xmlns="http://www.w3.org/2000/svg">
@@ -36,11 +36,11 @@ export function AuthSplitPanel({
           <g key={i}>
             <line
               x1={`${i * 10}%`} y1="0" x2={`${i * 10}%`} y2="100%"
-              stroke="white" strokeWidth="0.5"
+              stroke="var(--card-border)" strokeWidth="0.5"
             />
             <line
               x1="0" y1={`${i * 10}%`} x2="100%" y2={`${i * 10}%`}
-              stroke="white" strokeWidth="0.5"
+              stroke="var(--card-border)" strokeWidth="0.5"
             />                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
           </g>
         ))}
