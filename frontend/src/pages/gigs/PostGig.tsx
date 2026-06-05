@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { PageWrapper } from "@/components/layout/PageWrapper";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { postGigStep1, postGigStep2, type PostGigStep1, type PostGigStep2 } from "@/lib/validators";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 
 function PostGigForm() {
   const user = useAuthStore((s) => s.user)!;
+  const activeRole = useAuthStore((s) => s.activeRole);
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [s1, setS1] = useState<PostGigStep1 | null>(null);
@@ -58,8 +59,8 @@ function PostGigForm() {
   } : null;
 
   return (
-    <PageWrapper>
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+    <DashboardShell role={activeRole}>
+      <div className="max-w-2xl">
         <h1 className="text-2xl font-bold">Post a gig</h1>
         <div className="mt-3 flex items-center gap-2">
           {[1, 2, 3].map((n) => (
@@ -149,7 +150,7 @@ function PostGigForm() {
           )}
         </div>
       </div>
-    </PageWrapper>
+    </DashboardShell>
   );
 }
 

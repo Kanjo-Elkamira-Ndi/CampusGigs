@@ -171,10 +171,14 @@ export function DashboardShell({ role, children }: Props) {
           </TooltipProvider>
 
           <div className="flex items-center gap-2">
-            <button className="relative w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors" aria-label="Notifications">
+            <Link
+              to="/dashboard/notifications"
+              className="relative w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              aria-label="Notifications"
+            >
               <Bell size={18} />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-1 ring-background" />
-            </button>
+            </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
