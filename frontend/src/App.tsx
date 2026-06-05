@@ -1,11 +1,8 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { useAuthStore } from "@/store/authStore";
-import { cn } from "@/lib/utils";
 import { Landing } from "@/pages/Landing";
 import { Login } from "@/pages/auth/Login";
 import { RegisterPage } from "@/pages/auth/Register";
@@ -21,6 +18,7 @@ import { SavedGigs } from "@/pages/dashboard/SavedGigs";
 import { MyApplicationsPage } from "@/pages/dashboard/MyApplicationsPage";
 import { PosterGigs } from "@/pages/dashboard/PosterGigs";
 import { ApplicantsPage } from "@/pages/dashboard/ApplicantsPage";
+import { NotificationsPage } from "@/pages/dashboard/NotificationsPage";
 import { Messages } from "@/pages/messages/Messages";
 import { Profile } from "@/pages/profile/Profile";
 import { EditProfile } from "@/pages/profile/EditProfile";
@@ -30,36 +28,31 @@ const queryClient = new QueryClient();
 
 function AppLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
-  const location = useLocation();
-  const isDashboard = location.pathname.startsWith("/dashboard");
   useEffect(() => { hydrate(); }, [hydrate]);
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {!isDashboard && <Navbar />}
-      <div className={cn("flex-1", isDashboard ? "" : "pt-16")}>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/gigs" element={<GigFeed />} />
-          <Route path="/gigs/new" element={<PostGig />} />
-          <Route path="/gigs/:id" element={<GigDetail />} />
-          <Route path="/freelancers" element={<FreelancerDirectory />} />
-          <Route path="/dashboard" element={<WorkerDashboard />} />
-          <Route path="/dashboard/saved" element={<SavedGigs />} />
-          <Route path="/dashboard/applications" element={<MyApplicationsPage />} />
-          <Route path="/dashboard/poster" element={<PosterDashboard />} />
-          <Route path="/dashboard/poster/gigs" element={<PosterGigs />} />
-          <Route path="/dashboard/poster/applicants" element={<ApplicantsPage />} />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/gigs" element={<GigFeed />} />
+        <Route path="/gigs/new" element={<PostGig />} />
+        <Route path="/gigs/:id" element={<GigDetail />} />
+        <Route path="/freelancers" element={<FreelancerDirectory />} />
+        <Route path="/dashboard" element={<WorkerDashboard />} />
+        <Route path="/dashboard/saved" element={<SavedGigs />} />
+        <Route path="/dashboard/applications" element={<MyApplicationsPage />} />
+        <Route path="/dashboard/poster" element={<PosterDashboard />} />
+        <Route path="/dashboard/poster/gigs" element={<PosterGigs />} />
+        <Route path="/dashboard/poster/applicants" element={<ApplicantsPage />} />
+          <Route path="/dashboard/notifications" element={<NotificationsPage />} />
           <Route path="/messages" element={<Messages />} />
-          <Route path="/profile/edit" element={<EditProfile />} />
-          <Route path="/profile/:id" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-      {!isDashboard && <Footer />}
+        <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }

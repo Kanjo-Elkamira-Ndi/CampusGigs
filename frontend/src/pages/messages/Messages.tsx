@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { useAuthStore } from "@/store/authStore";
 import { mockThreads } from "@/lib/mockData";
 import { Avatar } from "@/components/shared/Avatar";
 import { ChatWindow } from "@/components/chat/ChatWindow";
@@ -8,12 +9,12 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 function MessagesContent() {
+  const activeRole = useAuthStore((s) => s.activeRole);
   const [activeId, setActiveId] = useState(mockThreads[0].id);
   const active = mockThreads.find((t) => t.id === activeId)!;
   return (
-    <PageWrapper>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <div className="grid md:grid-cols-[320px_1fr] h-[calc(100vh-180px)] rounded-xl border border-border bg-card overflow-hidden">
+    <DashboardShell role={activeRole}>
+        <div className="grid md:grid-cols-[320px_1fr] h-full rounded-xl border border-border bg-card overflow-hidden">
           <aside className="border-r border-border overflow-auto">
             {mockThreads.map((t) => {
               const last = t.messages[t.messages.length - 1];
@@ -40,8 +41,7 @@ function MessagesContent() {
             <ChatWindow thread={active} />
           </div>
         </div>
-      </div>
-    </PageWrapper>
+    </DashboardShell>
   );
 }
 
