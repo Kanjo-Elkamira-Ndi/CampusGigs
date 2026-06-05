@@ -365,6 +365,32 @@ export const mockNotifications: NotificationItem[] = [
   { id: "n8", type: "gig_update", title: "Gig expiring", message: "Your gig 'Help move furniture to new dorm' has 1 day left before the deadline.", time: "6 days ago", read: true },
 ];
 
+export const mockWorkerWeekActivity = [
+  { day: "S", value: 3 },
+  { day: "M", value: 5 },
+  { day: "T", value: 2 },
+  { day: "W", value: 7 },
+  { day: "T", value: 4 },
+  { day: "F", value: 6 },
+  { day: "S", value: 1 },
+];
+
+export const mockPosterWeekPosts = [
+  { day: "S", value: 1 },
+  { day: "M", value: 0 },
+  { day: "T", value: 3 },
+  { day: "W", value: 2 },
+  { day: "T", value: 4 },
+  { day: "F", value: 1 },
+  { day: "S", value: 0 },
+];
+
+export const mockUpcomingDeadline = {
+  gigTitle: "Python tutor for DS exam",
+  dateTime: "Thursday, 6:00 PM",
+  location: "Library Ground Floor, UB",
+};
+
 export const findGig = (id: string) => mockGigs.find((g) => g.id === id);
 export const findUser = (id: string) => mockUsers.find((u) => u.id === id);
 export const reviewsForUser = (userId: string) =>
