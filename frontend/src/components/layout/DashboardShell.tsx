@@ -20,6 +20,7 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/shared/Avatar";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -148,6 +149,12 @@ export function DashboardShell({ role, children }: Props) {
                   </Link>
                 );
               })}
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 transition-all">
+                <Sun size={18} className="text-gray-400 dark:hidden" />
+                <Moon size={18} className="text-gray-500 hidden dark:block" />
+                <span className="flex-1">Theme</span>
+                <ThemeToggle />
+              </div>
               <button
                 onClick={() => { clearAuth(); navigate("/"); }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200 transition-all"
