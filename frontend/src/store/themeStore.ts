@@ -1,14 +1,7 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 type Theme = "light" | "dark";
-const STORAGE_KEY = "campus-gigs-theme";
-
-const getInitial = (): Theme => {
-  if (typeof window === "undefined") return "light";
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "dark" || stored === "light") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-};
 
 interface ThemeStore {
   theme: Theme;
@@ -16,21 +9,29 @@ interface ThemeStore {
   setTheme: (t: Theme) => void;
 }
 
-export const useThemeStore = create<ThemeStore>((set, get) => ({
-  theme: getInitial(),
-  toggleTheme: () => {
-    const next: Theme = get().theme === "dark" ? "light" : "dark";
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, next);
-      document.documentElement.classList.toggle("dark", next === "dark");
-    }
-    set({ theme: next });
-  },
-  setTheme: (t) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, t);
-      document.documentElement.classList.toggle("dark", t === "dark");
-    }
-    set({ theme: t });
-  },
-}));
+function applyTheme(t: Theme) {
+  if (typeof window !== "undefined") {
+    document.documentElement.classList.toggle("dark", t === "dark");
+  }
+}
+
+export const useThemeStore = create<ThemeStore>()(
+  persist(
+    (set, get) => ({
+      theme: "light",
+      toggleTheme: () => {
+        const next: Theme = get().theme === "dark" ? "light" : "dark";
+        applyTheme(next);
+        set({ theme: next });
+      },
+      setTheme: (t) => {
+        applyTheme(t);
+        set({ theme: t });
+      },
+    }),
+    {
+      name: "campus-gigs-theme",
+      storage: createJSONStorage(() => localStorage),
+    },
+  ),
+);
