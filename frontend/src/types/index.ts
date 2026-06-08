@@ -19,6 +19,7 @@ export interface User {
   responseTime?: string;
   availability?: "Immediately" | "This Week" | "Next Week" | "Flexible";
   verified?: boolean;
+  emailVerified?: boolean;
   experienceLevel?: "Entry" | "Intermediate" | "Expert";
   remoteAvailable?: boolean;
 }

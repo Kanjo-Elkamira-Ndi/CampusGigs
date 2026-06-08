@@ -51,7 +51,7 @@ const WORKER_NAV: NavItem[] = [
   { to: "/dashboard/applications", label: "Applications", icon: FileText, section: "menu" },
   { to: "/messages", label: "Messages", icon: MessageSquare, section: "menu", badge: 3 },
   { to: "/dashboard/notifications", label: "Notifications", icon: Bell, section: "general" },
-  { to: "/profile/edit", label: "Settings", icon: Settings, section: "general" },
+  { to: "/dashboard/settings", label: "Settings", icon: Settings, section: "general" },
 ];
 
 const POSTER_NAV: NavItem[] = [
@@ -61,7 +61,7 @@ const POSTER_NAV: NavItem[] = [
   { to: "/dashboard/poster/applicants", label: "Applicants", icon: Users, section: "menu", badge: 7 },
   { to: "/messages", label: "Messages", icon: MessageSquare, section: "menu" },
   { to: "/dashboard/notifications", label: "Notifications", icon: Bell, section: "general" },
-  { to: "/profile/edit", label: "Settings", icon: Settings, section: "general" },
+  { to: "/dashboard/settings", label: "Settings", icon: Settings, section: "general" },
 ];
 
 export function DashboardShell({ role, children }: Props) {

@@ -21,6 +21,7 @@ import { MyApplicationsPage } from "@/pages/dashboard/MyApplicationsPage";
 import { PosterGigs } from "@/pages/dashboard/PosterGigs";
 import { ApplicantsPage } from "@/pages/dashboard/ApplicantsPage";
 import { NotificationsPage } from "@/pages/dashboard/NotificationsPage";
+import { SettingsPage } from "@/pages/dashboard/SettingsPage";
 import { Messages } from "@/pages/messages/Messages";
 import { Profile } from "@/pages/profile/Profile";
 import { EditProfile } from "@/pages/profile/EditProfile";
@@ -60,6 +61,7 @@ function AppLayout() {
           <Route path="/dashboard/poster/gigs" element={<PosterGigs />} />
           <Route path="/dashboard/poster/applicants" element={<ApplicantsPage />} />
           <Route path="/dashboard/notifications" element={<NotificationsPage />} />
+          <Route path="/dashboard/settings" element={<SettingsPage />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/profile/:id" element={<Profile />} />
