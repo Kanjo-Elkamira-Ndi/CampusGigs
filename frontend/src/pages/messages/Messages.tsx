@@ -24,7 +24,7 @@ function MessagesContent() {
                 key={t.id}
                 onClick={() => setActiveId(t.id)}
                 className={cn(
-                  "w-full text-left flex items-start gap-3 p-3 rounded-xl transition-all duration-150",
+                  "w-full text-left flex items-start gap-3 p-3 rounded-xl transition-all duration-150 active:scale-[0.98]",
                   "hover:bg-muted/50",
                   isActive && "bg-indigo-50 dark:bg-indigo-950/40",
                 )}
