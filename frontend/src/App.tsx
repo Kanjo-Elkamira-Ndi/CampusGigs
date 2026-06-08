@@ -1,8 +1,10 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/store/authStore";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { Landing } from "@/pages/Landing";
 import { Login } from "@/pages/auth/Login";
 import { RegisterPage } from "@/pages/auth/Register";
@@ -19,6 +21,7 @@ import { MyApplicationsPage } from "@/pages/dashboard/MyApplicationsPage";
 import { PosterGigs } from "@/pages/dashboard/PosterGigs";
 import { ApplicantsPage } from "@/pages/dashboard/ApplicantsPage";
 import { NotificationsPage } from "@/pages/dashboard/NotificationsPage";
+import { SettingsPage } from "@/pages/dashboard/SettingsPage";
 import { Messages } from "@/pages/messages/Messages";
 import { Profile } from "@/pages/profile/Profile";
 import { EditProfile } from "@/pages/profile/EditProfile";
@@ -28,42 +31,61 @@ const queryClient = new QueryClient();
 
 function AppLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
+  const location = useLocation();
   useEffect(() => { hydrate(); }, [hydrate]);
+
+  const isDashboardRoute =
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname === "/messages" ||
+    location.pathname === "/gigs/new" ||
+    location.pathname.startsWith("/profile/");
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/gigs" element={<GigFeed />} />
-        <Route path="/gigs/new" element={<PostGig />} />
-        <Route path="/gigs/:id" element={<GigDetail />} />
-        <Route path="/freelancers" element={<FreelancerDirectory />} />
-        <Route path="/dashboard" element={<WorkerDashboard />} />
-        <Route path="/dashboard/saved" element={<SavedGigs />} />
-        <Route path="/dashboard/applications" element={<MyApplicationsPage />} />
-        <Route path="/dashboard/poster" element={<PosterDashboard />} />
-        <Route path="/dashboard/poster/gigs" element={<PosterGigs />} />
-        <Route path="/dashboard/poster/applicants" element={<ApplicantsPage />} />
-          <Route path="/dashboard/notifications" element={<NotificationsPage />} />
-          <Route path="/messages" element={<Messages />} />
-        <Route path="/profile/edit" element={<EditProfile />} />
-        <Route path="/profile/:id" element={<Profile />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {!isDashboardRoute && <Navbar />}
+      <div className={`flex-1 ${!isDashboardRoute ? "pt-16" : ""}`}>
+        <Outlet />
+      </div>
+      {!isDashboardRoute && <Footer />}
     </div>
   );
 }
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <Landing /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <RegisterPage /> },
+      { path: "forgot-password", element: <ForgotPasswordPage /> },
+      { path: "reset-password", element: <ResetPasswordPage /> },
+      { path: "gigs", element: <GigFeed /> },
+      { path: "gigs/new", element: <PostGig /> },
+      { path: "gigs/:id", element: <GigDetail /> },
+      { path: "freelancers", element: <FreelancerDirectory /> },
+      { path: "dashboard", element: <WorkerDashboard /> },
+      { path: "dashboard/saved", element: <SavedGigs /> },
+      { path: "dashboard/applications", element: <MyApplicationsPage /> },
+      { path: "dashboard/poster", element: <PosterDashboard /> },
+      { path: "dashboard/poster/gigs", element: <PosterGigs /> },
+      { path: "dashboard/poster/applicants", element: <ApplicantsPage /> },
+      { path: "dashboard/notifications", element: <NotificationsPage /> },
+      { path: "dashboard/settings", element: <SettingsPage /> },
+      { path: "messages", element: <Messages /> },
+      { path: "profile/edit", element: <EditProfile /> },
+      { path: "profile/:id", element: <Profile /> },
+      { path: "*", element: <NotFound /> },
+    ],
+  },
+]);
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppLayout />
-        <Toaster richColors position="top-right" />
-      </BrowserRouter>
+      <RouterProvider router={router} />
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
 }

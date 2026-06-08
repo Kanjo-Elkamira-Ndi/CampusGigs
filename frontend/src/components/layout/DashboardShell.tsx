@@ -16,10 +16,13 @@ import {
   LogOut,
   ArrowLeftRight,
   Sparkles,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/shared/Avatar";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +51,7 @@ const WORKER_NAV: NavItem[] = [
   { to: "/dashboard/applications", label: "Applications", icon: FileText, section: "menu" },
   { to: "/messages", label: "Messages", icon: MessageSquare, section: "menu", badge: 3 },
   { to: "/dashboard/notifications", label: "Notifications", icon: Bell, section: "general" },
-  { to: "/profile/edit", label: "Settings", icon: Settings, section: "general" },
+  { to: "/dashboard/settings", label: "Settings", icon: Settings, section: "general" },
 ];
 
 const POSTER_NAV: NavItem[] = [
@@ -58,7 +61,7 @@ const POSTER_NAV: NavItem[] = [
   { to: "/dashboard/poster/applicants", label: "Applicants", icon: Users, section: "menu", badge: 7 },
   { to: "/messages", label: "Messages", icon: MessageSquare, section: "menu" },
   { to: "/dashboard/notifications", label: "Notifications", icon: Bell, section: "general" },
-  { to: "/profile/edit", label: "Settings", icon: Settings, section: "general" },
+  { to: "/dashboard/settings", label: "Settings", icon: Settings, section: "general" },
 ];
 
 export function DashboardShell({ role, children }: Props) {
@@ -148,6 +151,12 @@ export function DashboardShell({ role, children }: Props) {
                   </Link>
                 );
               })}
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 transition-all">
+                <Sun size={18} className="text-gray-400 dark:hidden" />
+                <Moon size={18} className="text-gray-500 hidden dark:block" />
+                <span className="flex-1">Theme</span>
+                <ThemeToggle />
+              </div>
               <button
                 onClick={() => { clearAuth(); navigate("/"); }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200 transition-all"
