@@ -11,10 +11,12 @@ import { ReviewItem } from "@/components/reviews/ReviewItem";
 import { GigCard } from "@/components/gigs/GigCard";
 import { useAuthStore } from "@/store/authStore";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 
 export function Profile() {
   const { id } = useParams<{ id: string }>();
   const me = useAuthStore((s) => s.user);
+  const activeRole = useAuthStore((s) => s.activeRole);
   const user = findUser(id ?? "");
   if (!user) return <Navigate to="/" replace />;
   const isMe = me?.id === user.id;
@@ -28,7 +30,8 @@ export function Profile() {
 
   return (
     <PageWrapper>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-[280px_1fr] gap-8">
+      <DashboardShell role={activeRole}>
+        <div className="max-w-5xl mx-auto grid lg:grid-cols-[280px_1fr] gap-8">
         <aside className="space-y-4">
           <div className="rounded-xl border border-border bg-card p-5">
             <Avatar id={user.id} name={user.fullName} size={80} />
@@ -101,6 +104,7 @@ export function Profile() {
           </Tabs>
         </div>
       </div>
+      </DashboardShell>
     </PageWrapper>
   );
 }

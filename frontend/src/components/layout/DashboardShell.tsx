@@ -16,6 +16,8 @@ import {
   LogOut,
   ArrowLeftRight,
   Sparkles,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";

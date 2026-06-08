@@ -13,9 +13,11 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { Avatar } from "@/components/shared/Avatar";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 
 function EditProfileContent() {
   const user = useAuthStore((s) => s.user)!;
+  const activeRole = useAuthStore((s) => s.activeRole);
   const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
   const [skills, setSkills] = useState<string[]>(user.skills);
@@ -51,7 +53,8 @@ function EditProfileContent() {
 
   return (
     <PageWrapper>
-      <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
+      <DashboardShell role={activeRole}>
+        <div className="max-w-xl mx-auto py-8">
         <h1 className="text-2xl font-bold">Edit profile</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 rounded-xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center gap-3">
@@ -98,6 +101,7 @@ function EditProfileContent() {
           </div>
         </form>
       </div>
+      </DashboardShell>
     </PageWrapper>
   );
 }
