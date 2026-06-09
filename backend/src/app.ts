@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { env } from './config/env'
 import { errorHandler } from './middleware/errorHandler'
+import authRoutes from './modules/auth/auth.routes'
 
 export const createApp = () => {
   const app = express()
@@ -21,8 +22,8 @@ export const createApp = () => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() })
   })
 
-  // routes registered here in later phases
-
+  // routes registered here 
+  app.use('/api/v1/auth', authRoutes)
   app.use(errorHandler)
   return app
 }
