@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express'
 import { ApiError } from '../utils/ApiError'
 import { ApiResponse } from '../utils/ApiResponse'
 import { env } from '../config/env'
-
 export const errorHandler = (
   err: Error,
   req: Request,
