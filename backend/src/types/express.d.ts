@@ -1,11 +1,9 @@
-import { UserRole } from '@prisma/client'
-
 export interface AuthUser {
   id: string
   email: string
   name: string
   fullName: string
-  role: UserRole
+  role: 'WORKER' | 'POSTER' | 'ADMIN'
   universityId: string | null
   avatarUrl: string | null
   isBanned: boolean
