@@ -9,7 +9,7 @@ export const getMe = asyncWrapper(async (req, res) => {
 })
 
 export const getPublicProfile = asyncWrapper(async (req, res) => {
-  const user = await usersService.getUserById(req.params.id)
+  const user = await usersService.getUserById(req.params.id as string)
   res.json(ApiResponse.success(user))
 })
 
