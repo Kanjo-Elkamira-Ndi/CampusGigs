@@ -1,15 +1,10 @@
 NODE_ENV=development
 PORT=5000
 
-DATABASE_URL=postgresql://postgres:password@localhost:5432/campus_gigs
+DATABASE_URL=postgresql://yves-dylane:12%40Y.0524@localhost:5432/campus
 
-REDIS_URL=redis://localhost:6379
-
-BETTER_AUTH_SECRET=your-super-secret-min-32-chars-here
-BETTER_AUTH_URL=http://localhost:5000
-
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
+JWT_SECRET=your-jwt-secret-min-64-chars-long-replace-this-in-production
+JWT_REFRESH_SECRET=your-jwt-refresh-secret-min-64-chars-long-replace-this
 
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
