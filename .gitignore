@@ -1,1 +1,4 @@
-session-ses_18ad.md
+node_modules/
+.env
+/src/generated/prisma
+/.idea/
