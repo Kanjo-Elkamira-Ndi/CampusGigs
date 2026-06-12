@@ -23,6 +23,9 @@ async function reset() {
         _migrations
       CASCADE
     `)
+    await client.query(`
+      DROP TYPE IF EXISTS user_role, gig_status, app_status CASCADE
+    `)
     console.log('\u2705 All tables dropped')
     console.log('Run npm run db:migrate && npm run db:seed to rebuild')
   } finally {
