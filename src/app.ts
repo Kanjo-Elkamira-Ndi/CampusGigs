@@ -5,7 +5,7 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { env } from './config/env'
 import { errorHandler } from './middleware/errorHandler'
-import authRoutes from './modules/auth/auth.routes'
+import authRoutes from './modules/auth/routes/auth.routes'
 import usersRoutes from './modules/users/users.routes'
 import categoriesRoutes from './modules/categories/categories.routes'
 

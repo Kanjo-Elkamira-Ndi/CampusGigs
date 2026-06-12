@@ -1,24 +1,35 @@
 import { Request, Response, NextFunction } from 'express'
-import { auth } from '../lib/betterAuth'
-import { fromNodeHeaders } from 'better-auth/node'
 import { ApiError } from '../utils/ApiError'
 import { asyncWrapper } from '../utils/asyncWrapper'
+import { verifyAccessToken } from '../lib/jwt'
 
 export const authGuard = asyncWrapper(
   async (req: Request, _res: Response, next: NextFunction) => {
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    })
-
-    if (!session?.user) {
-      throw new ApiError(401, 'Unauthenticated — please log in')
+    const header = req.headers.authorization
+    if (!header || !header.startsWith('Bearer ')) {
+      throw new ApiError(401, 'Missing or invalid authorization header')
     }
 
-    if ((session.user as any).isBanned) {
-      throw new ApiError(403, 'Your account has been banned')
+    const token = header.slice(7)
+    let payload: { sub: string; email: string; role: string }
+    try {
+      payload = verifyAccessToken(token)
+    } catch {
+      throw new ApiError(401, 'Invalid or expired token')
     }
 
-    req.user = session.user as any
+    req.user = {
+      id: payload.sub,
+      email: payload.email,
+      role: payload.role as 'WORKER' | 'POSTER' | 'ADMIN',
+      name: '',
+      fullName: '',
+      universityId: null,
+      avatarUrl: null,
+      isBanned: false,
+      emailVerified: false,
+    }
+
     next()
   }
 )
