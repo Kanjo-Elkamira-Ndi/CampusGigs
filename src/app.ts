@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/errorHandler'
 import authRoutes from './routes/authRoutes'
 import usersRoutes from './routes/usersRoutes'
 import categoriesRoutes from './routes/categoriesRoutes'
+import freelancersRoutes from './routes/freelancersRoutes'
 
 export const createApp = () => {
   const app = express()
@@ -36,6 +37,7 @@ export const createApp = () => {
   app.use('/api/v1/auth', authRoutes)
   app.use('/api/v1/users', usersRoutes)
   app.use('/api/v1/categories', categoriesRoutes)
+  app.use('/api/v1/freelancers', freelancersRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, message: 'Route not found' })

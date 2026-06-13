@@ -13,5 +13,12 @@ export const LoginDto = z.object({
   password: z.string().min(1, 'Password is required'),
 })
 
+export const VerifyEmailSchema = z.object({
+  email: z.string().email('Invalid email address'),
+})
+
+export const ResendVerificationSchema = z.object({})
+
 export type RegisterInput = z.infer<typeof RegisterDto>
 export type LoginInput = z.infer<typeof LoginDto>
+export type VerifyEmailInput = z.infer<typeof VerifyEmailSchema>

@@ -9,6 +9,10 @@ export const validate =
     if (!result.success) {
       throw new ApiError(422, 'Validation failed', result.error.flatten().fieldErrors as unknown[])
     }
-    req[source] = result.data
+    if (source === 'query') {
+      Object.assign(req.query, result.data)
+    } else {
+      req[source] = result.data
+    }
     next()
   }

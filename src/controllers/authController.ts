@@ -20,3 +20,14 @@ export const getMe = asyncWrapper(async (req: Request, res: Response) => {
   const user = await usersService.getUserById(req.user.id)
   res.json(ApiResponse.success(user, 'Profile retrieved'))
 })
+
+export const verifyEmail = asyncWrapper(async (req: Request, res: Response) => {
+  await authService.verifyEmail(req.body.email)
+  res.json(ApiResponse.success(null, 'Email verified successfully'))
+})
+
+export const resendVerification = asyncWrapper(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(401, 'Unauthenticated')
+  await authService.resendVerification(req.user.id)
+  res.json(ApiResponse.success(null, 'Verification email sent'))
+})

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authGuard } from '../middleware/authGuard'
 import { validate } from '../middleware/validate'
-import { RegisterDto, LoginDto } from '../dto/authDto'
+import { RegisterDto, LoginDto, VerifyEmailSchema, ResendVerificationSchema } from '../dto/authDto'
 import * as authController from '../controllers/authController'
 
 const router = Router()
@@ -9,5 +9,7 @@ const router = Router()
 router.post('/register', validate(RegisterDto), authController.register)
 router.post('/login', validate(LoginDto), authController.login)
 router.get('/me', authGuard, authController.getMe)
+router.post('/verify-email', validate(VerifyEmailSchema), authController.verifyEmail)
+router.post('/resend-verification', authGuard, authController.resendVerification)
 
 export default router

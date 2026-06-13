@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import { queryOne } from '../lib/db'
 import { ApiError } from '../utils/ApiError'
 import { signAccessToken, signRefreshToken } from '../lib/jwt'
+import { sendVerificationEmail } from './emailService'
 import type { RegisterInput, LoginInput } from '../dto/authDto'
 
 interface DbUser {
@@ -56,6 +57,10 @@ export async function register(data: RegisterInput) {
 
   if (!user) throw new ApiError(500, 'Failed to create user')
 
+  sendVerificationEmail(user.email).catch((err) =>
+    console.error('Failed to send verification email:', err)
+  )
+
   return {
     user: formatUser(user),
     accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role }),
@@ -84,4 +89,18 @@ export async function login(data: LoginInput) {
     accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role }),
     refreshToken: signRefreshToken({ id: user.id }),
   }
+}
+
+export async function verifyEmail(email: string): Promise<void> {
+  const user = await queryOne('SELECT id FROM users WHERE email = $1', [email])
+  if (!user) throw new ApiError(404, 'User not found')
+
+  await queryOne('UPDATE users SET email_verified = true WHERE email = $1', [email])
+}
+
+export async function resendVerification(userId: string): Promise<void> {
+  const user = await queryOne<{ email: string }>('SELECT email FROM users WHERE id = $1', [userId])
+  if (!user) throw new ApiError(404, 'User not found')
+
+  await sendVerificationEmail(user.email)
 }
