@@ -53,3 +53,19 @@ export const refresh = asyncWrapper(async (req: Request, res: Response) => {
   const result = await authService.refreshToken(req.body.refreshToken)
   res.json(ApiResponse.success(result, 'Token refreshed successfully'))
 })
+
+export const forgotPassword = asyncWrapper(async (req: Request, res: Response) => {
+  await authService.forgotPassword(req.body.email)
+  res.json(ApiResponse.success(null, 'If an account with that email exists, a reset link has been sent'))
+})
+
+export const resetPassword = asyncWrapper(async (req: Request, res: Response) => {
+  await authService.resetPassword(req.body)
+  res.json(ApiResponse.success(null, 'Password reset successfully'))
+})
+
+export const signOutAll = asyncWrapper(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(401, 'Unauthenticated')
+  await authService.signOutAll(req.user.id)
+  res.json(ApiResponse.success(null, 'Signed out of all sessions'))
+})

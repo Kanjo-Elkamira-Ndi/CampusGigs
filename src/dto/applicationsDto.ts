@@ -12,3 +12,18 @@ export const ListApplicationsSchema = z.object({
 
 export type CreateApplicationInput = z.infer<typeof CreateApplicationSchema>
 export type ListApplicationsInput = z.infer<typeof ListApplicationsSchema>
+
+export const RejectApplicationSchema = z.object({
+  reason: z.string().optional(),
+})
+
+export type RejectApplicationInput = z.infer<typeof RejectApplicationSchema>
+
+export const CreateReviewSchema = z.object({
+  gigId: z.string().uuid(),
+  revieweeId: z.string().uuid(),
+  rating: z.coerce.number().int().min(1).max(5),
+  comment: z.string().min(10, 'Comment must be at least 10 characters'),
+})
+
+export type CreateReviewInput = z.infer<typeof CreateReviewSchema>

@@ -28,3 +28,18 @@ export const CreateGigSchema = z.object({
 })
 
 export type CreateGigInput = z.infer<typeof CreateGigSchema>
+
+export const UpdateGigSchema = z.object({
+  title: z.string().min(5).max(100).optional(),
+  description: z.string().min(20).max(2000).optional(),
+  category: z.string().optional(),
+  location: z.string().min(2).optional(),
+  budget: z.coerce.number().min(500).optional(),
+  slots: z.coerce.number().int().min(1).max(10).optional(),
+  deadline: z.string().optional(),
+  universityId: z.string().optional(),
+  isEasyApply: z.boolean().optional(),
+  tags: z.array(z.string()).optional(),
+}).strict()
+
+export type UpdateGigInput = z.infer<typeof UpdateGigSchema>

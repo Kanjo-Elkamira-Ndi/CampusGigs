@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { ApiError } from '../utils/ApiError'
 import { asyncWrapper } from '../utils/asyncWrapper'
 import { verifyAccessToken } from '../lib/jwt'
+import { queryOne } from '../lib/db'
 
 export const authGuard = asyncWrapper(
   async (req: Request, _res: Response, next: NextFunction) => {
@@ -11,11 +12,20 @@ export const authGuard = asyncWrapper(
     }
 
     const token = header.slice(7)
-    let payload: { sub: string; email: string; role: string }
+    let payload: { sub: string; email: string; role: string; tokenVersion?: number }
     try {
       payload = verifyAccessToken(token)
     } catch {
       throw new ApiError(401, 'Invalid or expired token')
+    }
+
+    const user = await queryOne<{ token_version: number }>(
+      'SELECT token_version FROM users WHERE id = $1',
+      [payload.sub]
+    )
+    if (!user) throw new ApiError(401, 'User not found')
+    if (payload.tokenVersion !== undefined && user.token_version !== payload.tokenVersion) {
+      throw new ApiError(401, 'Session expired. Please log in again.')
     }
 
     req.user = {

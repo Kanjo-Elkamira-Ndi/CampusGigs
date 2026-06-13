@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authGuard } from '../middleware/authGuard'
 import { validate } from '../middleware/validate'
-import { RegisterDto, LoginDto, VerifyEmailSchema, RefreshDto, ChangePasswordDto } from '../dto/authDto'
+import { RegisterDto, LoginDto, VerifyEmailSchema, RefreshDto, ChangePasswordDto, ForgotPasswordDto, ResetPasswordDto } from '../dto/authDto'
 import * as authController from '../controllers/authController'
 
 const router = Router()
@@ -15,5 +15,8 @@ router.post('/verify-email', validate(VerifyEmailSchema), authController.verifyE
 router.post('/resend-verification', authGuard, authController.resendVerification)
 router.post('/change-password', authGuard, validate(ChangePasswordDto), authController.changePassword)
 router.delete('/delete-account', authGuard, authController.deleteAccount)
+router.post('/forgot-password', validate(ForgotPasswordDto), authController.forgotPassword)
+router.post('/reset-password', validate(ResetPasswordDto), authController.resetPassword)
+router.post('/sessions/sign-out-all', authGuard, authController.signOutAll)
 
 export default router

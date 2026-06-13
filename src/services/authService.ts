@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs'
 import { queryOne } from '../lib/db'
 import { ApiError } from '../utils/ApiError'
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../lib/jwt'
-import { sendVerificationEmail } from './emailService'
-import type { RegisterInput, LoginInput, ChangePasswordInput } from '../dto/authDto'
+import { signAccessToken, signRefreshToken, verifyRefreshToken, signResetToken, verifyResetToken } from '../lib/jwt'
+import { sendVerificationEmail, sendPasswordResetEmail } from './emailService'
+import type { RegisterInput, LoginInput, ChangePasswordInput, ResetPasswordInput } from '../dto/authDto'
 
 interface DbUser {
   id: string
@@ -18,8 +18,19 @@ interface DbUser {
   review_count: number
   is_banned: boolean
   email_verified: boolean
+  token_version: number
   created_at: string
   updated_at: string
+  university_name?: string | null
+  city?: string | null
+  skills?: string[]
+  hourly_rate?: string | null
+  availability?: string | null
+  experience_level?: string | null
+  remote_available?: boolean
+  hired_count?: number
+  response_time?: string | null
+  verified?: boolean
 }
 
 const formatUser = (u: DbUser) => ({
@@ -29,12 +40,22 @@ const formatUser = (u: DbUser) => ({
   fullName: u.full_name,
   role: u.role,
   universityId: u.university_id,
+  universityName: u.university_name ?? null,
+  city: u.city ?? null,
   avatarUrl: u.avatar_url,
   bio: u.bio,
   avgRating: Number(u.avg_rating),
   reviewCount: u.review_count,
   isBanned: u.is_banned,
   emailVerified: u.email_verified,
+  skills: u.skills ?? [],
+  hourlyRate: u.hourly_rate ? Number(u.hourly_rate) : null,
+  availability: u.availability ?? null,
+  experienceLevel: u.experience_level ?? null,
+  remoteAvailable: u.remote_available ?? false,
+  hiredCount: u.hired_count ?? 0,
+  responseTime: u.response_time ?? null,
+  verified: u.verified ?? false,
   createdAt: u.created_at,
   updatedAt: u.updated_at,
 })
@@ -46,13 +67,26 @@ export async function register(data: RegisterInput) {
   const passwordHash = await bcrypt.hash(data.password, 12)
   const name = data.fullName.split(' ')[0] || data.fullName
 
-  const user = await queryOne<DbUser>(
+  const result = await queryOne<{ id: string }>(
     `INSERT INTO users (email, name, full_name, password_hash, role, university_id)
      VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, email, name, full_name, role, university_id,
-               avatar_url, bio, avg_rating, review_count,
-               is_banned, email_verified, created_at, updated_at`,
+     RETURNING id`,
     [data.email, name, data.fullName, passwordHash, data.role, data.universityId]
+  )
+
+  if (!result) throw new ApiError(500, 'Failed to create user')
+
+  const user = await queryOne<DbUser>(
+    `SELECT u.id, u.email, u.name, u.full_name, u.role, u.university_id,
+            u.avatar_url, u.bio, u.avg_rating, u.review_count,
+            u.is_banned, u.email_verified, u.token_version, u.created_at, u.updated_at,
+            u.skills, u.hourly_rate, u.availability, u.experience_level,
+            u.remote_available, u.hired_count, u.response_time, u.verified,
+            univ.name AS university_name, univ.city AS university_city
+     FROM users u
+     LEFT JOIN universities univ ON univ.id = u.university_id
+     WHERE u.id = $1`,
+    [result.id]
   )
 
   if (!user) throw new ApiError(500, 'Failed to create user')
@@ -63,18 +97,23 @@ export async function register(data: RegisterInput) {
 
   return {
     user: formatUser(user),
-    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role }),
+    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role, tokenVersion: user.token_version }),
     refreshToken: signRefreshToken({ id: user.id }),
   }
 }
 
 export async function login(data: LoginInput) {
   const user = await queryOne<DbUser & { password_hash: string }>(
-    `SELECT id, email, name, full_name, role, university_id,
-            avatar_url, bio, avg_rating, review_count,
-            is_banned, email_verified, created_at, updated_at,
-            password_hash
-     FROM users WHERE email = $1`,
+    `SELECT u.id, u.email, u.name, u.full_name, u.role, u.university_id,
+            u.avatar_url, u.bio, u.avg_rating, u.review_count,
+            u.is_banned, u.email_verified, u.token_version, u.created_at, u.updated_at,
+            u.skills, u.hourly_rate, u.availability, u.experience_level,
+            u.remote_available, u.hired_count, u.response_time, u.verified,
+            univ.name AS university_name, univ.city AS university_city,
+            u.password_hash
+     FROM users u
+     LEFT JOIN universities univ ON univ.id = u.university_id
+     WHERE u.email = $1`,
     [data.email]
   )
 
@@ -86,7 +125,7 @@ export async function login(data: LoginInput) {
 
   return {
     user: formatUser(user),
-    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role }),
+    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role, tokenVersion: user.token_version }),
     refreshToken: signRefreshToken({ id: user.id }),
   }
 }
@@ -139,15 +178,39 @@ export async function refreshToken(refreshToken: string) {
     throw new ApiError(401, 'Invalid or expired refresh token')
   }
 
-  const user = await queryOne<{ id: string; email: string; role: string }>(
-    'SELECT id, email, role FROM users WHERE id = $1',
+  const user = await queryOne<{ id: string; email: string; role: string; token_version: number }>(
+    'SELECT id, email, role, token_version FROM users WHERE id = $1',
     [decoded.sub]
   )
 
   if (!user) throw new ApiError(401, 'User not found')
 
   return {
-    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role }),
+    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role, tokenVersion: user.token_version }),
     refreshToken: signRefreshToken({ id: user.id }),
   }
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  const user = await queryOne<{ id: string }>('SELECT id FROM users WHERE email = $1', [email])
+  if (!user) return
+
+  const token = signResetToken(email)
+  sendPasswordResetEmail(email, token).catch((err) =>
+    console.error('Failed to send password reset email:', err)
+  )
+}
+
+export async function resetPassword(data: ResetPasswordInput): Promise<void> {
+  const email = verifyResetToken(data.token)
+
+  const user = await queryOne<{ id: string }>('SELECT id FROM users WHERE email = $1', [email])
+  if (!user) throw new ApiError(400, 'Invalid or expired reset token')
+
+  const passwordHash = await bcrypt.hash(data.password, 12)
+  await queryOne('UPDATE users SET password_hash = $1 WHERE email = $2', [passwordHash, email])
+}
+
+export async function signOutAll(userId: string): Promise<void> {
+  await queryOne('UPDATE users SET token_version = token_version + 1 WHERE id = $1', [userId])
 }

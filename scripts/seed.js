@@ -38,6 +38,30 @@ async function seed() {
     `, [process.env.SUPERADMIN_EMAIL, hash, 'Platform Admin'])
     console.log('\u2705 Super admin seeded')
 
+    console.log('\n\uD83C\uDF31 Seeding universities...')
+    const universities = [
+      { id: 'uy1', name: 'University of Yaound\u00E9 I', city: 'Yaound\u00E9', type: 'public' },
+      { id: 'uy2', name: 'University of Yaound\u00E9 II', city: 'Soa', type: 'public' },
+      { id: 'ub', name: 'University of Buea', city: 'Buea', type: 'public' },
+      { id: 'udschang', name: 'University of Dschang', city: 'Dschang', type: 'public' },
+      { id: 'udla', name: 'University of Douala', city: 'Douala', type: 'public' },
+      { id: 'un', name: 'University of Ngaound\u00E9r\u00E9', city: 'Ngaound\u00E9r\u00E9', type: 'public' },
+      { id: 'um', name: 'University of Maroua', city: 'Maroua', type: 'public' },
+      { id: 'ubam', name: 'University of Bamenda', city: 'Bamenda', type: 'public' },
+      { id: 'yibs', name: 'YIBS', city: 'Yaound\u00E9', type: 'private' },
+      { id: 'esstic', name: 'ESSTIC', city: 'Yaound\u00E9', type: 'public' },
+      { id: 'ensp', name: 'ENSP', city: 'Yaound\u00E9', type: 'public' },
+      { id: 'catholic', name: 'Catholic University of Cameroon', city: 'Bamenda', type: 'private' },
+    ]
+    for (const u of universities) {
+      await client.query(`
+        INSERT INTO universities (id, name, city, type)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (id) DO NOTHING
+      `, [u.id, u.name, u.city, u.type])
+    }
+    console.log('\u2705 Universities seeded (' + universities.length + ')')
+
     console.log('\n\uD83C\uDF89 Seed complete')
   } finally {
     client.release()
