@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs'
 import { queryOne } from '../lib/db'
 import { ApiError } from '../utils/ApiError'
-import { signAccessToken, signRefreshToken } from '../lib/jwt'
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../lib/jwt'
 import { sendVerificationEmail } from './emailService'
-import type { RegisterInput, LoginInput } from '../dto/authDto'
+import type { RegisterInput, LoginInput, ChangePasswordInput } from '../dto/authDto'
 
 interface DbUser {
   id: string
@@ -103,4 +103,51 @@ export async function resendVerification(userId: string): Promise<void> {
   if (!user) throw new ApiError(404, 'User not found')
 
   await sendVerificationEmail(user.email)
+}
+
+export async function logout(): Promise<void> {
+  // Stateless logout — nothing to invalidate on the server
+}
+
+export async function changePassword(userId: string, data: ChangePasswordInput): Promise<void> {
+  const user = await queryOne<{ password_hash: string }>(
+    'SELECT password_hash FROM users WHERE id = $1',
+    [userId]
+  )
+
+  if (!user) throw new ApiError(404, 'User not found')
+
+  const valid = await bcrypt.compare(data.currentPassword, user.password_hash)
+  if (!valid) throw new ApiError(401, 'Current password is incorrect')
+
+  const passwordHash = await bcrypt.hash(data.newPassword, 12)
+  await queryOne('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, userId])
+}
+
+export async function deleteAccount(userId: string): Promise<void> {
+  const user = await queryOne('SELECT id FROM users WHERE id = $1', [userId])
+  if (!user) throw new ApiError(404, 'User not found')
+
+  await queryOne('DELETE FROM users WHERE id = $1', [userId])
+}
+
+export async function refreshToken(refreshToken: string) {
+  let decoded: { sub: string }
+  try {
+    decoded = verifyRefreshToken(refreshToken)
+  } catch {
+    throw new ApiError(401, 'Invalid or expired refresh token')
+  }
+
+  const user = await queryOne<{ id: string; email: string; role: string }>(
+    'SELECT id, email, role FROM users WHERE id = $1',
+    [decoded.sub]
+  )
+
+  if (!user) throw new ApiError(401, 'User not found')
+
+  return {
+    accessToken: signAccessToken({ id: user.id, email: user.email, role: user.role }),
+    refreshToken: signRefreshToken({ id: user.id }),
+  }
 }

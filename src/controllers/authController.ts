@@ -31,3 +31,25 @@ export const resendVerification = asyncWrapper(async (req: Request, res: Respons
   await authService.resendVerification(req.user.id)
   res.json(ApiResponse.success(null, 'Verification email sent'))
 })
+
+export const logout = asyncWrapper(async (_req: Request, res: Response) => {
+  await authService.logout()
+  res.json(ApiResponse.success(null, 'Logged out successfully'))
+})
+
+export const changePassword = asyncWrapper(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(401, 'Unauthenticated')
+  await authService.changePassword(req.user.id, req.body)
+  res.json(ApiResponse.success(null, 'Password changed successfully'))
+})
+
+export const deleteAccount = asyncWrapper(async (req: Request, res: Response) => {
+  if (!req.user) throw new ApiError(401, 'Unauthenticated')
+  await authService.deleteAccount(req.user.id)
+  res.json(ApiResponse.success(null, 'Account deleted successfully'))
+})
+
+export const refresh = asyncWrapper(async (req: Request, res: Response) => {
+  const result = await authService.refreshToken(req.body.refreshToken)
+  res.json(ApiResponse.success(result, 'Token refreshed successfully'))
+})

@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes'
 import usersRoutes from './routes/usersRoutes'
 import categoriesRoutes from './routes/categoriesRoutes'
 import freelancersRoutes from './routes/freelancersRoutes'
+import gigsRoutes from './routes/gigsRoutes'
 
 export const createApp = () => {
   const app = express()
@@ -38,6 +39,7 @@ export const createApp = () => {
   app.use('/api/v1/users', usersRoutes)
   app.use('/api/v1/categories', categoriesRoutes)
   app.use('/api/v1/freelancers', freelancersRoutes)
+  app.use('/api/v1/gigs', gigsRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, message: 'Route not found' })

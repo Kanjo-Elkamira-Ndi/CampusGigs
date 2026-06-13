@@ -19,6 +19,17 @@ export const VerifyEmailSchema = z.object({
 
 export const ResendVerificationSchema = z.object({})
 
+export const RefreshDto = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required'),
+})
+
+export const ChangePasswordDto = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+})
+
 export type RegisterInput = z.infer<typeof RegisterDto>
 export type LoginInput = z.infer<typeof LoginDto>
 export type VerifyEmailInput = z.infer<typeof VerifyEmailSchema>
+export type RefreshInput = z.infer<typeof RefreshDto>
+export type ChangePasswordInput = z.infer<typeof ChangePasswordDto>
