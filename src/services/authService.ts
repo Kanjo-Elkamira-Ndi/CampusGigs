@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs'
-import { query, queryOne } from '../../../lib/db'
-import { ApiError } from '../../../utils/ApiError'
-import { signAccessToken, signRefreshToken } from '../../../lib/jwt'
-import type { RegisterInput, LoginInput } from '../auth.dto'
+import { queryOne } from '../lib/db'
+import { ApiError } from '../utils/ApiError'
+import { signAccessToken, signRefreshToken } from '../lib/jwt'
+import type { RegisterInput, LoginInput } from '../dto/authDto'
 
 interface DbUser {
   id: string

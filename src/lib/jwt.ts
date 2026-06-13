@@ -11,7 +11,7 @@ export function signAccessToken(payload: { id: string; email: string; role: stri
   return jwt.sign(
     { sub: payload.id, email: payload.email, role: payload.role },
     env.JWT_SECRET,
-    { expiresIn: env.JWT_EXPIRES_IN }
+    { expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
   )
 }
 

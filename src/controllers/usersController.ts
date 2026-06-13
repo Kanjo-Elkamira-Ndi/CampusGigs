@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import { asyncWrapper } from '../../utils/asyncWrapper'
-import { ApiResponse } from '../../utils/ApiResponse'
-import { ApiError } from '../../utils/ApiError'
-import * as usersService from './users.service'
+import { asyncWrapper } from '../utils/asyncWrapper'
+import { ApiResponse } from '../utils/ApiResponse'
+import { ApiError } from '../utils/ApiError'
+import * as usersService from '../services/usersService'
 
 export const getMe = asyncWrapper(async (req: Request, res: Response) => {
   if (!req.user) throw new ApiError(401, 'Unauthenticated')

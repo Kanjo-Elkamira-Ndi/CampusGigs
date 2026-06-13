@@ -1,4 +1,4 @@
-import { query, queryOne } from '../../lib/db'
+import { query, queryOne } from '../lib/db'
 
 interface DbCategory {
   id: string
@@ -14,8 +14,8 @@ export const listCategories = async () => {
             COUNT(g.id) FILTER (WHERE g.status = 'OPEN') AS open_gig_count
      FROM categories c
      LEFT JOIN gigs g ON g.category_id = c.id
-     GROUP BY c.id
-     ORDER BY c.name ASC`
+     GROUP BY c.id, c.name, c.slug, c.icon_name
+     ORDER BY c.name`
   )
   return rows.map(c => ({
     id:       c.id,
@@ -34,7 +34,7 @@ export const getCategoryBySlug = async (slug: string) => {
      FROM categories c
      LEFT JOIN gigs g ON g.category_id = c.id
      WHERE c.slug = $1
-     GROUP BY c.id`,
+     GROUP BY c.id, c.name, c.slug, c.icon_name`,
     [slug]
   )
   if (!row) return null

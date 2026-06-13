@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { authGuard } from '../../../middleware/authGuard'
-import { validate } from '../../../middleware/validate'
-import { RegisterDto, LoginDto } from '../auth.dto'
-import * as authController from '../controllers/auth.controller'
+import { authGuard } from '../middleware/authGuard'
+import { validate } from '../middleware/validate'
+import { RegisterDto, LoginDto } from '../dto/authDto'
+import * as authController from '../controllers/authController'
 
 const router = Router()
 

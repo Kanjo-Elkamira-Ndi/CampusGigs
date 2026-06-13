@@ -1,6 +1,6 @@
-import { query, queryOne } from '../../lib/db'
-import { ApiError } from '../../utils/ApiError'
-import { UpdateProfileInput } from './users.dto'
+import { query, queryOne } from '../lib/db'
+import { ApiError } from '../utils/ApiError'
+import { UpdateProfileInput } from '../dto/usersDto'
 
 interface DbUser {
   id: string

@@ -5,9 +5,9 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { env } from './config/env'
 import { errorHandler } from './middleware/errorHandler'
-import authRoutes from './modules/auth/routes/auth.routes'
-import usersRoutes from './modules/users/users.routes'
-import categoriesRoutes from './modules/categories/categories.routes'
+import authRoutes from './routes/authRoutes'
+import usersRoutes from './routes/usersRoutes'
+import categoriesRoutes from './routes/categoriesRoutes'
 
 export const createApp = () => {
   const app = express()

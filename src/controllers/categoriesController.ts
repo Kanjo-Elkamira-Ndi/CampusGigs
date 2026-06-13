@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { asyncWrapper } from '../../utils/asyncWrapper'
-import { ApiResponse } from '../../utils/ApiResponse'
-import * as categoriesService from './categories.service'
+import { asyncWrapper } from '../utils/asyncWrapper'
+import { ApiResponse } from '../utils/ApiResponse'
+import * as categoriesService from '../services/categoriesService'
 
 export const getCategories = asyncWrapper(async (_req: Request, res: Response) => {
   const categories = await categoriesService.listCategories()

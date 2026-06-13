@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
-import { asyncWrapper } from '../../../utils/asyncWrapper'
-import { ApiResponse } from '../../../utils/ApiResponse'
-import { ApiError } from '../../../utils/ApiError'
-import * as authService from '../services/auth.service'
-import * as usersService from '../../users/users.service'
+import { asyncWrapper } from '../utils/asyncWrapper'
+import { ApiResponse } from '../utils/ApiResponse'
+import { ApiError } from '../utils/ApiError'
+import * as authService from '../services/authService'
+import * as usersService from '../services/usersService'
 
 export const register = asyncWrapper(async (req: Request, res: Response) => {
   const result = await authService.register(req.body)
