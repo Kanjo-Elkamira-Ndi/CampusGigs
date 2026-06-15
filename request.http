@@ -1,0 +1,407 @@
+@baseUrl = http://localhost:5000/api/v1
+
+### ═══════════════════════════════════════════
+###  AUTH
+### ═══════════════════════════════════════════
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Yves Dylane",
+  "email": "yvesdylane@example.com",
+  "password": "password123",
+  "role": "WORKER",
+  "universityId": "ub"
+}
+
+### Register a poster
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Jane Poster",
+  "email": "jane@example.com",
+  "password": "password123",
+  "role": "POSTER",
+  "universityId": "uy1"
+}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "yvesdylane@example.com",
+  "password": "password123"
+}
+
+### Get current user
+GET {{baseUrl}}/auth/me
+Authorization: Bearer <token>
+
+### Refresh token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "<refresh-token>"
+}
+
+### Logout (stateless)
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer <token>
+
+### Change password
+POST {{baseUrl}}/auth/change-password
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "currentPassword": "password123",
+  "newPassword": "newpass1234"
+}
+
+### Forgot password
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "yvesdylane@example.com"
+}
+
+### Reset password
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "<reset-token>",
+  "password": "newpassword123"
+}
+
+### Verify email
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "yvesdylane@example.com"
+}
+
+### Resend verification email
+POST {{baseUrl}}/auth/resend-verification
+Authorization: Bearer <token>
+
+### Sign out all sessions (increments token_version)
+POST {{baseUrl}}/auth/sessions/sign-out-all
+Authorization: Bearer <token>
+
+### ═══════════════════════════════════════════
+###  USERS
+### ═══════════════════════════════════════════
+
+### Get own profile (full details + reviews + counts)
+GET {{baseUrl}}/users/me
+Authorization: Bearer <token>
+
+### Update own profile (accepts new fields now)
+PATCH {{baseUrl}}/users/me
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "fullName": "Yves Dylane Updated",
+  "bio": "Computer Science student at UB",
+  "skills": ["JavaScript", "React", "Node.js"],
+  "hourlyRate": 2500,
+  "availability": "Immediately",
+  "experienceLevel": "Intermediate",
+  "remoteAvailable": true
+}
+
+### Get public profile
+GET {{baseUrl}}/users/<user-id>
+
+### Get user reviews (paginated)
+GET {{baseUrl}}/users/<user-id>/reviews?page=1&limit=10
+
+### ═══════════════════════════════════════════
+###  CATEGORIES
+### ═══════════════════════════════════════════
+
+### List all categories with open gig count
+GET {{baseUrl}}/categories
+
+### Get category by slug
+GET {{baseUrl}}/categories/tech-dev
+
+### ═══════════════════════════════════════════
+###  GIGS
+### ═══════════════════════════════════════════
+
+### List open gigs (with filters)
+GET {{baseUrl}}/gigs?page=1&limit=10
+
+### Search gigs
+GET {{baseUrl}}/gigs?q=math&category=tech-dev&minBudget=1000&maxBudget=10000
+
+### Filter by poster (profile page)
+GET {{baseUrl}}/gigs?posterId=<user-id>
+
+### Filter by university
+GET {{baseUrl}}/gigs?universityId=ub
+
+### Get gig by id
+GET {{baseUrl}}/gigs/<gig-id>
+
+### Create a gig (POSTER only)
+POST {{baseUrl}}/gigs
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Need help with math homework",
+  "category": "tutoring-academic",
+  "description": "I need someone to help me with my calculus homework for the next 2 weeks at the university campus.",
+  "location": "Buea",
+  "budget": 5000,
+  "slots": 2,
+  "deadline": "2026-07-01T00:00:00Z",
+  "universityId": "ub",
+  "isEasyApply": true,
+  "tags": ["math", "calculus"]
+}
+
+### Update a gig (owner only)
+PATCH {{baseUrl}}/gigs/<gig-id>
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Updated math tutoring gig",
+  "budget": 7000
+}
+
+### Delete a gig (soft-delete → CANCELLED)
+DELETE {{baseUrl}}/gigs/<gig-id>
+Authorization: Bearer <token>
+
+### Close a gig (→ COMPLETED)
+PATCH {{baseUrl}}/gigs/<gig-id>/close
+Authorization: Bearer <token>
+
+### Save/bookmark a gig
+POST {{baseUrl}}/gigs/<gig-id>/save
+Authorization: Bearer <token>
+
+### Unsave a gig
+DELETE {{baseUrl}}/gigs/<gig-id>/save
+Authorization: Bearer <token>
+
+### List saved gigs
+GET {{baseUrl}}/gigs/saved
+Authorization: Bearer <token>
+
+### ═══════════════════════════════════════════
+###  APPLICATIONS
+### ═══════════════════════════════════════════
+
+### Apply to a gig (WORKER only)
+POST {{baseUrl}}/gigs/<gig-id>/applications
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "coverNote": "I am very interested in this gig. I have relevant experience and can start immediately."
+}
+
+### List applications for a gig (poster only)
+GET {{baseUrl}}/gigs/<gig-id>/applications
+Authorization: Bearer <token>
+
+### List my applications (paginated, filterable)
+GET {{baseUrl}}/applications?page=1&limit=10&status=PENDING
+Authorization: Bearer <token>
+
+### Accept an application
+PATCH {{baseUrl}}/applications/<app-id>/accept
+Authorization: Bearer <token>
+
+### Reject an application
+PATCH {{baseUrl}}/applications/<app-id>/reject
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "reason": "Position filled by another candidate"
+}
+
+### Complete an application
+PATCH {{baseUrl}}/applications/<app-id>/complete
+Authorization: Bearer <token>
+
+### ═══════════════════════════════════════════
+###  REVIEWS
+### ═══════════════════════════════════════════
+
+### Create a review (after completion)
+POST {{baseUrl}}/reviews
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "gigId": "<gig-id>",
+  "revieweeId": "<user-id>",
+  "rating": 5,
+  "comment": "Great work! Very professional and delivered on time."
+}
+
+### ═══════════════════════════════════════════
+###  FREELANCERS
+### ═══════════════════════════════════════════
+
+### List freelancers (all filters)
+GET {{baseUrl}}/freelancers?page=1&limit=12
+
+### Search freelancers
+GET {{baseUrl}}/freelancers?q=javascript&minRating=3&sort=rating
+
+### Filter by university
+GET {{baseUrl}}/freelancers?universityIds=ub&universityIds=uy1
+
+### ═══════════════════════════════════════════
+###  MESSAGES
+### ═══════════════════════════════════════════
+
+### List message threads
+GET {{baseUrl}}/messages
+Authorization: Bearer <token>
+
+### Get thread (marks messages as read)
+GET {{baseUrl}}/messages/<application-id>
+Authorization: Bearer <token>
+
+### Send message (with optional attachments)
+POST {{baseUrl}}/messages/<application-id>
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "text": "Hello, I would like to discuss the gig details.",
+  "attachments": [
+    { "type": "file", "url": "https://example.com/doc.pdf", "fileName": "portfolio.pdf", "fileSize": 102400 }
+  ]
+}
+
+### ═══════════════════════════════════════════
+###  NOTIFICATIONS
+### ═══════════════════════════════════════════
+
+### List notifications
+GET {{baseUrl}}/notifications?page=1&limit=20
+Authorization: Bearer <token>
+
+### Unread only
+GET {{baseUrl}}/notifications?unreadOnly=true
+Authorization: Bearer <token>
+
+### Unread count
+GET {{baseUrl}}/notifications/unread-count
+Authorization: Bearer <token>
+
+### Mark notification as read
+PATCH {{baseUrl}}/notifications/<notif-id>
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "read": true
+}
+
+### Mark all as read
+PATCH {{baseUrl}}/notifications/read-all
+Authorization: Bearer <token>
+
+### ═══════════════════════════════════════════
+###  DASHBOARD
+### ═══════════════════════════════════════════
+
+### Worker dashboard
+GET {{baseUrl}}/dashboard/worker
+Authorization: Bearer <token>
+
+### Poster dashboard (includes applicantsToReview array)
+GET {{baseUrl}}/dashboard/poster
+Authorization: Bearer <token>
+
+### ═══════════════════════════════════════════
+###  SUPER ADMIN AUTH
+### ═══════════════════════════════════════════
+
+### Super admin login
+POST {{baseUrl}}/superadmin/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@campusgigs.com",
+  "password": "admin123"
+}
+
+### Super admin me
+GET {{baseUrl}}/superadmin/auth/me
+
+### Super admin logout
+POST {{baseUrl}}/superadmin/auth/logout
+
+### ═══════════════════════════════════════════
+###  SUPER ADMIN
+### ═══════════════════════════════════════════
+
+### Dashboard stats
+GET {{baseUrl}}/superadmin/dashboard
+
+### List users
+GET {{baseUrl}}/superadmin/users?page=1&limit=20
+
+### Search users
+GET {{baseUrl}}/superadmin/users?q=yves&role=WORKER&isBanned=false
+
+### Update user (ban, role, verify)
+PATCH {{baseUrl}}/superadmin/users/<user-id>
+Content-Type: application/json
+
+{
+  "isBanned": false,
+  "role": "WORKER",
+  "emailVerified": true,
+  "verified": true
+}
+
+### Delete user (hard delete)
+DELETE {{baseUrl}}/superadmin/users/<user-id>
+
+### List all gigs
+GET {{baseUrl}}/superadmin/gigs?page=1&limit=20&status=OPEN
+
+### Delete gig (hard delete)
+DELETE {{baseUrl}}/superadmin/gigs/<gig-id>
+
+### Delete review
+DELETE {{baseUrl}}/superadmin/reviews/<review-id>
+
+### List universities
+GET {{baseUrl}}/superadmin/universities
+
+### Add university
+POST {{baseUrl}}/superadmin/universities
+Content-Type: application/json
+
+{
+  "id": "ict",
+  "name": "ICT University",
+  "city": "Yaoundé",
+  "type": "private"
+}
+
+### Audit logs
+GET {{baseUrl}}/superadmin/audit-logs?page=1&limit=20
