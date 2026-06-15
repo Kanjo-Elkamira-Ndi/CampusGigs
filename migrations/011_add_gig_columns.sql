@@ -1,3 +1,0 @@
-ALTER TABLE gigs ADD COLUMN university_id TEXT;
-ALTER TABLE gigs ADD COLUMN tags TEXT[] DEFAULT '{}';
-ALTER TABLE gigs ADD COLUMN is_easy_apply BOOLEAN NOT NULL DEFAULT true;
