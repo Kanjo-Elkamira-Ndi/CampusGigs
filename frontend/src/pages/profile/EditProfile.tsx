@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { toast } from "sonner";
 import { X } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
@@ -14,12 +13,13 @@ import { useAuthStore } from "@/store/authStore";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { Avatar } from "@/components/shared/Avatar";
 import { DashboardShell } from "@/components/layout/DashboardShell";
+import { useUpdateProfile } from "@/hooks/useUsers";
 
 function EditProfileContent() {
   const user = useAuthStore((s) => s.user)!;
   const activeRole = useAuthStore((s) => s.activeRole);
-  const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
+  const updateProfile = useUpdateProfile();
   const [skills, setSkills] = useState<string[]>(user.skills);
   const [skillInput, setSkillInput] = useState("");
 
@@ -39,14 +39,10 @@ function EditProfileContent() {
   };
 
   const onSubmit = (d: EditProfileInput) => {
-    const uni = CAMEROON_UNIVERSITIES.find((u) => u.id === d.universityId)!;
-    setAuth({
-      ...user, fullName: d.fullName, bio: d.bio,
-      universityId: uni.id, universityName: uni.name, city: uni.city,
-      skills, avatarUrl: d.avatarUrl || undefined,
-    }, "mock-token");
-    toast.success("Profile updated");
-    navigate("/profile/" + user.id);
+    updateProfile.mutate(
+      { fullName: d.fullName, bio: d.bio, universityId: d.universityId, skills, avatarUrl: d.avatarUrl || undefined },
+      { onSuccess: () => navigate("/profile/" + user.id) },
+    );
   };
 
   const avatarPreview = watch("avatarUrl");
@@ -96,7 +92,7 @@ function EditProfileContent() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button type="submit" className="bg-brand hover:bg-[color:var(--brand-dark)] text-white">Save changes</Button>
+            <Button type="submit" disabled={updateProfile.isPending} className="bg-brand hover:bg-[color:var(--brand-dark)] text-white">{updateProfile.isPending ? "Saving…" : "Save changes"}</Button>
             <Button type="button" variant="ghost" onClick={() => navigate("/profile/" + user.id)}>Cancel</Button>
           </div>
         </form>

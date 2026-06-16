@@ -1,23 +1,52 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { reviewsApi } from "@/api/reviews.api";
+import { reviewsApi, type ReviewsListResponse } from "@/api/reviews.api";
 
 export function useReviews(params: { page?: number; limit?: number }) {
-  return useQuery({
-    queryKey: ["reviews", params],
-    queryFn: () => reviewsApi.list(params),
-    retry: false,
-  });
+  const [data, setData] = useState<ReviewsListResponse | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>(undefined);
+  const paramsKey = useMemo(() => JSON.stringify(params), [params]);
+
+  const fetch = useCallback(async () => {
+    setIsLoading(true);
+    setError(undefined);
+    try {
+      const result = await reviewsApi.list(JSON.parse(paramsKey));
+      setData(result);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [paramsKey]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, isLoading, error, refetch: fetch };
 }
 
 export function useDeleteReview() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => reviewsApi.remove(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["reviews"] });
+  const [isPending, setIsPending] = useState(false);
+
+  const mutate = async (
+    id: string,
+    options?: { onSuccess?: () => void; onError?: (e: unknown) => void }
+  ) => {
+    setIsPending(true);
+    try {
+      await reviewsApi.remove(id as string);
       toast.success("Review deleted");
-    },
-    onError: (e: any) => toast.error(e?.response?.data?.message ?? "Delete failed"),
-  });
+      options?.onSuccess?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message ?? "Delete failed");
+      options?.onError?.(e);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  return { mutate, isPending };
 }

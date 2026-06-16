@@ -8,7 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { mockGigs } from "@/lib/mockData";
+import { useGigs } from "@/hooks/useGigs";
 
 import type { GigCategory } from "@/types";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
@@ -38,8 +38,6 @@ const CATEGORY_ORDER: GigCategory[] = [
   "Other",
 ];
 
-const ACTIVE_GIGS = mockGigs.filter((g) => g.status !== "CANCELLED");
-
 /* ── per-category accent colors ── */
 
 const CAT_COLORS: Record<GigCategory, string> = {
@@ -59,22 +57,14 @@ export function GigFeed() {
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const selectedCategory = searchParams.get("category") as GigCategory | null;
 
-  const filtered = useMemo(() => {
-    let out = [...ACTIVE_GIGS];
-    if (selectedCategory) out = out.filter((g) => g.category === selectedCategory);
-    if (search) {
-      const q = search.toLowerCase();
-      out = out.filter(
-        (g) =>
-          g.title.toLowerCase().includes(q) ||
-          g.description.toLowerCase().includes(q) ||
-          g.category.toLowerCase().includes(q) ||
-          g.city.toLowerCase().includes(q) ||
-          g.tags?.some((t) => t.toLowerCase().includes(q)),
-      );
-    }
-    return out;
-  }, [selectedCategory, search]);
+  const { data: gigsResult } = useGigs({
+    category: selectedCategory ?? undefined,
+    q: search || undefined,
+    limit: 50,
+  });
+  const allGigs = gigsResult?.data ?? [];
+  const filtered = allGigs;
+  const ACTIVE_GIGS = allGigs;
 
   const selectCategory = (cat: GigCategory) => {
     setSearchParams({ category: cat });
@@ -200,8 +190,8 @@ export function GigFeed() {
               transition={{ duration: 0.3 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
             >
-              {CATEGORY_ORDER.map((cat, i) => {
-                const count = ACTIVE_GIGS.filter((g) => g.category === cat).length;
+                {CATEGORY_ORDER.map((cat, i) => {
+                const count = allGigs.filter((g) => g.category === cat).length;
                 const color = CAT_COLORS[cat];
                 const bg = `${color}12`;
                 return (

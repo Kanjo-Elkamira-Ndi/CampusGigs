@@ -2,7 +2,7 @@ import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, MapPin, Calendar, Users, Star } from "lucide-react";
 import { useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { findGig, gigsByPoster } from "@/lib/mockData";
+import { useGig, useGigs } from "@/hooks/useGigs";
 import { CategoryIconCircle, GigBadge } from "@/components/gigs/GigBadge";
 import { GigStatusBadge } from "@/components/gigs/GigStatusBadge";
 import { UniversityBadge } from "@/components/shared/UniversityBadge";
@@ -16,15 +16,21 @@ import { GigCard } from "@/components/gigs/GigCard";
 
 export function GigDetail() {
   const { id } = useParams<{ id: string }>();
-  const gig = findGig(id ?? "");
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [applyOpen, setApplyOpen] = useState(false);
 
+  const { data: gigResult } = useGig(id ?? "");
+  const gig = gigResult ?? null;
+
+  const { data: posterGigsResult } = useGigs(
+    gig ? { posterId: gig.poster.id, limit: 3 } : {},
+  );
+  const otherFromPoster = (posterGigsResult?.data ?? []).filter((g) => g.id !== id).slice(0, 3);
+
   if (!gig) return <Navigate to="/gigs" replace />;
   const d = getDeadlineLabel(gig.deadline);
   const isOwn = user?.id === gig.poster.id;
-  const otherFromPoster = gigsByPoster(gig.poster.id).filter((g) => g.id !== gig.id).slice(0, 3);
 
   return (
     <PageWrapper>
@@ -40,10 +46,21 @@ export function GigDetail() {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <GigStatusBadge status={gig.status} />
-                {gig.isEasyApply && <EasyApplyBadge />}
+          <div className="flex items-center gap-2 mb-3">
+            <Avatar className="h-10 w-10 border">
+              <AvatarImage src={gig.posterAvatar} />
+              <AvatarFallback>{gig.posterName?.[0] ?? "U"}</AvatarFallback>
+            </Avatar>
+            <div>
+              <Link to={`/profile/${gig.posterId}`} className="text-sm font-medium hover:underline">
+                {gig.posterName}
+              </Link>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <BadgeCheck className="h-3 w-3 text-brand" />
+                <span>{gig.posterUniversity}</span>
               </div>
+            </div>
+          </div>
               <h1 className="text-3xl font-bold leading-tight">{gig.title}</h1>
               <div className="mt-3 flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
                 <span className="inline-flex items-center gap-1"><GigBadge category={gig.category} /></span>

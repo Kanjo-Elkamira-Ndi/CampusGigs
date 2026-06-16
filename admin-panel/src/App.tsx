@@ -1,14 +1,14 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { AdminLayout } from "@/components/layout/AdminLayout";
-import { useAdminAuthStore } from "@/store/adminAuthStore";
-import Login from "@/pages/Login";
-import Dashboard from "@/pages/Dashboard";
-import Users from "@/pages/Users";
-import Gigs from "@/pages/Gigs";
-import Universities from "@/pages/Universities";
-import AuditLogs from "@/pages/AuditLogs";
-import Reviews from "@/pages/Reviews";
-import NotFound from "@/pages/NotFound";
+import { AdminLayout } from "./components/layout/AdminLayout";
+import { useAdminAuthStore } from "./store/adminAuthStore";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Users from "./pages/Users";
+import Gigs from "./pages/Gigs";
+import Universities from "./pages/Universities";
+import AuditLogs from "./pages/AuditLogs";
+import Reviews from "./pages/Reviews";
+import NotFound from "./pages/NotFound";
 
 function Protected({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAdminAuthStore((s) => s.isAuthenticated);

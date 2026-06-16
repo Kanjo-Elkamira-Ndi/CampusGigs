@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Heart, Clock, MapPin, Users } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CategoryIconCircle } from "@/components/gigs/GigBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { mockSavedGigs } from "@/lib/mockData";
+import { useSavedGigs, useUnsaveGig } from "@/hooks/useGigs";
 import { formatBudget, getDeadlineLabel } from "@/lib/utils";
 
 const FADE_IN = {
@@ -16,8 +15,9 @@ const FADE_IN = {
 };
 
 function SavedGigsContent() {
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set(mockSavedGigs.map((g) => g.id)));
-  const gigs = mockSavedGigs.filter((g) => savedIds.has(g.id));
+  const { data: gigsResult } = useSavedGigs();
+  const unsave = useUnsaveGig();
+  const gigs = gigsResult?.data ?? [];
 
   return (
     <PageWrapper>
@@ -54,7 +54,7 @@ function SavedGigsContent() {
                   </Link>
                   <div className="text-sm font-semibold text-primary">{formatBudget(g.budget)}</div>
                   <button
-                    onClick={() => setSavedIds((prev) => { const next = new Set(prev); next.delete(g.id); return next; })}
+                    onClick={() => unsave.mutate(g.id)}
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors shrink-0"
                     aria-label="Remove from saved"
                   >

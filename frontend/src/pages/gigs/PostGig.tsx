@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { postGigStep1, postGigStep2, type PostGigStep1, type PostGigStep2 } from "@/lib/validators";
@@ -13,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { CATEGORY_META, CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { GigListRow } from "@/components/gigs/GigListRow";
 import { useAuthStore } from "@/store/authStore";
+import { useCreateGig } from "@/hooks/useGigs";
 import type { Gig, GigCategory } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,7 @@ function PostGigForm() {
   const [step, setStep] = useState(1);
   const [s1, setS1] = useState<PostGigStep1 | null>(null);
   const [s2, setS2] = useState<PostGigStep2 | null>(null);
+  const createGig = useCreateGig();
 
   const f1 = useForm<PostGigStep1>({ resolver: zodResolver(postGigStep1), defaultValues: { remote: false, category: "Tutoring" as GigCategory } });
   const f2 = useForm<PostGigStep2>({ resolver: zodResolver(postGigStep2), defaultValues: { slots: 1, isEasyApply: true, universityId: user.universityId } });
@@ -30,8 +31,24 @@ function PostGigForm() {
   const onStep1 = (d: PostGigStep1) => { setS1(d); setStep(2); };
   const onStep2 = (d: PostGigStep2) => { setS2(d); setStep(3); };
   const submit = () => {
-    toast.success("Your gig is live! 🎉");
-    navigate("/gigs");
+    if (!s1 || !s2) return;
+    const budget = Number(s2.budget);
+    const slots = Number(s2.slots);
+    createGig.mutate(
+      {
+        title: s1.title,
+        description: s1.description,
+        category: s1.category,
+        location: s1.location,
+        remote: s1.remote,
+        universityId: s2.universityId,
+        budget,
+        slots,
+        deadline: new Date(s2.deadline).toISOString(),
+        isEasyApply: s2.isEasyApply,
+      },
+      { onSuccess: () => navigate("/gigs") },
+    );
   };
 
   const preview: Gig | null = s1 && s2 ? {
@@ -144,7 +161,7 @@ function PostGigForm() {
               </div>
               <div className="mt-6 flex gap-2">
                 <Button type="button" variant="ghost" onClick={() => setStep(2)}>← Edit</Button>
-                <Button onClick={submit} className="bg-brand hover:bg-[color:var(--brand-dark)] text-white">Post gig</Button>
+                <Button onClick={submit} disabled={createGig.isPending} className="bg-brand hover:bg-[color:var(--brand-dark)] text-white">{createGig.isPending ? "Posting…" : "Post gig"}</Button>
               </div>
             </div>
           )}

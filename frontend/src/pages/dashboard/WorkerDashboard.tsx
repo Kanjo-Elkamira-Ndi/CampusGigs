@@ -10,13 +10,7 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CategoryIconCircle } from "@/components/gigs/GigBadge";
 import { GigStatusBadge } from "@/components/gigs/GigStatusBadge";
 import { cn, formatBudget } from "@/lib/utils";
-import {
-  mockDashboardApplications,
-  mockMessages,
-  mockWorkerStats,
-  mockWorkerWeekActivity,
-  mockUpcomingDeadline,
-} from "@/lib/mockData";
+import { useWorkerDashboard } from "@/hooks/useDashboard";
 
 const CONTAINER = {
   hidden: { opacity: 0 },
@@ -51,9 +45,10 @@ function getGreeting() {
 function WorkerDashboardContent() {
   const user = useAuthStore((s) => s.user)!;
   const firstName = user.fullName.split(" ")[0];
-  const stats = mockWorkerStats;
-  const apps = mockDashboardApplications;
-  const messages = mockMessages;
+  const { data: dashboard } = useWorkerDashboard();
+  const stats = dashboard?.stats ?? null;
+  const apps = dashboard?.recentApplications ?? [];
+  const messages = dashboard?.recentMessages ?? [];
 
   const profileItems = [
     { label: "Avatar uploaded", done: !!user.avatarUrl },
@@ -65,12 +60,12 @@ function WorkerDashboardContent() {
 
   const statCards: {
     label: string; value: string | number; delta: string; filled?: boolean; formatted?: boolean; rating?: boolean;
-  }[] = [
+  }[] = stats ? [
     { label: "Active applications", value: stats.activeApplications, delta: `${stats.applicationsAwaitingResponse} awaiting response`, filled: true },
     { label: "Gigs completed", value: stats.gigsCompleted, delta: `+${stats.monthlyGigsCompleted} this month` },
     { label: "Total earned", value: `XAF ${stats.totalEarned.toLocaleString("fr-CM")}`, delta: `+${(stats.monthlyGigsCompleted * 15000).toLocaleString("fr-CM")} this month`, formatted: true },
     { label: "Your rating", value: stats.rating.toFixed(1), delta: `${stats.reviewCount} reviews`, rating: true },
-  ];
+  ] : [];
 
   return (
     <PageWrapper>
@@ -132,7 +127,7 @@ function WorkerDashboardContent() {
             </div>
             <div className="h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockWorkerWeekActivity} margin={{ top: 0, right: 0, left: -12, bottom: 0 }}>
+                <BarChart data={dashboard?.weeklyActivity ?? []} margin={{ top: 0, right: 0, left: -12, bottom: 0 }}>
                   <Tooltip
                     cursor={{ fill: "transparent" }}
                     contentStyle={{
@@ -145,8 +140,8 @@ function WorkerDashboardContent() {
                     labelStyle={{ fontWeight: 600 }}
                   />
                   <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={28}>
-                    {mockWorkerWeekActivity.map((entry, idx) => (
-                      <Cell key={idx} fill={idx === mockWorkerWeekActivity.length - 1 ? "#6366f1" : "#e0e7ff"} />
+                    {(dashboard?.weeklyActivity ?? []).map((entry, idx) => (
+                      <Cell key={idx} fill={idx === (dashboard?.weeklyActivity ?? []).length - 1 ? "#6366f1" : "#e0e7ff"} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -165,17 +160,21 @@ function WorkerDashboardContent() {
               </div>
             </div>
             <div className="space-y-3">
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 leading-snug">{mockUpcomingDeadline.gigTitle}</p>
-                <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  <Calendar size={12} />
-                  <span>{mockUpcomingDeadline.dateTime}</span>
+              {dashboard?.upcomingDeadline ? (
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 leading-snug">{dashboard.upcomingDeadline.gigTitle}</p>
+                  <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    <Calendar size={12} />
+                    <span>{dashboard.upcomingDeadline.dateTime}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <MapPin size={12} />
+                    <span>{dashboard.upcomingDeadline.location}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  <MapPin size={12} />
-                  <span>{mockUpcomingDeadline.location}</span>
-                </div>
-              </div>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">No upcoming deadlines</p>
+              )}
               <Link
                 to="/messages"
                 className="block text-center py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors"
@@ -197,7 +196,7 @@ function WorkerDashboardContent() {
             <div className="px-2 pb-2">
               {apps.slice(0, 4).map((a) => (
                 <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                  <CategoryIconCircle category={a.category} size={28} />
+                  <CategoryIconCircle category={a.category as any} size={28} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{a.gigTitle}</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">

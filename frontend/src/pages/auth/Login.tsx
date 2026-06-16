@@ -1,40 +1,34 @@
-import { Link, useNavigate, Navigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Eye, EyeOff, GraduationCap } from "lucide-react";
-import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { loginSchema, type LoginInput } from "@/lib/validators";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
-import { mockUsers } from "@/lib/mockData";
+import { useLogin } from "@/hooks/useAuth";
 import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
 
 export function Login() {
   const user = useAuthStore((s) => s.user);
-  const setAuth = useAuthStore((s) => s.setAuth);
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const from = searchParams.get("from");
   const [showPw, setShowPw] = useState(false);
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
+  const login = useLogin();
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
   });
 
   if (user) return <Navigate to={from ?? "/dashboard"} replace />;
 
-  const onSubmit = async (data: LoginInput) => {
-    await new Promise((r) => setTimeout(r, 300));
-    if (data.password !== "password123") {
-      toast.error("Invalid credentials. Try password: password123");
-      return;
-    }
-    const found = mockUsers.find((u) => u.email === data.email) ?? mockUsers[2];
-    setAuth(found, "mock-token");
-    toast.success(`Welcome back, ${found.fullName.split(" ")[0]}!`);
-    navigate(from ?? "/dashboard");
+  const onSubmit = (data: LoginInput) => {
+    login.mutate(data, {
+      onSuccess: () => {
+        window.location.href = from ?? "/dashboard";
+      },
+    });
   };
 
   return (
@@ -87,8 +81,8 @@ export function Login() {
               </div>
               {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>}
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white">
-              {isSubmitting ? "Logging in…" : "Log in"}
+            <Button type="submit" disabled={login.isPending} className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white">
+              {login.isPending ? "Logging in…" : "Log in"}
             </Button>
           </form>
 
@@ -101,9 +95,7 @@ export function Login() {
               Sign up
             </Link>
           </div>
-          <p className="text-[11px] text-center text-muted-foreground mt-6">
-            Demo: any email + password <code className="px-1 bg-muted rounded">password123</code>
-          </p>
+
         </motion.div>
       </div>
     </div>

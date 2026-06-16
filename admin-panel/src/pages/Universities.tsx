@@ -56,6 +56,7 @@ export default function Universities() {
       onSuccess: () => {
         reset({ name: "", city: "", type: "public" });
         setOpen(false);
+        refetch();
       },
     });
 

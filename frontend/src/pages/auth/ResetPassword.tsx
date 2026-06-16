@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CheckInbox } from "@/components/shared/CheckInbox";
 import { cn } from "@/lib/utils";
 import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
+import { useResetPassword } from "@/hooks/useAuth";
 
 const schema = z
   .object({
@@ -40,7 +41,8 @@ export function ResetPasswordPage() {
   const [expired] = useState(token === "expired");
   const [done, setDone] = useState(false);
   const [showPw, setShowPw] = useState(false);
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } =
+  const resetPassword = useResetPassword();
+  const { register, handleSubmit, watch, formState: { errors } } =
     useForm<FormInput>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
@@ -55,9 +57,10 @@ export function ResetPasswordPage() {
   const pw = watch("password") ?? "";
   const { score, label } = scorePassword(pw);
 
-  const onSubmit = async () => {
-    await new Promise((r) => setTimeout(r, 300));
-    setDone(true);
+  const onSubmit = () => {
+    resetPassword.mutate({ token: token!, password: watch("password") }, {
+      onSuccess: () => setDone(true),
+    });
   };
 
   if (!token) return null;
@@ -163,10 +166,10 @@ export function ResetPasswordPage() {
                 </div>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={resetPassword.isPending}
                   className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white"
                 >
-                  Update password
+                  {resetPassword.isPending ? "Updating…" : "Update password"}
                 </Button>
               </form>
               <div className="text-center text-sm mt-4">
