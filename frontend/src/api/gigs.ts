@@ -1,6 +1,29 @@
 import { api, extractData } from "./axios";
 import type { Gig, GigCategory, GigStatus } from "@/types";
 
+const CATEGORY_TO_SLUG: Record<string, string> = {
+  Tutoring: "tutoring-academic",
+  Errands: "admin-errands",
+  "Tech help": "tech-dev",
+  Events: "events-hospitality",
+  Creative: "design-creative",
+  Delivery: "moving-labour",
+  Translation: "writing-translation",
+  Photography: "photography-video",
+  Other: "admin-errands",
+};
+
+const BACKEND_NAME_TO_SHORT: Record<string, string> = {
+  "Tutoring & Academic": "Tutoring",
+  "Admin & Errands": "Errands",
+  "Tech & Dev": "Tech help",
+  "Events & Hospitality": "Events",
+  "Design & Creative": "Creative",
+  "Moving & Labour": "Delivery",
+  "Writing & Translation": "Translation",
+  "Photography & Video": "Photography",
+};
+
 export interface ListGigsParams {
   q?: string;
   category?: string;
@@ -56,7 +79,7 @@ function mapBackendGig(g: Record<string, unknown>): Gig {
     universityId: (g.universityId as string) ?? "",
     universityName: (g.universityName as string) ?? "",
     city: (g.city as string) ?? "",
-    category: g.category as GigCategory,
+    category: (BACKEND_NAME_TO_SHORT[g.category as string] ?? g.category) as GigCategory,
     status: g.status as GigStatus,
     slots: Number(g.slots),
     slotsRemaining: Number(g.slotsRemaining ?? g.slots),
@@ -89,14 +112,19 @@ function mapBackendGig(g: Record<string, unknown>): Gig {
 }
 
 export const gigsApi = {
-  list: (params?: ListGigsParams) =>
-    api
-      .get<{ success: boolean; data: PaginatedResult<Record<string, unknown>> }>("/gigs", { params })
+  list: (params?: ListGigsParams) => {
+    const mapped = { ...params };
+    if (mapped.category) {
+      mapped.category = CATEGORY_TO_SLUG[mapped.category] ?? mapped.category;
+    }
+    return api
+      .get<{ success: boolean; data: PaginatedResult<Record<string, unknown>> }>("/gigs", { params: mapped })
       .then(extractData<PaginatedResult<Record<string, unknown>>>)
       .then((res) => ({
         data: res.data.map(mapBackendGig),
         meta: res.meta,
-      })),
+      }));
+  },
 
   getById: (id: string) =>
     api
@@ -104,11 +132,13 @@ export const gigsApi = {
       .then(extractData<Record<string, unknown>>)
       .then(mapBackendGig),
 
-  create: (data: CreateGigInput) =>
-    api
-      .post<{ success: boolean; data: Record<string, unknown> }>("/gigs", data)
+  create: (data: CreateGigInput) => {
+    const slug = CATEGORY_TO_SLUG[data.category] ?? data.category;
+    return api
+      .post<{ success: boolean; data: Record<string, unknown> }>("/gigs", { ...data, category: slug })
       .then(extractData<Record<string, unknown>>)
-      .then(mapBackendGig),
+      .then(mapBackendGig);
+  },
 
   update: (id: string, data: UpdateGigInput) =>
     api

@@ -2,21 +2,6 @@ import { query } from '../lib/db'
 import { parsePagination } from '../utils/pagination'
 import type { ListFreelancersInput } from '../dto/freelancersDto'
 
-interface DbFreelancer {
-  id: string
-  full_name: string
-  avatar_url: string | null
-  university_id: string | null
-  university_name: string | null
-  city: string | null
-  bio: string | null
-  avg_rating: string
-  review_count: string
-  created_at: string
-  email_verified: boolean
-  response_time: string | null
-}
-
 interface FreelancerResult {
   id: string
   fullName: string
@@ -39,10 +24,10 @@ interface FreelancerResult {
 }
 
 const SORT_MAP: Record<string, string> = {
-  rating: 'avg_rating DESC NULLS LAST',
-  newest: 'created_at DESC',
-  'rate-asc': 'avg_rating ASC NULLS LAST',
-  'rate-desc': 'avg_rating DESC NULLS LAST',
+  rating: 'u.avg_rating DESC NULLS LAST',
+  newest: 'u.created_at DESC',
+  'rate-asc': 'u.avg_rating ASC NULLS LAST',
+  'rate-desc': 'u.avg_rating DESC NULLS LAST',
 }
 
 export const listFreelancers = async (input: ListFreelancersInput) => {
@@ -76,24 +61,21 @@ export const listFreelancers = async (input: ListFreelancersInput) => {
   }
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-  const countWhere = whereClause.replace(/u\./g, '')
 
   const orderBy = input.sort && SORT_MAP[input.sort] ? SORT_MAP[input.sort] : 'created_at DESC'
 
   const [{ count }] = await query<{ count: string }>(
-    `SELECT COUNT(*) FROM users u ${countWhere}`,
+    `SELECT COUNT(*) FROM users u ${whereClause}`,
     params
   )
   const total = Number(count)
 
-  const rows = await query<DbFreelancer>(
+  const rows = await query<any>(
     `SELECT u.id, u.full_name, u.avatar_url, u.university_id, u.bio,
             u.avg_rating, u.review_count, u.created_at, u.email_verified,
-            u.response_time,
-            un.name AS university_name, un.city,
-            (SELECT COALESCE(json_agg(s.name) FILTER (WHERE s.name IS NOT NULL), '[]'::json)::text
-             FROM user_skills us JOIN skills s ON s.id = us.skill_id WHERE us.user_id = u.id) AS skills,
-            (SELECT COUNT(*) FROM applications a WHERE a.worker_id = u.id AND a.status = 'COMPLETED') AS hired_count
+            u.response_time, u.skills, u.hired_count,
+            u.hourly_rate, u.availability, u.experience_level, u.remote_available, u.verified,
+            un.name AS university_name, un.city
      FROM users u
      LEFT JOIN universities un ON un.id = u.university_id
      ${whereClause}
@@ -102,35 +84,26 @@ export const listFreelancers = async (input: ListFreelancersInput) => {
     params
   )
 
-  const data: FreelancerResult[] = rows.map(row => {
-    let skills: string[] = []
-    try {
-      if ((row as any).skills) {
-        const parsed = JSON.parse((row as any).skills as string)
-        skills = Array.isArray(parsed) ? parsed : []
-      }
-    } catch { skills = [] }
-    return {
-      id: row.id,
-      fullName: row.full_name,
-      avatarUrl: row.avatar_url,
-      universityId: row.university_id,
-      universityName: row.university_name ?? '',
-      city: row.city ?? '',
-      bio: row.bio,
-      avgRating: Number(row.avg_rating),
-      reviewCount: Number(row.review_count),
-      createdAt: row.created_at,
-      verified: row.email_verified,
-      responseTime: row.response_time ?? null,
-      hiredCount: Number((row as any).hired_count ?? 0),
-      skills: skills ?? [],
-      hourlyRate: null,
-      availability: null,
-      experienceLevel: null,
-      remoteAvailable: false,
-    }
-  })
+  const data: FreelancerResult[] = rows.map((row: Record<string, unknown>) => ({
+    id: row.id as string,
+    fullName: row.full_name as string,
+    avatarUrl: (row.avatar_url as string) ?? null,
+    universityId: (row.university_id as string) ?? null,
+    universityName: (row.university_name as string) ?? '',
+    city: (row.city as string) ?? '',
+    bio: (row.bio as string) ?? null,
+    avgRating: Number(row.avg_rating ?? 0),
+    reviewCount: Number(row.review_count ?? 0),
+    createdAt: row.created_at as string,
+    verified: Boolean(row.verified ?? row.email_verified ?? false),
+    responseTime: (row.response_time as string) ?? null,
+    hiredCount: Number(row.hired_count ?? 0),
+    skills: (row.skills as string[]) ?? [],
+    hourlyRate: row.hourly_rate ? Number(row.hourly_rate) : null,
+    availability: (row.availability as string) ?? null,
+    experienceLevel: (row.experience_level as string) ?? null,
+    remoteAvailable: Boolean(row.remote_available ?? false),
+  }))
 
   const totalPages = Math.ceil(total / limit)
 

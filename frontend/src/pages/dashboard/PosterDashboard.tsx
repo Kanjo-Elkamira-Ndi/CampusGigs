@@ -138,7 +138,7 @@ function PosterDashboardContent() {
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Active gigs</h2>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">{stats.activeGigs} currently open</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{stats?.activeGigs ?? 0} currently open</p>
               </div>
             </div>
             <div className="space-y-2">
@@ -172,7 +172,7 @@ function PosterDashboardContent() {
           <motion.div {...FADE_UP} className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Applicants to review</h2>
-              <span className="text-xs font-medium text-red-500">{stats.applicantsToReview} pending</span>
+              <span className="text-xs font-medium text-red-500">{stats?.applicantsToReview ?? 0} pending</span>
             </div>
             <div className="px-2 pb-2 space-y-0.5">
               {(dashboard?.applicantsToReview ?? []).slice(0, 4).map((a) => {

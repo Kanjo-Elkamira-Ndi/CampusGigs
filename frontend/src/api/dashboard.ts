@@ -1,5 +1,16 @@
 import { api, extractData } from "./axios";
 
+const BACKEND_NAME_TO_SHORT: Record<string, string> = {
+  "Tutoring & Academic": "Tutoring",
+  "Admin & Errands": "Errands",
+  "Tech & Dev": "Tech help",
+  "Events & Hospitality": "Events",
+  "Design & Creative": "Creative",
+  "Moving & Labour": "Delivery",
+  "Writing & Translation": "Translation",
+  "Photography & Video": "Photography",
+};
+
 export interface WorkerDashboard {
   stats: {
     activeApplications: number;
@@ -80,5 +91,12 @@ export const dashboardApi = {
   poster: () =>
     api
       .get<{ success: boolean; data: PosterDashboard }>("/dashboard/poster")
-      .then(extractData<PosterDashboard>),
+      .then(extractData<PosterDashboard>)
+      .then((data) => ({
+        ...data,
+        postedGigs: data.postedGigs.map((g) => ({
+          ...g,
+          category: BACKEND_NAME_TO_SHORT[g.category] ?? g.category,
+        })),
+      })),
 };
