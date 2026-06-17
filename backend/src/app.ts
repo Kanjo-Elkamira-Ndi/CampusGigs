@@ -46,7 +46,7 @@ export const createApp = () => {
   app.use('/api/v1/categories', categoriesRoutes)
   app.use('/api/v1/freelancers', freelancersRoutes)
   app.use('/api/v1/gigs', gigsRoutes)
-  app.use('/api/v1/applications', myApplicationsRoutes)
+  app.use('/api/v1/my-applications', myApplicationsRoutes)
   app.use('/api/v1/reviews', reviewsRoutes)
   app.use('/api/v1/messages', messagesRoutes)
   app.use('/api/v1/superadmin', superadminRoutes)
