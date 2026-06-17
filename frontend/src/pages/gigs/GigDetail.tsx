@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { ChevronRight, MapPin, Calendar, Users, Star } from "lucide-react";
+import { ChevronRight, MapPin, Calendar, Users, Star, BadgeCheck } from "lucide-react";
 import { useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useGig, useGigs } from "@/hooks/useGigs";
@@ -47,17 +47,14 @@ export function GigDetail() {
           <div className="lg:col-span-2 space-y-6">
             <div>
           <div className="flex items-center gap-2 mb-3">
-            <Avatar className="h-10 w-10 border">
-              <AvatarImage src={gig.posterAvatar} />
-              <AvatarFallback>{gig.posterName?.[0] ?? "U"}</AvatarFallback>
-            </Avatar>
+            <Avatar id={gig.poster.id} name={gig.poster.fullName} src={gig.poster.avatarUrl} size={40} className="border" />
             <div>
-              <Link to={`/profile/${gig.posterId}`} className="text-sm font-medium hover:underline">
-                {gig.posterName}
+              <Link to={`/profile/${gig.poster.id}`} className="text-sm font-medium hover:underline">
+                {gig.poster.fullName}
               </Link>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <BadgeCheck className="h-3 w-3 text-brand" />
-                <span>{gig.posterUniversity}</span>
+                <span>{gig.poster.universityName}</span>
               </div>
             </div>
           </div>

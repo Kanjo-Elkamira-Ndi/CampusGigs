@@ -24,7 +24,7 @@ export function ApplyModal({ gig, open, onOpenChange }: Props) {
     if (note.trim().length < 10) {
       return;
     }
-    apply.mutate({ coverLetter: note });
+    apply.mutate({ coverNote: note });
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
