@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -13,11 +14,13 @@ import type { Gig } from "@/types";
 import { formatBudget, getDeadlineLabel, timeAgo } from "@/lib/utils";
 import { CATEGORY_META } from "@/lib/constants";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
+import { ApplyModal } from "@/components/applications/ApplyModal";
 
 export function GigCard({ gig }: { gig: Gig }) {
   const meta = CATEGORY_META[gig.category];
   const deadline = getDeadlineLabel(gig.deadline);
   const d = new Date(gig.createdAt);
+  const [applyOpen, setApplyOpen] = useState(false);
 
   return (
     <motion.div
@@ -122,15 +125,21 @@ export function GigCard({ gig }: { gig: Gig }) {
             >
               <Bookmark size={14} />
             </button>
-            <span
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setApplyOpen(true);
+              }}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all hover:brightness-110"
               style={{ backgroundColor: "var(--brand)" }}
             >
               Quick Apply <ArrowRight size={12} />
-            </span>
+            </button>
           </div>
         </div>
       </Link>
+      <ApplyModal gig={gig} open={applyOpen} onOpenChange={setApplyOpen} />
     </motion.div>
   );
 }

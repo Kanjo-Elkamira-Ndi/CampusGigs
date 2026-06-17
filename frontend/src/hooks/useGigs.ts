@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { gigsApi, type ListGigsParams, type CreateGigInput, type UpdateGigInput } from "@/api";
 
@@ -7,6 +7,7 @@ export function useGigs(params?: ListGigsParams) {
     queryKey: ["gigs", params],
     queryFn: () => gigsApi.list(params),
     staleTime: 30_000,
+    placeholderData: keepPreviousData,
   });
 }
 
