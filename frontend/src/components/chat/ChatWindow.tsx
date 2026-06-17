@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Send, Smile, Paperclip } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { useSendMessage } from "@/hooks/useMessages";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ export function ChatWindow({ thread }: { thread: ChatThread }) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const meId = user?.id ?? "u3";
+  const send = useSendMessage(thread.id);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +44,7 @@ export function ChatWindow({ thread }: { thread: ChatThread }) {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!draft.trim()) return;
-    setDraft("");
+    send.mutate({ text: draft.trim() }, { onSuccess: () => setDraft("") });
   };
 
   return (
@@ -144,7 +146,7 @@ export function ChatWindow({ thread }: { thread: ChatThread }) {
             <Button
               type="submit"
               size="icon"
-              disabled={!draft.trim()}
+              disabled={!draft.trim() || send.isPending}
               className="shrink-0 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white active:scale-95 transition-all duration-150 disabled:opacity-40 disabled:active:scale-100"
               style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
             >

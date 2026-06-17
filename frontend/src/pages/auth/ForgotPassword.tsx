@@ -4,32 +4,25 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CheckInbox } from "@/components/shared/CheckInbox";
 import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
+import { useForgotPassword } from "@/hooks/useAuth";
 
 const schema = z.object({ email: z.string().email("Enter a valid email") });
 type FormInput = z.infer<typeof schema>;
 
 export function ForgotPasswordPage() {
   const [sentEmail, setSentEmail] = useState<string | null>(null);
-  const [sentSet] = useState(() => new Set<string>());
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormInput>({
+  const forgotPassword = useForgotPassword();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormInput>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormInput) => {
-    await new Promise((r) => setTimeout(r, 300));
-    if (sentSet.has(data.email)) {
-      toast.info("Already sent — check your spam folder.");
-      setSentEmail(data.email);
-      return;
-    }
-    sentSet.add(data.email);
-    setSentEmail(data.email);
+  const onSubmit = (data: FormInput) => {
+    forgotPassword.mutate(data, { onSuccess: () => setSentEmail(data.email) });
   };
 
   return (
@@ -74,13 +67,13 @@ export function ForgotPasswordPage() {
                     <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>
                   )}
                 </div>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white"
-                >
-                  Send reset link
-                </Button>
+                  <Button
+                    type="submit"
+                    disabled={forgotPassword.isPending}
+                    className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white"
+                  >
+                    {forgotPassword.isPending ? "Sending…" : "Send reset link"}
+                  </Button>
               </form>
               <div className="text-center text-sm mt-4">
                 <Link

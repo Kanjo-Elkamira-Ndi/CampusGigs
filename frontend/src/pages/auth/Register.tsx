@@ -1,50 +1,31 @@
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { Briefcase, UserPlus, GraduationCap } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validators";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { useAuthStore } from "@/store/authStore";
+import { useRegister } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
 
 export function RegisterPage() {
   const user = useAuthStore((s) => s.user);
-  const setAuth = useAuthStore((s) => s.setAuth);
-  const navigate = useNavigate();
   const [role, setRole] = useState<"WORKER" | "POSTER">("WORKER");
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<RegisterInput>({
+  const registerMut = useRegister();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: { role: "WORKER" },
   });
 
   if (user) return <Navigate to="/dashboard" replace />;
 
-  const onSubmit = async (data: RegisterInput) => {
-    await new Promise((r) => setTimeout(r, 300));
-    const uni = CAMEROON_UNIVERSITIES.find((u) => u.id === data.universityId)!;
-    setAuth(
-      {
-        id: "new-" + Date.now(),
-        email: data.email,
-        fullName: data.fullName,
-        role: data.role,
-        universityId: uni.id,
-        universityName: uni.name,
-        city: uni.city,
-        skills: [],
-        avgRating: 0, reviewCount: 0, hiredCount: 0,
-        createdAt: new Date().toISOString(),
-      },
-      "mock-token",
-    );
-    toast.success("Welcome to Campus Gigs! 🎉");
-    navigate(data.role === "POSTER" ? "/dashboard/poster" : "/dashboard");
+  const onSubmit = (data: RegisterInput) => {
+    registerMut.mutate(data);
   };
 
   return (
@@ -131,8 +112,8 @@ export function RegisterPage() {
               </div>
             </div>
 
-            <Button type="submit" disabled={isSubmitting} className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white">
-              Create account
+            <Button type="submit" disabled={registerMut.isPending} className="w-full bg-brand hover:bg-[color:var(--brand-dark)] text-white">
+              {registerMut.isPending ? "Creating account…" : "Create account"}
             </Button>
           </form>
 

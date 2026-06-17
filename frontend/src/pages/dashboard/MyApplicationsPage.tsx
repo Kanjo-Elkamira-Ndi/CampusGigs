@@ -7,7 +7,7 @@ import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { ApplicationRow } from "@/components/applications/ApplicationRow";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { mockApplications } from "@/lib/mockData";
+import { useMyApplications } from "@/hooks/useApplications";
 import { cn } from "@/lib/utils";
 import type { AppStatus } from "@/types";
 
@@ -27,7 +27,9 @@ const FADE_IN = {
 
 function MyApplicationsContent() {
   const [filter, setFilter] = useState<Filter>("ALL");
-  const apps = filter === "ALL" ? mockApplications : mockApplications.filter((a) => a.status === filter);
+  const { data: appsResult } = useMyApplications({ limit: 100 });
+  const allApps = appsResult?.data ?? [];
+  const apps = filter === "ALL" ? allApps : allApps.filter((a) => a.status === filter);
 
   return (
     <PageWrapper>
@@ -35,7 +37,7 @@ function MyApplicationsContent() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">My applications</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{mockApplications.length} total</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{allApps.length} total</p>
           </div>
         </div>
 

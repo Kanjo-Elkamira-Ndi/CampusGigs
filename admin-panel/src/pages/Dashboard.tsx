@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
@@ -34,10 +34,27 @@ function actionTone(action: string): "neutral" | "amber" | "red" {
 }
 
 export default function Dashboard() {
-  const stats = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: () => api.get<DashboardStats>("/dashboard").then((r) => r.data),
-  });
+  const [stats, setStats] = useState<DashboardStats | undefined>(undefined);
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState<unknown>(undefined);
+
+  const refetchStats = useCallback(async () => {
+    setIsStatsLoading(true);
+    setStatsError(undefined);
+    try {
+      const data = await api.get<DashboardStats>("/dashboard").then((r) => r.data);
+      setStats(data);
+    } catch (e) {
+      setStatsError(e);
+    } finally {
+      setIsStatsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refetchStats();
+  }, [refetchStats]);
+
   const logs = useAuditLogs({ limit: 5, page: 1 });
 
   return (
@@ -49,7 +66,7 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {stats.error ? (
+      {statsError ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 flex items-start gap-3">
           <AlertCircle className="text-red-500" />
           <div className="flex-1">
@@ -58,7 +75,7 @@ export default function Dashboard() {
               size="sm"
               variant="outline"
               className="mt-2"
-              onClick={() => stats.refetch()}
+              onClick={() => refetchStats()}
             >
               Retry
             </Button>
@@ -73,31 +90,31 @@ export default function Dashboard() {
         >
           <StatCard
             label="Total Users"
-            value={stats.data?.totalUsers ?? 0}
+            value={stats?.totalUsers ?? 0}
             icon={UsersIcon}
             color="indigo"
-            isLoading={stats.isLoading}
+            isLoading={isStatsLoading}
           />
           <StatCard
             label="Total Gigs"
-            value={stats.data?.totalGigs ?? 0}
+            value={stats?.totalGigs ?? 0}
             icon={Briefcase}
             color="green"
-            isLoading={stats.isLoading}
+            isLoading={isStatsLoading}
           />
           <StatCard
             label="Total Applications"
-            value={stats.data?.totalApplications ?? 0}
+            value={stats?.totalApplications ?? 0}
             icon={Send}
             color="amber"
-            isLoading={stats.isLoading}
+            isLoading={isStatsLoading}
           />
           <StatCard
             label="Active Universities"
-            value={stats.data?.activeUniversities ?? 0}
+            value={stats?.activeUniversities ?? 0}
             icon={Building2}
             color="rose"
-            isLoading={stats.isLoading}
+            isLoading={isStatsLoading}
           />
         </motion.div>
       )}
@@ -145,10 +162,10 @@ export default function Dashboard() {
           <h3 className="font-semibold text-neutral-900 mb-4">Platform health</h3>
           <div className="space-y-2 text-sm">
             {[
-              { label: "Banned users", value: stats.data?.bannedUsers ?? 0 },
-              { label: "Unverified users", value: stats.data?.unverifiedUsers ?? 0 },
-              { label: "Open gigs", value: stats.data?.openGigs ?? 0 },
-              { label: "Completed gigs", value: stats.data?.completedGigs ?? 0 },
+              { label: "Banned users", value: stats?.bannedUsers ?? 0 },
+              { label: "Unverified users", value: stats?.unverifiedUsers ?? 0 },
+              { label: "Open gigs", value: stats?.openGigs ?? 0 },
+              { label: "Completed gigs", value: stats?.completedGigs ?? 0 },
             ].map((row) => (
               <div
                 key={row.label}

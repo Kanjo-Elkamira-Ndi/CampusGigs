@@ -8,7 +8,8 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CategoryIconCircle } from "@/components/gigs/GigBadge";
 import { GigStatusBadge } from "@/components/gigs/GigStatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { mockPostedGigs } from "@/lib/mockData";
+import { useGigs } from "@/hooks/useGigs";
+import { useAuthStore } from "@/store/authStore";
 import { formatBudget } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { GigStatus } from "@/types";
@@ -28,8 +29,11 @@ const FADE_IN = {
 };
 
 function PosterGigsContent() {
+  const user = useAuthStore((s) => s.user)!;
   const [filter, setFilter] = useState<Filter>("ALL");
-  const gigs = filter === "ALL" ? mockPostedGigs : mockPostedGigs.filter((g) => g.status === filter);
+  const { data: gigsResult } = useGigs({ posterId: user.id, limit: 100 });
+  const allGigs = gigsResult?.data ?? [];
+  const gigs = filter === "ALL" ? allGigs : allGigs.filter((g) => g.status === filter);
 
   return (
     <PageWrapper>
@@ -37,7 +41,7 @@ function PosterGigsContent() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">My gigs</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{mockPostedGigs.length} total</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{allGigs.length} total</p>
           </div>
           <Link
             to="/gigs/new"
@@ -74,7 +78,7 @@ function PosterGigsContent() {
           <motion.div {...FADE_IN} className="rounded-xl border border-border bg-card overflow-hidden">
             {gigs.map((g) => (
               <div key={g.id} className="flex items-center gap-4 p-4 border-b border-border last:border-b-0 hover:bg-muted/40 transition-colors">
-                <CategoryIconCircle category={g.category} size={36} />
+                  <CategoryIconCircle category={g.category as any} size={36} />
                 <Link to={"/gigs/" + g.id} className="flex-1 min-w-0">
                   <div className="font-medium text-sm hover:text-primary transition-colors truncate">{g.title}</div>
                   <div className="text-xs text-muted-foreground mt-0.5">

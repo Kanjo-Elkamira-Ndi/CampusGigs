@@ -5,7 +5,8 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import { CategoryBento } from "@/components/landing/CategoryBento";
 import { TalentShowcase } from "@/components/landing/TalentShowcase";
 import { GigsShowcase } from "@/components/landing/GigsShowcase";
-import { mockGigs, mockUsers } from "@/lib/mockData";
+import { useGigs } from "@/hooks/useGigs";
+import { useFreelancers } from "@/hooks/useFreelancers";
 import { Avatar } from "@/components/shared/Avatar";
 import { RotatingWords } from "@/components/landing/RotatingWords";
 import { SearchWidget } from "@/components/landing/SearchWidget";
@@ -26,8 +27,10 @@ const HOW_POSTER = [
 ];
 
 export function Landing() {
-  const latest = mockGigs.filter((g) => g.status === "OPEN").slice(0, 5);
-  const browseTalent = mockUsers.filter((u) => u.role === "WORKER");
+  const { data: gigsResult } = useGigs({ status: "OPEN", limit: 5 });
+  const { data: talentResult } = useFreelancers({ limit: 12 });
+  const latest = gigsResult?.data ?? [];
+  const browseTalent = talentResult?.data ?? [];
 
   return (
     <PageWrapper>
@@ -199,12 +202,12 @@ export function Landing() {
         <h2 className="text-2xl sm:text-3xl font-bold mb-8" style={{ color: "var(--foreground)" }}>What students are saying</h2>
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            { u: mockUsers[0], q: "Earned XAF 60,000 last semester tutoring. Paid my hostel rent." },
-            { u: mockUsers[1], q: "Best way to get freelance design experience while still in school." },
-            { u: mockUsers[7], q: "Booked 5 graduation shoots through Campus Gigs in one month." },
-          ].map(({ u, q }) => (
+            { name: "Marie K.", uni: "University of Yaoundé I", quote: "Earned XAF 60,000 last semester tutoring. Paid my hostel rent." },
+            { name: "Paul D.", uni: "Catholic University of Cameroon", quote: "Best way to get freelance design experience while still in school." },
+            { name: "Sarah M.", uni: "University of Buea", quote: "Booked 5 graduation shoots through Campus Gigs in one month." },
+          ].map((t, i) => (
             <div
-              key={u.id}
+              key={i}
               className="rounded-xl p-6"
               style={{
                 border: "1px solid var(--card-border)",
@@ -214,12 +217,14 @@ export function Landing() {
               <div className="flex items-center gap-1 mb-3">
                 {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} className="fill-amber-400 text-amber-400" />)}
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>"{q}"</p>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>"{t.quote}"</p>
               <div className="mt-4 flex items-center gap-3">
-                <Avatar id={u.id} name={u.fullName} size={36} />
+                <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center font-semibold text-xs">
+                  {t.name.split(" ").map((s) => s[0]).join("")}
+                </div>
                 <div>
-                  <div className="font-medium text-sm" style={{ color: "var(--foreground)" }}>{u.fullName}</div>
-                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>{u.universityName}</div>
+                  <div className="font-medium text-sm" style={{ color: "var(--foreground)" }}>{t.name}</div>
+                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>{t.uni}</div>
                 </div>
               </div>
             </div>

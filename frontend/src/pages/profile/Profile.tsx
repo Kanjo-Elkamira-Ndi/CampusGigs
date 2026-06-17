@@ -2,7 +2,8 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { Star } from "lucide-react";
 import { format } from "date-fns";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { findUser, mockReviews, gigsByPoster } from "@/lib/mockData";
+import { useUserProfile, useUserReviews } from "@/hooks/useUsers";
+import { useGigs } from "@/hooks/useGigs";
 import { Avatar } from "@/components/shared/Avatar";
 import { UniversityBadge } from "@/components/shared/UniversityBadge";
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,16 @@ export function Profile() {
   const { id } = useParams<{ id: string }>();
   const me = useAuthStore((s) => s.user);
   const activeRole = useAuthStore((s) => s.activeRole);
-  const user = findUser(id ?? "");
+  const { data: userResult } = useUserProfile(id ?? "");
+  const { data: reviewsResult } = useUserReviews(id ?? "");
+  const { data: gigsResult } = useGigs(
+    userResult ? { posterId: userResult.id, limit: 6 } : {},
+  );
+  const user = userResult ?? null;
   if (!user) return <Navigate to="/" replace />;
   const isMe = me?.id === user.id;
-  const reviews = mockReviews.slice(0, 6);
-  const gigs = gigsByPoster(user.id);
+  const reviews = reviewsResult?.reviews ?? [];
+  const gigs = gigsResult?.data ?? [];
 
   const buckets = [5, 4, 3, 2, 1].map((s) => ({
     s, count: reviews.filter((r) => Math.round(r.rating) === s).length,

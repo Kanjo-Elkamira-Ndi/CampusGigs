@@ -6,24 +6,10 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import { TalentCard } from "@/components/talents/TalentCard";
 import { FilterSidebar, type TalentFilters, DEFAULT_FILTERS } from "@/components/talents/FilterSidebar";
 import { ResultsHeader } from "@/components/talents/ResultsHeader";
-import { mockUsers } from "@/lib/mockData";
-import type { User } from "@/types";
+import { useFreelancers } from "@/hooks/useFreelancers";
 
 const PER_PAGE = 12;
-/* ── map user to PublicUser shape ── */
-function toPublic(u: User) {
-  return {
-    id: u.id, fullName: u.fullName, avatarUrl: u.avatarUrl,
-    universityName: u.universityName, city: u.city,
-    avgRating: u.avgRating, reviewCount: u.reviewCount, hiredCount: u.hiredCount,
-    skills: u.skills,
-    hourlyRate: u.hourlyRate, responseTime: u.responseTime, availability: u.availability,
-    verified: u.verified, experienceLevel: u.experienceLevel, remoteAvailable: u.remoteAvailable,
-    bio: u.bio, universityId: u.universityId, createdAt: u.createdAt,
-  };
-}
 
-/* ── derive role-based category from skills ── */
 function inferCategory(skills: string[]): string {
   if (skills.some((s) => ["Python", "Algorithms", "React", "Laravel", "JavaScript", "Web Development", "Django", "PostgreSQL", "CSS", "Networking"].includes(s))) return "Tech help";
   if (skills.some((s) => ["Graphic design", "Graphic Design", "Canva", "Illustrator", "Illustration", "Poster Design", "Branding", "Photoshop"].includes(s))) return "Creative";
@@ -36,6 +22,17 @@ function inferCategory(skills: string[]): string {
   return "Other";
 }
 
+function getSortParam(sort: string): string {
+  switch (sort) {
+    case "rating": return "rating";
+    case "hired": return "hired";
+    case "newest": return "newest";
+    case "rate-asc": return "rate_asc";
+    case "rate-desc": return "rate_desc";
+    default: return "rating";
+  }
+}
+
 export function FreelancerDirectory() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
@@ -44,91 +41,30 @@ export function FreelancerDirectory() {
   const [page, setPage] = useState(1);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  const allWorkers = useMemo(() => mockUsers.filter((u) => u.role === "WORKER"), []);
+  /* reset page on filter/sort/search change */
+  useEffect(() => {
+    setPage(1);
+  }, [search, filters, sort]);
+
+  const queryParams = useMemo(() => ({
+    q: search || undefined,
+    universityIds: filters.universityIds.length > 0 ? filters.universityIds : undefined,
+    minRating: filters.minRating > 0 ? filters.minRating : undefined,
+    sort: getSortParam(sort),
+    page,
+    limit: PER_PAGE,
+  }), [search, filters, sort, page]);
+
+  const { data: result } = useFreelancers(queryParams);
+  const workers = result?.data ?? [];
+  const totalCount = result?.meta?.total ?? workers.length;
+  const totalPages = result?.meta ? Math.ceil(result.meta.total / PER_PAGE) : 1;
 
   const allCities = useMemo(
-    () => [...new Set(allWorkers.map((u) => u.city))],
-    [allWorkers],
+    () => [...new Set(workers.map((u) => u.city).filter(Boolean))],
+    [workers],
   );
 
-  const filtered = useMemo(() => {
-    let out = allWorkers.map(toPublic);
-
-    /* search */
-    if (search) {
-      const q = search.toLowerCase();
-      out = out.filter(
-        (u) =>
-          u.fullName.toLowerCase().includes(q) ||
-          u.skills.some((s) => s.toLowerCase().includes(q)) ||
-          u.universityName.toLowerCase().includes(q) ||
-          u.city.toLowerCase().includes(q) ||
-          u.bio?.toLowerCase().includes(q),
-      );
-    }
-
-    /* category */
-    if (filters.categories.length > 0) {
-      out = out.filter((u) => filters.categories.includes(inferCategory(u.skills)));
-    }
-
-    /* city */
-    if (filters.cities.length > 0) {
-      out = out.filter((u) => filters.cities.includes(u.city));
-    }
-
-    /* university */
-    if (filters.universityIds.length > 0) {
-      out = out.filter((u) => filters.universityIds.includes(u.universityId));
-    }
-
-    /* rating */
-    if (filters.minRating > 0) {
-      out = out.filter((u) => u.avgRating >= filters.minRating);
-    }
-
-    /* availability */
-    if (filters.availability.length > 0) {
-      out = out.filter((u) => u.availability && filters.availability.includes(u.availability));
-    }
-
-    /* hourly rate */
-    out = out.filter((u) => {
-      const rate = u.hourlyRate ?? 0;
-      return rate >= filters.minRate && rate <= filters.maxRate;
-    });
-
-    /* remote */
-    if (filters.remoteOnly) {
-      out = out.filter((u) => u.remoteAvailable);
-    }
-
-    /* verified */
-    if (filters.verifiedOnly) {
-      out = out.filter((u) => u.verified);
-    }
-
-    /* experience */
-    if (filters.experienceLevels.length > 0) {
-      out = out.filter((u) => u.experienceLevel && filters.experienceLevels.includes(u.experienceLevel));
-    }
-
-    /* sort */
-    if (sort === "rating") out.sort((a, b) => b.avgRating - a.avgRating);
-    else if (sort === "hired") out.sort((a, b) => b.hiredCount - a.hiredCount);
-    else if (sort === "newest") out.sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
-    else if (sort === "rate-asc") out.sort((a, b) => (a.hourlyRate ?? 0) - (b.hourlyRate ?? 0));
-    else if (sort === "rate-desc") out.sort((a, b) => (b.hourlyRate ?? 0) - (a.hourlyRate ?? 0));
-    else {
-      /* relevant: rating × sqrt(hired) heuristic */
-      out.sort((a, b) => b.avgRating * Math.sqrt(b.hiredCount) - a.avgRating * Math.sqrt(a.hiredCount));
-    }
-
-    return out;
-  }, [allWorkers, search, filters, sort]);
-
-  const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const activeFilterCount =
     filters.categories.length +
     filters.cities.length +
@@ -139,11 +75,6 @@ export function FreelancerDirectory() {
     (filters.remoteOnly ? 1 : 0) +
     (filters.verifiedOnly ? 1 : 0) +
     filters.experienceLevels.length;
-
-  /* reset page on filter/sort/search change */
-  useEffect(() => {
-    setPage(1);
-  }, [search, filters, sort]);
 
   return (
     <PageWrapper>
@@ -164,7 +95,7 @@ export function FreelancerDirectory() {
           </p>
           <p className="mt-3 text-sm font-semibold" style={{ color: "var(--brand)" }}>
             <Users size={15} className="inline mr-1" />
-            {allWorkers.length.toLocaleString()}+ Verified Students
+            {totalCount.toLocaleString()}+ Verified Students
           </p>
         </motion.div>
 
@@ -244,7 +175,7 @@ export function FreelancerDirectory() {
           {/* ─── results grid ─── */}
           <div className="flex-1 min-w-0">
             <ResultsHeader
-              totalCount={filtered.length}
+              totalCount={totalCount}
               page={page}
               perPage={PER_PAGE}
               sort={sort}
@@ -252,7 +183,7 @@ export function FreelancerDirectory() {
             />
 
             <AnimatePresence mode="wait">
-              {paged.length > 0 ? (
+              {workers.length > 0 ? (
                 <motion.div
                   key="results"
                   initial={{ opacity: 0 }}
@@ -260,7 +191,7 @@ export function FreelancerDirectory() {
                   exit={{ opacity: 0 }}
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6"
                 >
-                  {paged.map((user, i) => (
+                  {workers.map((user, i) => (
                     <TalentCard key={user.id} user={user} index={i} />
                   ))}
                 </motion.div>
@@ -401,7 +332,7 @@ export function FreelancerDirectory() {
                   className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
                   style={{ backgroundColor: "var(--brand)" }}
                 >
-                  Show Results ({filtered.length})
+                  Show Results ({totalCount})
                 </button>
               </div>
             </motion.div>

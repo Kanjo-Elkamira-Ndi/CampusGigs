@@ -1,23 +1,77 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { gigsApi, type GigsListParams } from "@/api/gigs.api";
+import { gigsApi, type GigsListParams, type GigsListResponse } from "@/api/gigs.api";
 
 export function useGigs(params: GigsListParams) {
-  return useQuery({ queryKey: ["gigs", params], queryFn: () => gigsApi.list(params) });
+  const [data, setData] = useState<GigsListResponse | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>(undefined);
+  const paramsKey = useMemo(() => JSON.stringify(params), [params]);
+
+  const fetch = useCallback(async () => {
+    setIsLoading(true);
+    setError(undefined);
+    try {
+      const result = await gigsApi.list(JSON.parse(paramsKey));
+      setData(result);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [paramsKey]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, isLoading, error, refetch: fetch };
 }
 
 export function useCategories() {
-  return useQuery({ queryKey: ["categories"], queryFn: () => gigsApi.categories() });
+  const [data, setData] = useState<{ id: string; name: string; slug: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>(undefined);
+
+  const fetch = useCallback(async () => {
+    setIsLoading(true);
+    setError(undefined);
+    try {
+      const result = await gigsApi.categories();
+      setData(result);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, isLoading, error, refetch: fetch };
 }
 
 export function useDeleteGig() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => gigsApi.remove(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["gigs"] });
+  const [isPending, setIsPending] = useState(false);
+
+  const mutate = async (
+    id: string,
+    options?: { onSuccess?: () => void; onError?: (e: unknown) => void }
+  ) => {
+    setIsPending(true);
+    try {
+      await gigsApi.remove(id as string);
       toast.success("Gig deleted");
-    },
-    onError: (e: any) => toast.error(e?.response?.data?.message ?? "Delete failed"),
-  });
+      options?.onSuccess?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message ?? "Delete failed");
+      options?.onError?.(e);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  return { mutate, isPending };
 }

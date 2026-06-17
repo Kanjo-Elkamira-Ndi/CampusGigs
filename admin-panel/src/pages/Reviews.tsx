@@ -176,7 +176,7 @@ export default function Reviews() {
         onConfirm={() => {
           if (!deleteTarget) return;
           deleteReview.mutate(deleteTarget.id, {
-            onSuccess: () => setDeleteTarget(null),
+            onSuccess: () => { setDeleteTarget(null); refetch(); },
           });
         }}
       />

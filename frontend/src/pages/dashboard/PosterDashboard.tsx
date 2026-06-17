@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Star, TrendingUp, Briefcase, Calendar } from "lucide-react";
 import { BarChart, Bar, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -10,16 +10,9 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CategoryIconCircle } from "@/components/gigs/GigBadge";
 import { GigStatusBadge } from "@/components/gigs/GigStatusBadge";
 import { StarRating } from "@/components/reviews/StarRating";
-import { toast } from "sonner";
 import { cn, formatBudget } from "@/lib/utils";
-import {
-  mockPostedGigs,
-  mockApplicants,
-  mockMessages,
-  mockReceivedReviews,
-  mockPosterStats,
-  mockPosterWeekPosts,
-} from "@/lib/mockData";
+import { usePosterDashboard } from "@/hooks/useDashboard";
+import { useAcceptApplication, useRejectApplication } from "@/hooks/useApplications";
 
 const CONTAINER = {
   hidden: { opacity: 0 },
@@ -46,20 +39,19 @@ function CountUp({ value }: { value: number }) {
 
 function PosterDashboardContent() {
   const user = useAuthStore((s) => s.user)!;
-  const stats = mockPosterStats;
-
-  const [applicantState, setApplicantState] = useState<Record<string, "pending" | "accepted" | "passed">>(
-    Object.fromEntries(mockApplicants.map((a) => [a.id, "pending" as const])),
-  );
+  const { data: dashboard } = usePosterDashboard();
+  const stats = dashboard?.stats ?? null;
+  const acceptApp = useAcceptApplication();
+  const rejectApp = useRejectApplication();
 
   const statCards: {
     label: string; value: string | number; delta: string; filled?: boolean; rating?: boolean;
-  }[] = [
+  }[] = stats ? [
     { label: "Active gigs", value: stats.activeGigs, delta: `${stats.openGigs} open, ${stats.inProgressGigs} in progress`, filled: true },
     { label: "New applicants", value: stats.newApplicants, delta: "Needs your review" },
     { label: "Gigs completed", value: stats.gigsCompleted, delta: "All time" },
     { label: "Avg worker rating", value: stats.avgWorkerRating.toFixed(1), delta: `Across ${stats.gigsWithReviews} gigs`, rating: true },
-  ];
+  ] : [];
 
   return (
     <PageWrapper>
@@ -117,7 +109,7 @@ function PosterDashboardContent() {
             </div>
             <div className="h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockPosterWeekPosts} margin={{ top: 0, right: 0, left: -12, bottom: 0 }}>
+                <BarChart data={dashboard?.weeklyPosts ?? []} margin={{ top: 0, right: 0, left: -12, bottom: 0 }}>
                   <Tooltip
                     cursor={{ fill: "transparent" }}
                     contentStyle={{
@@ -130,8 +122,8 @@ function PosterDashboardContent() {
                     labelStyle={{ fontWeight: 600 }}
                   />
                   <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={28}>
-                    {mockPosterWeekPosts.map((entry, idx) => (
-                      <Cell key={idx} fill={idx === mockPosterWeekPosts.length - 1 ? "#6366f1" : "#e0e7ff"} />
+                    {(dashboard?.weeklyPosts ?? []).map((entry, idx) => (
+                      <Cell key={idx} fill={idx === (dashboard?.weeklyPosts ?? []).length - 1 ? "#6366f1" : "#e0e7ff"} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -146,11 +138,11 @@ function PosterDashboardContent() {
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Active gigs</h2>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">{stats.activeGigs} currently open</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{stats?.activeGigs ?? 0} currently open</p>
               </div>
             </div>
             <div className="space-y-2">
-              {mockPostedGigs.slice(0, 3).map((g) => (
+              {(dashboard?.postedGigs ?? []).slice(0, 3).map((g) => (
                 <Link
                   key={g.id}
                   to="/dashboard/poster/gigs"
@@ -180,19 +172,20 @@ function PosterDashboardContent() {
           <motion.div {...FADE_UP} className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Applicants to review</h2>
-              <span className="text-xs font-medium text-red-500">{stats.applicantsToReview} pending</span>
+              <span className="text-xs font-medium text-red-500">{stats?.applicantsToReview ?? 0} pending</span>
             </div>
             <div className="px-2 pb-2 space-y-0.5">
-              {mockApplicants.slice(0, 4).map((a) => {
-                const state = applicantState[a.id];
-                if (state === "accepted" || state === "passed") return null;
+              {(dashboard?.applicantsToReview ?? []).slice(0, 4).map((a) => {
+                const initials = a.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+                const colors = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6"];
+                const avatarColor = colors[a.name.length % colors.length];
                 return (
                   <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs shrink-0"
-                      style={{ background: a.avatarColor }}
+                      className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs shrink-0 text-white"
+                      style={{ background: avatarColor }}
                     >
-                      {a.initials}
+                      {initials}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{a.name}</div>
@@ -205,14 +198,16 @@ function PosterDashboardContent() {
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button
-                        onClick={() => { setApplicantState((p) => ({ ...p, [a.id]: "accepted" })); toast.success(`${a.name} accepted!`); }}
-                        className="px-2.5 py-1 rounded-md bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors"
+                        onClick={() => acceptApp.mutate(a.id)}
+                        disabled={acceptApp.isPending}
+                        className="px-2.5 py-1 rounded-md bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
                       >
                         Accept
                       </button>
                       <button
-                        onClick={() => { setApplicantState((p) => ({ ...p, [a.id]: "passed" })); toast(`${a.name} passed`); }}
-                        className="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        onClick={() => rejectApp.mutate(a.id)}
+                        disabled={rejectApp.isPending}
+                        className="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                       >
                         Pass
                       </button>
@@ -220,7 +215,7 @@ function PosterDashboardContent() {
                   </div>
                 );
               })}
-              {mockApplicants.slice(0, 4).every((a) => applicantState[a.id] !== "pending") && (
+              {(dashboard?.applicantsToReview ?? []).slice(0, 4).length === 0 && (
                 <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">All applicants reviewed</div>
               )}
             </div>
@@ -234,10 +229,12 @@ function PosterDashboardContent() {
               </Link>
             </div>
             <div className="px-2 pb-2 space-y-0.5">
-              {mockReceivedReviews.slice(0, 3).map((r) => (
+              {(dashboard?.receivedReviews ?? []).slice(0, 3).map((r) => {
+                const initials = r.reviewerName.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+                return (
                 <div key={r.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs shrink-0 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                    {r.initials}
+                    {initials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -249,7 +246,8 @@ function PosterDashboardContent() {
                     </p>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </motion.div>
         </div>
@@ -263,7 +261,7 @@ function PosterDashboardContent() {
               </Link>
             </div>
             <div className="px-2 pb-2">
-              {mockMessages.slice(0, 3).map((m) => (
+              {(dashboard?.recentMessages ?? []).slice(0, 3).map((m) => (
                 <Link
                   key={m.id}
                   to="/messages"
@@ -298,7 +296,7 @@ function PosterDashboardContent() {
               </Link>
             </div>
             <div className="px-2 pb-2">
-              {mockPostedGigs.slice(0, 2).map((g) => (
+              {(dashboard?.postedGigs ?? []).slice(0, 2).map((g) => (
                 <div key={g.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                   <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 flex items-center justify-center shrink-0">
                     <Calendar size={14} className="text-amber-600 dark:text-amber-400" />

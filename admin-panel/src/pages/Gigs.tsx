@@ -234,7 +234,7 @@ export default function Gigs() {
         onConfirm={() => {
           if (!deleteTarget) return;
           deleteGig.mutate(deleteTarget.id, {
-            onSuccess: () => setDeleteTarget(null),
+            onSuccess: () => { setDeleteTarget(null); refetch(); },
           });
         }}
       />

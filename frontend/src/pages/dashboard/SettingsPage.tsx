@@ -30,6 +30,9 @@ import { useAuthStore } from "@/store/authStore";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { cn, getAvatarColor, getInitials } from "@/lib/utils";
+import { useUpdateProfile } from "@/hooks/useUsers";
+import { useChangePassword, useDeleteAccount, useSignOutAll, useLogout } from "@/hooks/useAuth";
+import { authApi } from "@/api/auth";
 import {
   Camera,
   X,
@@ -87,6 +90,11 @@ function SettingsContent() {
   const activeRole = useAuthStore((s) => s.activeRole);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const navigate = useNavigate();
+  const updateProfile = useUpdateProfile();
+  const changePassword = useChangePassword();
+  const deleteAccount = useDeleteAccount();
+  const signOutAll = useSignOutAll();
+  const signOut = useLogout();
 
   const isWorker = user.role === "WORKER" || activeRole === "WORKER";
 
@@ -154,7 +162,12 @@ function SettingsContent() {
   const removeSkill = (s: string) => setSkills(skills.filter((x) => x !== s));
 
   const handleSaveProfile = () => {
-    toast.success("Profile saved successfully");
+    updateProfile.mutate({
+      fullName,
+      bio: bio || undefined,
+      universityId,
+      skills,
+    });
   };
 
   const handleUpdatePassword = () => {
@@ -163,31 +176,41 @@ function SettingsContent() {
       toast.error("Passwords do not match");
       return;
     }
-    toast.success("Password updated — use your new password next time");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+    changePassword.mutate(
+      { currentPassword, newPassword },
+      {
+        onSuccess: () => {
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        },
+      },
+    );
   };
 
   const handleResendVerification = () => {
-    toast.success("Verification email sent to " + user.email);
+    authApi.resendVerification().then(() => {
+      toast.success("Verification email sent to " + user.email);
+    });
   };
 
   const handleSignOutAll = () => {
-    toast.success("Signed out of all other devices");
+    signOutAll.mutate();
   };
 
   const handleSignOut = () => {
-    clearAuth();
-    navigate("/");
-    toast.success("Signed out successfully");
+    signOut.mutate(undefined, {
+      onSuccess: () => navigate("/"),
+    });
   };
 
   const handleDeleteAccount = () => {
-    clearAuth();
-    navigate("/");
-    setDeleteOpen(false);
-    toast.success("Account deleted permanently");
+    deleteAccount.mutate(undefined, {
+      onSuccess: () => {
+        setDeleteOpen(false);
+        navigate("/");
+      },
+    });
   };
 
   const pwStrength = passwordStrength(newPassword);

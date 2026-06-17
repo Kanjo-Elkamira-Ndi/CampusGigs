@@ -267,7 +267,7 @@ export default function Users() {
         />
       )}
 
-      <EditUserSheet user={editing} onClose={() => setEditing(null)} />
+      <EditUserSheet user={editing} onClose={() => { setEditing(null); refetch(); }} />
 
       <ConfirmDialog
         open={!!banTarget}
@@ -284,7 +284,7 @@ export default function Users() {
           if (!banTarget) return;
           updateUser.mutate(
             { id: banTarget.id, payload: { isBanned: !banTarget.isBanned } },
-            { onSuccess: () => setBanTarget(null) }
+            { onSuccess: () => { setBanTarget(null); refetch(); } }
           );
         }}
       />
@@ -299,7 +299,7 @@ export default function Users() {
         onConfirm={() => {
           if (!deleteTarget) return;
           deleteUser.mutate(deleteTarget.id, {
-            onSuccess: () => setDeleteTarget(null),
+            onSuccess: () => { setDeleteTarget(null); refetch(); },
           });
         }}
       />

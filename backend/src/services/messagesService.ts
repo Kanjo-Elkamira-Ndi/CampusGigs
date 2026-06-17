@@ -38,19 +38,23 @@ export const listThreads = async (userId: string) => {
     [userId]
   )
 
-  return rows.filter((r: any) => r.last_message_body !== null).map((row: any) => ({
+  return rows.map((row: any) => ({
     id: row.application_id,
     otherUser: {
       id: row.other_user_id,
-      name: row.other_user_name,
+      fullName: row.other_user_name,
       avatarUrl: row.other_user_avatar,
     },
     gigTitle: row.gig_title,
-    lastMessage: {
-      text: row.last_message_body,
-      sentAt: row.last_message_sent_at,
-      fromUserId: row.last_message_sender_id,
-    },
+    messages: row.last_message_body
+      ? [{
+          id: '',
+          fromUserId: row.last_message_sender_id,
+          text: row.last_message_body,
+          sentAt: row.last_message_sent_at,
+          attachments: [],
+        }]
+      : [],
     unreadCount: Number(row.unread_count),
   }))
 }
@@ -94,7 +98,7 @@ export const getThread = async (applicationId: string, userId: string) => {
     id: app.id,
     otherUser: {
       id: otherUserId,
-      name: otherUser?.full_name ?? otherUser?.name ?? '',
+      fullName: otherUser?.full_name ?? otherUser?.name ?? '',
       avatarUrl: otherUser?.avatar_url ?? null,
     },
     gigTitle: gig.title,

@@ -1,13 +1,12 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { StarRating } from "@/components/reviews/StarRating";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { mockApplicants } from "@/lib/mockData";
+import { usePosterDashboard } from "@/hooks/useDashboard";
+import { useAcceptApplication, useRejectApplication } from "@/hooks/useApplications";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 const FADE_IN = {
   initial: { opacity: 0, y: 12 },
@@ -15,12 +14,11 @@ const FADE_IN = {
 };
 
 function ApplicantsPageContent() {
-  const [applicantState, setApplicantState] = useState<Record<string, "pending" | "accepted" | "passed">>(
-    Object.fromEntries(mockApplicants.map((a) => [a.id, "pending" as const])),
-  );
-
-  const pendingCount = Object.values(applicantState).filter((s) => s === "pending").length;
-  const applicants = mockApplicants;
+  const { data: dashboard } = usePosterDashboard();
+  const acceptApp = useAcceptApplication();
+  const rejectApp = useRejectApplication();
+  const applicants = dashboard?.applicantsToReview ?? [];
+  const pendingCount = applicants.length;
 
   return (
     <PageWrapper>
@@ -37,29 +35,23 @@ function ApplicantsPageContent() {
         ) : (
           <motion.div {...FADE_IN} className="rounded-xl border border-border bg-card overflow-hidden">
             {applicants.map((a) => {
-              const state = applicantState[a.id];
+              const initials = a.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+              const colors = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6"];
+              const avatarColor = colors[a.name.length % colors.length];
               return (
                 <div
                   key={a.id}
-                  className={cn(
-                    "flex items-center gap-4 p-4 border-b border-border last:border-b-0 transition-all",
-                    state === "accepted" && "bg-green-50/50 dark:bg-green-950/20",
-                    state === "passed" && "opacity-50",
-                    state === "pending" && "hover:bg-muted/40",
-                  )}
+                  className="flex items-center gap-4 p-4 border-b border-border last:border-b-0 hover:bg-muted/40 transition-colors"
                 >
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
-                    style={{ background: a.avatarColor }}
+                    className="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm shrink-0 text-white"
+                    style={{ background: avatarColor }}
                   >
-                    {a.initials}
+                    {initials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-sm">{a.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {state === "accepted" ? "Accepted" : state === "passed" ? "Passed" : ""}
-                      </span>
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1 flex-wrap">
                       <span>Applied to: {a.gigTitle}</span>
@@ -68,22 +60,22 @@ function ApplicantsPageContent() {
                       <span>({a.reviewCount})</span>
                     </div>
                   </div>
-                  {state === "pending" && (
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        onClick={() => { setApplicantState((p) => ({ ...p, [a.id]: "accepted" })); toast.success(`${a.name} accepted!`); }}
-                        className="px-2.5 py-1 rounded-md bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() => { setApplicantState((p) => ({ ...p, [a.id]: "passed" })); toast(`${a.name} passed`); }}
-                        className="px-2.5 py-1 rounded-md bg-muted text-muted-foreground text-xs font-medium hover:bg-muted/70 transition-colors"
-                      >
-                        Pass
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={() => acceptApp.mutate(a.id)}
+                      disabled={acceptApp.isPending}
+                      className="px-2.5 py-1 rounded-md bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => rejectApp.mutate(a.id)}
+                      disabled={rejectApp.isPending}
+                      className="px-2.5 py-1 rounded-md bg-muted text-muted-foreground text-xs font-medium hover:bg-muted/70 transition-colors disabled:opacity-50"
+                    >
+                      Pass
+                    </button>
+                  </div>
                 </div>
               );
             })}

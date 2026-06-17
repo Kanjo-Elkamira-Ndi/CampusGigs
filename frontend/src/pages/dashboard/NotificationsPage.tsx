@@ -6,10 +6,10 @@ import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { useAuthStore } from "@/store/authStore";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { mockNotifications, type NotificationItem } from "@/lib/mockData";
+import { useNotifications, useMarkRead, useMarkAllRead } from "@/hooks/useNotifications";
 import { cn } from "@/lib/utils";
 
-const TYPE_ICON = {
+const TYPE_ICON: Record<string, typeof UserPlus> = {
   application: UserPlus,
   message: MessageSquare,
   review: Star,
@@ -23,15 +23,14 @@ const FADE_IN = {
 
 function NotificationsContent() {
   const activeRole = useAuthStore((s) => s.activeRole);
-  const [notifications, setNotifications] = useState<NotificationItem[]>(mockNotifications);
+  const { data: notificationsResult } = useNotifications();
+  const markRead = useMarkRead();
+  const markAll = useMarkAllRead();
   const [filter, setFilter] = useState<"ALL" | "UNREAD">("ALL");
 
+  const notifications = notificationsResult?.data ?? [];
   const filtered = filter === "ALL" ? notifications : notifications.filter((n) => !n.read);
   const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-
-  const toggleRead = (id: string) => setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n)));
 
   return (
     <PageWrapper>
@@ -45,7 +44,7 @@ function NotificationsContent() {
           </div>
           {unreadCount > 0 && (
             <button
-              onClick={markAllRead}
+              onClick={() => markAll.mutate()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <CheckCheck size={16} /> Mark all read
@@ -83,7 +82,7 @@ function NotificationsContent() {
               return (
                 <button
                   key={n.id}
-                  onClick={() => toggleRead(n.id)}
+                  onClick={() => { if (!n.read) markRead.mutate(n.id); }}
                   className={cn(
                     "w-full text-left flex items-start gap-4 p-4 border-b border-border last:border-b-0 transition-colors hover:bg-muted/40",
                     !n.read && "bg-primary/5",
