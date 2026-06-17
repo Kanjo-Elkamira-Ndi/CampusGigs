@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useCreateApplication } from "@/hooks/useApplications";
 import type { Gig } from "@/types";
 
@@ -13,18 +14,24 @@ interface Props {
 
 export function ApplyModal({ gig, open, onOpenChange }: Props) {
   const [note, setNote] = useState("");
-  const apply = useCreateApplication(gig?.id ?? "", {
-    onSuccess: () => {
-      onOpenChange(false);
-      setNote("");
-    },
-  });
+  const apply = useCreateApplication(gig?.id ?? "");
   if (!gig) return null;
   const submit = () => {
     if (note.trim().length < 10) {
       return;
     }
-    apply.mutate({ coverNote: note });
+    apply.mutate(
+      { coverNote: note },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+          setNote("");
+        },
+        onError: (err: Error) => {
+          toast.error(err.message);
+        },
+      },
+    );
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -27,6 +27,10 @@ export const CATEGORY_META = {
   Other: { bg: "bg-gray-50 dark:bg-gray-800", text: "text-gray-600 dark:text-gray-400" },
 } as const;
 
+export function getCategoryMeta(category: string): { bg: string; text: string } {
+  return CATEGORY_META[category as keyof typeof CATEGORY_META] ?? CATEGORY_META.Other;
+}
+
 export const ROUTES = {
   home: "/",
   gigs: "/gigs",

@@ -86,7 +86,14 @@ export const dashboardApi = {
   worker: () =>
     api
       .get<{ success: boolean; data: WorkerDashboard }>("/dashboard/worker")
-      .then(extractData<WorkerDashboard>),
+      .then(extractData<WorkerDashboard>)
+      .then((data) => ({
+        ...data,
+        recentApplications: data.recentApplications.map((a) => ({
+          ...a,
+          category: BACKEND_NAME_TO_SHORT[a.category] ?? a.category,
+        })),
+      })),
 
   poster: () =>
     api

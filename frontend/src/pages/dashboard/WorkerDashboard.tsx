@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CategoryIconCircle } from "@/components/gigs/GigBadge";
 import { GigStatusBadge } from "@/components/gigs/GigStatusBadge";
+import type { GigCategory } from "@/types";
 import { cn, formatBudget } from "@/lib/utils";
 import { useWorkerDashboard } from "@/hooks/useDashboard";
 
@@ -196,7 +197,7 @@ function WorkerDashboardContent() {
             <div className="px-2 pb-2">
               {apps.slice(0, 4).map((a) => (
                 <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                  <CategoryIconCircle category={a.category as any} size={28} />
+                  <CategoryIconCircle category={a.category as GigCategory} size={28} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{a.gigTitle}</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
