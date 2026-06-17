@@ -182,7 +182,7 @@ export function FreelancerDirectory() {
               onSortChange={setSort}
             />
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout">
               {workers.length > 0 ? (
                 <motion.div
                   key="results"
