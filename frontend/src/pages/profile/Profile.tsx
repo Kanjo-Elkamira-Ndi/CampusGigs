@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { format } from "date-fns";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useUserProfile, useUserReviews } from "@/hooks/useUsers";
@@ -18,13 +18,22 @@ export function Profile() {
   const { id } = useParams<{ id: string }>();
   const me = useAuthStore((s) => s.user);
   const activeRole = useAuthStore((s) => s.activeRole);
-  const { data: userResult } = useUserProfile(id ?? "");
+  const { data: userResult, isLoading, isError } = useUserProfile(id ?? "");
   const { data: reviewsResult } = useUserReviews(id ?? "");
   const { data: gigsResult } = useGigs(
     userResult ? { posterId: userResult.id, limit: 6 } : {},
   );
   const user = userResult ?? null;
-  if (!user) return <Navigate to="/" replace />;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError || !user) return <Navigate to="/" replace />;
   const isMe = me?.id === user.id;
   const reviews = reviewsResult?.reviews ?? [];
   const gigs = gigsResult?.data ?? [];
