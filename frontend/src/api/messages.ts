@@ -1,5 +1,12 @@
 import { api, extractData } from "./axios";
-import type { ChatThread, ChatMessage, MessageAttachment } from "@/types";
+import type { ChatThread, ChatMessage, MessageAttachment, MessageStatus, ReplyToInfo } from "@/types";
+
+interface BackendReplyToInfo {
+  id: string;
+  fromUserId: string;
+  text: string;
+  isVoice?: boolean;
+}
 
 interface BackendMessageAttachment {
   type: "image" | "file" | "voice";
@@ -18,6 +25,9 @@ interface BackendThreadMessage {
   sentAt: string;
   attachments: BackendMessageAttachment[];
   isVoice?: boolean;
+  status?: MessageStatus;
+  replyToId?: string;
+  replyTo?: BackendReplyToInfo;
 }
 
 interface BackendOtherUser {
@@ -52,16 +62,31 @@ function mapBackendThread(t: BackendThread): ChatThread {
       hiredCount: 0,
       skills: [],
     } as ChatThread["otherUser"],
-    messages: t.messages.map((m) => ({
-      id: m.id,
-      fromUserId: m.fromUserId,
-      text: m.text,
-      sentAt: m.sentAt,
-      attachments: m.attachments as MessageAttachment[],
-      isVoice: m.isVoice ?? false,
-    })),
+    messages: t.messages.map(mapMessage),
     unreadCount: t.unreadCount ?? 0,
   };
+}
+
+function mapMessage(m: BackendThreadMessage): ChatMessage {
+  const msg: ChatMessage = {
+    id: m.id,
+    fromUserId: m.fromUserId,
+    text: m.text,
+    sentAt: m.sentAt,
+    attachments: m.attachments as MessageAttachment[],
+    isVoice: m.isVoice ?? false,
+    status: m.status ?? "sent",
+    replyToId: m.replyToId,
+  };
+  if (m.replyTo) {
+    msg.replyTo = {
+      id: m.replyTo.id,
+      fromUserId: m.replyTo.fromUserId,
+      text: m.replyTo.text,
+      isVoice: m.replyTo.isVoice,
+    };
+  }
+  return msg;
 }
 
 export const messagesApi = {
@@ -77,7 +102,15 @@ export const messagesApi = {
       .then(extractData<BackendThread>)
       .then(mapBackendThread),
 
-  sendMessage: (threadId: string, payload: { text: string; attachments?: MessageAttachment[]; isVoice?: boolean }) =>
+  sendMessage: (
+    threadId: string,
+    payload: {
+      text: string;
+      attachments?: MessageAttachment[];
+      isVoice?: boolean;
+      replyToId?: string;
+    },
+  ) =>
     api
       .post<{ success: boolean; data: ChatMessage }>(`/messages/${threadId}`, payload)
       .then(extractData<ChatMessage>),

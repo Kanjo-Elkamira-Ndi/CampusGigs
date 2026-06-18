@@ -1,7 +1,7 @@
-import type { MessageAttachment } from "@/types";
+import type { MessageAttachment, MessageStatus, ReplyToInfo } from "@/types";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { FileText, Download, Play, Mic } from "lucide-react";
+import { FileText, Download, Play, Mic, Check } from "lucide-react";
 import { useState, useRef } from "react";
 
 interface Props {
@@ -11,12 +11,39 @@ interface Props {
   isConsecutive?: boolean;
   attachments?: MessageAttachment[];
   isVoice?: boolean;
+  status?: MessageStatus;
+  replyTo?: ReplyToInfo;
 }
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function StatusTicks({ status, isMe }: { status?: MessageStatus; isMe: boolean }) {
+  if (!isMe || !status) return null;
+
+  if (status === "sent") {
+    return <Check size={12} className="text-muted-foreground/50" />;
+  }
+  if (status === "delivered") {
+    return (
+      <span className="flex items-center">
+        <Check size={12} className="text-muted-foreground/60" />
+        <Check size={12} className="-ml-[5px] text-muted-foreground/60" />
+      </span>
+    );
+  }
+  if (status === "read") {
+    return (
+      <span className="flex items-center">
+        <Check size={12} className="text-blue-500" />
+        <Check size={12} className="-ml-[5px] text-blue-500" />
+      </span>
+    );
+  }
+  return null;
 }
 
 function ImageAttachment({ att }: { att: MessageAttachment }) {
@@ -108,7 +135,24 @@ function VoiceAttachment({ att, isMe }: { att: MessageAttachment; isMe: boolean 
   );
 }
 
-export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments, isVoice }: Props) {
+function ReplyPreview({ replyTo, isMe }: { replyTo: ReplyToInfo; isMe: boolean }) {
+  return (
+    <div
+      className={cn(
+        "mb-1.5 pl-2.5 border-l-2 rounded-sm text-xs",
+        isMe
+          ? "border-indigo-300/60 text-indigo-200"
+          : "border-gray-400 dark:border-gray-500 text-gray-500 dark:text-gray-400",
+      )}
+    >
+      <div className="font-semibold text-[11px] mb-0.5">
+        {replyTo.isVoice ? "🎤 Voice message" : replyTo.text.slice(0, 80)}{replyTo.text.length > 80 ? "…" : ""}
+      </div>
+    </div>
+  );
+}
+
+export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments, isVoice, status, replyTo }: Props) {
   const hasAttachments = attachments && attachments.length > 0;
 
   if (isVoice && !text) {
@@ -128,6 +172,7 @@ export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments, 
             <span className={cn("text-[10px] tabular-nums leading-none", isMe ? "text-indigo-200" : "text-gray-400 dark:text-gray-500")}>
               {format(new Date(sentAt), "HH:mm")}
             </span>
+            <StatusTicks status={status} isMe={isMe} />
           </div>
         </div>
       </div>
@@ -150,6 +195,7 @@ export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments, 
               ),
         )}
       >
+        {replyTo && <ReplyPreview replyTo={replyTo} isMe={isMe} />}
         {text && <p className="text-pretty">{text}</p>}
         {hasAttachments &&
           attachments.map((att) =>
@@ -175,6 +221,7 @@ export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments, 
           >
             {format(new Date(sentAt), "HH:mm")}
           </span>
+          <StatusTicks status={status} isMe={isMe} />
         </div>
       </div>
     </div>

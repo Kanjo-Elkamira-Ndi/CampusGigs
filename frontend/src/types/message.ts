@@ -10,6 +10,15 @@ export interface MessageAttachment {
   height?: number;
 }
 
+export type MessageStatus = "sent" | "delivered" | "read";
+
+export interface ReplyToInfo {
+  id: string;
+  fromUserId: string;
+  text: string;
+  isVoice?: boolean;
+}
+
 export interface ChatMessage {
   id: string;
   fromUserId: string;
@@ -18,6 +27,9 @@ export interface ChatMessage {
   attachments?: MessageAttachment[];
   isVoice?: boolean;
   applicationId?: string;
+  status?: MessageStatus;
+  replyToId?: string;
+  replyTo?: ReplyToInfo;
 }
 
 export interface ChatThread {

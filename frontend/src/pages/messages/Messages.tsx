@@ -1,7 +1,7 @@
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { useAuthStore } from "@/store/authStore";
-import { useThreads } from "@/hooks/useMessages";
+import { useThreads, useThread } from "@/hooks/useMessages";
 import { useSocket } from "@/hooks/useSocket";
 import { Avatar } from "@/components/shared/Avatar";
 import { ChatWindow } from "@/components/chat/ChatWindow";
@@ -14,7 +14,8 @@ function MessagesContent() {
   const { data: threads } = useThreads();
   const threadList = threads ?? [];
   const [activeId, setActiveId] = useState(threadList[0]?.id ?? "");
-  const active = threadList.find((t) => t.id === activeId) ?? threadList[0];
+  const { data: fullThread } = useThread(activeId);
+  const activeThread = fullThread ?? threadList.find((t) => t.id === activeId) ?? threadList[0];
 
   const {
     isUserOnline,
@@ -89,10 +90,10 @@ function MessagesContent() {
           })}
         </aside>
         <div className="min-h-0">
-          {active ? (
+          {activeThread ? (
             <AnimatePresence mode="wait">
               <motion.div
-                key={active.id}
+                key={activeThread.id}
                 initial={{ opacity: 0, x: 12 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -12 }}
@@ -100,8 +101,8 @@ function MessagesContent() {
                 className="h-full"
               >
                 <ChatWindow
-                  thread={active}
-                  online={isUserOnline(active.otherUser.id)}
+                  thread={activeThread}
+                  online={isUserOnline(activeThread.otherUser.id)}
                   onTypingStart={emitTypingStart}
                   onTypingStop={emitTypingStop}
                   onMessageRead={emitMessageRead}

@@ -1,4 +1,4 @@
-import type { ChatThread, MessageAttachment } from "@/types";
+import type { ChatThread, ChatMessage, MessageAttachment } from "@/types";
 import { Avatar } from "@/components/shared/Avatar";
 import { MessageBubble } from "./MessageBubble";
 import { EmojiPicker } from "./EmojiPicker";
@@ -7,7 +7,7 @@ import { VoiceRecorder } from "./VoiceRecorder";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Send, Smile, Paperclip } from "lucide-react";
+import { Send, Smile, Paperclip, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useSendMessage } from "@/hooks/useMessages";
@@ -30,9 +30,13 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
   const [draft, setDraft] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
+  const [contextMsg, setContextMsg] = useState<ChatMessage | null>(null);
+  const [contextPos, setContextPos] = useState({ x: 0, y: 0 });
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const contextRef = useRef<HTMLDivElement>(null);
   const meId = user?.id ?? "";
   const send = useSendMessage(thread.id);
   const lastSeen = thread.otherUser.lastSeen;
@@ -41,11 +45,24 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
     onMessageRead(thread.id);
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     setShowEmoji(false);
+    setReplyTo(null);
   }, [thread.id]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [thread.messages.length]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (contextRef.current && !contextRef.current.contains(e.target as Node)) {
+        setContextMsg(null);
+      }
+    };
+    if (contextMsg) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [contextMsg]);
 
   const handleEmojiSelect = (emoji: string) => {
     setDraft((prev) => prev + emoji);
@@ -78,7 +95,10 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
         }
       }
       if (uploaded.length > 0) {
-        send.mutate({ text: draft.trim() || "📷 Image", attachments: uploaded }, { onSuccess: () => setDraft("") });
+        send.mutate(
+          { text: draft.trim() || "📷 Image", attachments: uploaded, replyToId: replyTo?.id },
+          { onSuccess: () => { setDraft(""); setReplyTo(null); } },
+        );
       }
     } catch {
       console.error("Upload failed");
@@ -97,8 +117,9 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
           text: "🎤 Voice message",
           attachments: [{ type: "voice", url, fileName: "voice.webm", fileSize: blob.size, fileType: "audio/webm" }],
           isVoice: true,
+          replyToId: replyTo?.id,
         },
-        { onError: () => console.error("Failed to send voice message") },
+        { onSuccess: () => setReplyTo(null) },
       );
     } catch (err) {
       console.error("Voice upload failed:", err);
@@ -111,7 +132,27 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
     e.preventDefault();
     if (!draft.trim() || send.isPending) return;
     onTypingStop(thread.id);
-    send.mutate({ text: draft.trim() }, { onSuccess: () => setDraft("") });
+    send.mutate(
+      { text: draft.trim(), replyToId: replyTo?.id },
+      { onSuccess: () => { setDraft(""); setReplyTo(null); } },
+    );
+  };
+
+  const handleReply = (msg: ChatMessage) => {
+    setReplyTo(msg);
+    setContextMsg(null);
+    inputRef.current?.focus();
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, msg: ChatMessage) => {
+    if (msg.fromUserId === meId) return;
+    e.preventDefault();
+    setContextPos({ x: e.clientX, y: e.clientY });
+    setContextMsg(msg);
+  };
+
+  const handleSwipe = (msg: ChatMessage) => {
+    handleReply(msg);
   };
 
   return (
@@ -149,21 +190,79 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
                 initial={{ opacity: 0, y: 12, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
+                onContextMenu={(e) => handleContextMenu(e, m)}
               >
-                <MessageBubble
-                  text={m.text}
-                  sentAt={m.sentAt}
-                  isMe={m.fromUserId === meId}
-                  isConsecutive={isConsecutive}
-                  attachments={m.attachments}
-                  isVoice={m.isVoice}
-                />
+                <SwipeableMessage onSwipe={() => handleSwipe(m)}>
+                  <MessageBubble
+                    text={m.text}
+                    sentAt={m.sentAt}
+                    isMe={m.fromUserId === meId}
+                    isConsecutive={isConsecutive}
+                    attachments={m.attachments}
+                    isVoice={m.isVoice}
+                    status={m.status}
+                    replyTo={m.replyTo}
+                  />
+                </SwipeableMessage>
               </motion.div>
             );
           })}
         </AnimatePresence>
         <div ref={bottomRef} />
       </div>
+
+      {/* Reply bar */}
+      <AnimatePresence>
+        {replyTo && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden border-t border-border bg-muted/30"
+          >
+            <div className="flex items-center gap-2 px-5 py-2">
+              <div className="flex-1 min-w-0">
+                <div className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">Replying to {replyTo.fromUserId === meId ? "yourself" : thread.otherUser.fullName}</div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {replyTo.isVoice ? "🎤 Voice message" : replyTo.text}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReplyTo(null)}
+                className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom context menu */}
+      <AnimatePresence>
+        {contextMsg && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setContextMsg(null)} />
+            <motion.div
+              ref={contextRef}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed z-50 bg-card border border-border rounded-xl shadow-xl py-1 min-w-[140px]"
+              style={{ left: contextPos.x, top: contextPos.y }}
+            >
+              <button
+                type="button"
+                onClick={() => handleReply(contextMsg)}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors"
+              >
+                Reply
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <div className="shrink-0">
         <AnimatePresence>
@@ -206,7 +305,7 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
               ref={inputRef}
               value={draft}
               onChange={(e) => handleDraftChange(e.target.value)}
-              placeholder="Type a message…"
+              placeholder={replyTo ? "Write a reply…" : "Type a message…"}
               className="flex-1 rounded-xl border-border/60 bg-muted/30 focus-visible:bg-background transition-colors text-sm"
             />
 
@@ -240,6 +339,29 @@ export function ChatWindow({ thread, online, onTypingStart, onTypingStop, onMess
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function SwipeableMessage({ children, onSwipe }: { children: React.ReactNode; onSwipe: () => void }) {
+  const touchStartRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartRef.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current;
+    if (dx > 60) {
+      onSwipe();
+    }
+    touchStartRef.current = null;
+  };
+
+  return (
+    <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {children}
     </div>
   );
 }

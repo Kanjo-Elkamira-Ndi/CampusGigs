@@ -22,6 +22,7 @@ interface SendPayload {
   text: string;
   attachments?: MessageAttachment[];
   isVoice?: boolean;
+  replyToId?: string;
 }
 
 export function useSendMessage(threadId: string) {

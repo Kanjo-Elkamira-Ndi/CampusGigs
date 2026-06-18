@@ -6,7 +6,6 @@ import { query, queryOne } from './db'
 
 let io: SocketServer
 
-// Track online users: userId -> Set<socketId>
 const onlineUsers = new Map<string, Set<string>>()
 
 const getOnlineUserIds = () => Array.from(onlineUsers.keys())
@@ -36,19 +35,15 @@ export const initSocket = (httpServer: HttpServer) => {
   io.on('connection', async (socket) => {
     const userId = (socket as any).userId
 
-    // Track online status
     if (!onlineUsers.has(userId)) {
       onlineUsers.set(userId, new Set())
     }
     onlineUsers.get(userId)!.add(socket.id)
 
-    // Join personal room
     socket.join(`user:${userId}`)
 
-    // Update last_seen
     await query('UPDATE users SET last_seen = NOW() WHERE id = $1', [userId]).catch(() => {})
 
-    // Broadcast online status
     io.emit('user:online', { userId, onlineUserIds: getOnlineUserIds() })
 
     socket.on('join:thread', (threadId: string) => {
@@ -62,7 +57,7 @@ export const initSocket = (httpServer: HttpServer) => {
     socket.on(
       'message:send',
       async (
-        data: { threadId: string; text: string; attachments?: any[]; isVoice?: boolean },
+        data: { threadId: string; text: string; attachments?: any[]; isVoice?: boolean; replyToId?: string },
         callback: Function,
       ) => {
         try {
@@ -79,11 +74,28 @@ export const initSocket = (httpServer: HttpServer) => {
             : '[]'
 
           const [message] = await query<any>(
-            `INSERT INTO messages (application_id, sender_id, body, attachments, is_voice)
-             VALUES ($1, $2, $3, $4, $5)
-             RETURNING id, application_id, sender_id, body, read, sent_at, attachments, is_voice`,
-            [data.threadId, userId, data.text, attsJson, data.isVoice ?? false],
+            `INSERT INTO messages (application_id, sender_id, body, attachments, is_voice, status, reply_to_id)
+             VALUES ($1, $2, $3, $4, $5, 'sent', $6)
+             RETURNING id, application_id, sender_id, body, read, sent_at, attachments, is_voice, status, reply_to_id`,
+            [data.threadId, userId, data.text, attsJson, data.isVoice ?? false, data.replyToId ?? null],
           )
+
+          // Fetch replied-to message if this is a reply
+          let replyTo: any = null
+          if (message.reply_to_id) {
+            const replied = await queryOne<any>(
+              'SELECT id, sender_id, body, is_voice FROM messages WHERE id = $1',
+              [message.reply_to_id],
+            )
+            if (replied) {
+              replyTo = {
+                id: replied.id,
+                fromUserId: replied.sender_id,
+                text: replied.body,
+                isVoice: replied.is_voice,
+              }
+            }
+          }
 
           const result = {
             id: message.id,
@@ -93,12 +105,12 @@ export const initSocket = (httpServer: HttpServer) => {
             sentAt: message.sent_at,
             attachments: message.attachments ?? [],
             isVoice: message.is_voice,
+            status: message.status,
+            replyTo,
           }
 
-          // Broadcast to all in thread
           io.to(`thread:${data.threadId}`).emit('message:received', result)
 
-          // Notify other participant if not in thread
           const otherUserId = app.worker_id === userId ? app.poster_id : app.worker_id
           const otherSockets = onlineUsers.get(otherUserId)
           const isInThread = otherSockets?.size
@@ -123,11 +135,41 @@ export const initSocket = (httpServer: HttpServer) => {
       },
     )
 
-    socket.on('message:read', (threadId: string) => {
-      query(
-        `UPDATE messages SET read = true WHERE application_id = $1 AND sender_id != $2 AND NOT read`,
-        [threadId, userId],
-      ).catch(() => {})
+    socket.on('message:delivered', async (messageIds: string[]) => {
+      if (!messageIds?.length) return
+      try {
+        await query(
+          `UPDATE messages SET status = 'delivered' WHERE id = ANY($1::uuid[]) AND status = 'sent'`,
+          [messageIds],
+        )
+        for (const msgId of messageIds) {
+          const msg = await queryOne<any>('SELECT application_id FROM messages WHERE id = $1', [msgId])
+          if (msg) {
+            io.to(`thread:${msg.application_id}`).emit('message:status', {
+              messageIds,
+              status: 'delivered',
+            })
+          }
+        }
+      } catch {}
+    })
+
+    socket.on('message:read', async (threadId: string) => {
+      try {
+        const updated = await query<any>(
+          `UPDATE messages SET status = 'read', read = true
+           WHERE application_id = $1 AND sender_id != $2 AND status != 'read'
+           RETURNING id`,
+          [threadId, userId],
+        )
+        const ids = updated.map((r: any) => r.id)
+        if (ids.length > 0) {
+          io.to(`thread:${threadId}`).emit('message:status', {
+            messageIds: ids,
+            status: 'read',
+          })
+        }
+      } catch {}
     })
 
     socket.on('typing:start', (threadId: string) => {

@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
-import type { ChatMessage } from "@/types";
+import type { ChatMessage, MessageStatus } from "@/types";
 
 const SOCKET_URL = import.meta.env.VITE_API_URL
   ? (import.meta.env.VITE_API_URL as string).replace("/api/v1", "")
@@ -34,6 +34,7 @@ export function useSocket() {
   const onlineUsersRef = useRef<Set<string>>(new Set());
   const typingUsersRef = useRef<Map<string, string>>(new Map());
   const activeThreadRef = useRef<string | null>(null);
+  const deliveredTimersRef = useRef<Map<string, string>>(new Map());
 
   const setActiveThread = useCallback((threadId: string | null) => {
     activeThreadRef.current = threadId;
@@ -67,6 +68,12 @@ export function useSocket() {
     globalSocket?.emit("message:read", threadId);
   }, []);
 
+  const emitMessageDelivered = useCallback((messageIds: string[]) => {
+    if (messageIds.length > 0) {
+      globalSocket?.emit("message:delivered", messageIds);
+    }
+  }, []);
+
   useEffect(() => {
     hookInstanceCount++;
 
@@ -98,9 +105,32 @@ export function useSocket() {
     });
 
     globalSocket.on("message:received", (message: ChatMessage) => {
-      qc.invalidateQueries({ queryKey: ["messages"] });
+      // Optimistically append to the thread cache if it exists
+      const threadId = message.applicationId;
+      if (threadId) {
+        qc.setQueryData<any>(["messages", "thread", threadId], (old: any) => {
+          if (!old?.messages) return old;
+          // Avoid duplicates — only append if not already present
+          if (old.messages.some((m: any) => m.id === message.id)) return old;
+          return {
+            ...old,
+            messages: [...old.messages, message],
+          };
+        });
+      }
 
-      if (message.fromUserId !== user.id && activeThreadRef.current !== message.applicationId) {
+      // Invalidate sidebar thread list preview
+      qc.invalidateQueries({ queryKey: ["messages", "threads"] });
+
+      // Emit delivered for messages from others
+      if (message.fromUserId !== user.id) {
+        deliveredTimersRef.current.set(message.id, setTimeout(() => {
+          emitMessageDelivered([message.id]);
+          deliveredTimersRef.current.delete(message.id);
+        }, 500));
+      }
+
+      if (message.fromUserId !== user.id && activeThreadRef.current !== threadId) {
         playNotificationSound();
       }
     });
@@ -109,6 +139,29 @@ export function useSocket() {
       qc.invalidateQueries({ queryKey: ["messages", "threads"] });
       playNotificationSound();
     });
+
+    globalSocket.on(
+      "message:status",
+      ({ messageIds, status }: { messageIds: string[]; status: MessageStatus }) => {
+        qc.setQueriesData<any>({ queryKey: ["messages"] }, (old: any) => {
+          if (!old) return old;
+          const updateStatus = (msgs: any[]) =>
+            msgs.map((m: any) =>
+              messageIds.includes(m.id) ? { ...m, status } : m,
+            );
+          if (Array.isArray(old)) {
+            return old.map((thread: any) => ({
+              ...thread,
+              messages: updateStatus(thread.messages),
+            }));
+          }
+          if (old?.messages) {
+            return { ...old, messages: updateStatus(old.messages) };
+          }
+          return old;
+        });
+      },
+    );
 
     globalSocket.on("typing:start", ({ threadId, userId: typingUserId }: { threadId: string; userId: string }) => {
       typingUsersRef.current.set(threadId, typingUserId);
@@ -125,6 +178,10 @@ export function useSocket() {
     return () => {
       hookInstanceCount--;
       if (hookInstanceCount > 0) return;
+      for (const timer of deliveredTimersRef.current.values()) {
+        clearTimeout(timer);
+      }
+      deliveredTimersRef.current.clear();
       if (globalSocket) {
         globalSocket.removeAllListeners();
         globalSocket.disconnect();
@@ -141,6 +198,7 @@ export function useSocket() {
     emitTypingStart,
     emitTypingStop,
     emitMessageRead,
+    emitMessageDelivered,
     setActiveThread,
   };
 }
