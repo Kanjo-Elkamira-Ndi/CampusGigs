@@ -11,6 +11,7 @@ export const CAMEROON_UNIVERSITIES = [
   { id: "esstic", name: "ESSTIC", city: "Yaoundé", type: "public" },
   { id: "ensp", name: "ENSP", city: "Yaoundé", type: "public" },
   { id: "catholic", name: "Catholic University of Cameroon", city: "Bamenda", type: "private" },
+  { id: "other", name: "Other (suggest yours)", city: "", type: "public" },
 ] as const;
 
 export type UniversityId = (typeof CAMEROON_UNIVERSITIES)[number]["id"];

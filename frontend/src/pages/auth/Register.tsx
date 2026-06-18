@@ -10,22 +10,39 @@ import { Button } from "@/components/ui/button";
 import { CAMEROON_UNIVERSITIES } from "@/lib/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useRegister } from "@/hooks/useAuth";
+import { universityRequestsApi } from "@/api";
 import { cn } from "@/lib/utils";
 import { AuthSplitPanel } from "@/components/auth/AuthSplitPanel";
+import { toast } from "sonner";
 
 export function RegisterPage() {
   const user = useAuthStore((s) => s.user);
   const [role, setRole] = useState<"WORKER" | "POSTER">("WORKER");
+  const [customUniversity, setCustomUniversity] = useState("");
   const registerMut = useRegister();
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<RegisterInput>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: { role: "WORKER" },
   });
 
+  const selectedUniversityId = watch("universityId");
+
   if (user) return <Navigate to="/dashboard" replace />;
 
   const onSubmit = (data: RegisterInput) => {
-    registerMut.mutate(data);
+    if (data.universityId === "other" && !customUniversity.trim()) {
+      toast.error("Please type your university name");
+      return;
+    }
+    registerMut.mutate(data, {
+      onSuccess: () => {
+        if (data.universityId === "other" && customUniversity.trim()) {
+          universityRequestsApi.create({ name: customUniversity.trim() })
+            .then(() => toast.success("University request submitted for admin approval"))
+            .catch(() => toast.error("Failed to submit university request"));
+        }
+      },
+    });
   };
 
   return (
@@ -82,9 +99,17 @@ export function RegisterPage() {
               <select {...register("universityId")} className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
                 <option value="">Choose your university…</option>
                 {CAMEROON_UNIVERSITIES.map((u) => (
-                  <option key={u.id} value={u.id}>{u.name} — {u.city}</option>
+                  <option key={u.id} value={u.id}>{u.name}{u.id === "other" ? "" : ` — ${u.city}`}</option>
                 ))}
               </select>
+              {selectedUniversityId === "other" && (
+                <Input
+                  value={customUniversity}
+                  onChange={(e) => setCustomUniversity(e.target.value)}
+                  placeholder="Type your university name…"
+                  className="mt-2"
+                />
+              )}
               {errors.universityId && <p className="text-xs text-red-600 mt-1">{errors.universityId.message}</p>}
             </div>
 

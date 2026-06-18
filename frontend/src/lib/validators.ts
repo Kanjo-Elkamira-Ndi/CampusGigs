@@ -52,7 +52,8 @@ export const editProfileSchema = z.object({
   fullName: z.string().min(2),
   bio: z.string().max(300).optional(),
   universityId: z.string().min(1),
+  customUniversity: z.string().max(200).optional(),
   skills: z.array(z.string()).max(10),
-  avatarUrl: z.string().url().optional().or(z.literal("")),
+  avatarUrl: z.string().optional(),
 });
 export type EditProfileInput = z.infer<typeof editProfileSchema>;
