@@ -49,7 +49,7 @@ export function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-[var(--muted)] transition-colors" style={{ color: "var(--foreground)" }}>
-                  <Avatar id={user.id} name={user.fullName} size={28} />
+                  <Avatar id={user.id} name={user.fullName} src={user.avatarUrl} size={28} />
                   <span className="text-sm font-medium">{user.fullName.split(" ")[0]}</span>
                 </button>
               </DropdownMenuTrigger>
