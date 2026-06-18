@@ -66,6 +66,7 @@ export function TalentCard({ user, index = 0 }: Props) {
             <Avatar
               id={user.id}
               name={user.fullName}
+              src={user.avatarUrl}
               size={80}
               className="rounded-xl w-20 h-20 object-cover"
             />
