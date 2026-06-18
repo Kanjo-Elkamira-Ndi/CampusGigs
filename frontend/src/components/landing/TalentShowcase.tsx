@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Star,
   ChevronLeft,
@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import type { PublicUser } from "@/types";
 import { Avatar } from "@/components/shared/Avatar";
+import { AuthPromptModal } from "@/components/shared/AuthPromptModal";
+import { useAuthStore } from "@/store/authStore";
 
 const RESPONSE_TIMES = [
   "under 1 hour",
@@ -104,6 +106,21 @@ function TalentCard({
   const hired = HIRED_COUNTS[index % HIRED_COUNTS.length];
   const responseTime = RESPONSE_TIMES[index % RESPONSE_TIMES.length];
   const skills = EXTRA_SKILLS[user.id] ?? user.skills;
+  const navigate = useNavigate();
+  const currentUser = useAuthStore((s) => s.user);
+  const [authOpen, setAuthOpen] = useState(false);
+
+  const requireAuth = useCallback(
+    (to: string, hire = false) => {
+      if (currentUser) {
+        if (hire) onHire();
+        navigate(to);
+      } else {
+        setAuthOpen(true);
+      }
+    },
+    [currentUser, navigate, onHire],
+  );
 
   return (
     <motion.div
@@ -215,8 +232,9 @@ function TalentCard({
 
         {/* Buttons */}
         <div className="mt-auto pt-5 flex gap-2.5">
-          <Link
-            to={"/profile/" + user.id}
+          <button
+            type="button"
+            onClick={() => requireAuth("/profile/" + user.id)}
             className="flex-1 text-center px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
             style={{
               backgroundColor: "var(--card-surface-sm)",
@@ -225,17 +243,18 @@ function TalentCard({
             }}
           >
             View Profile
-          </Link>
-          <Link
-            to={`/messages/new?user=${user.id}`}
-            onClick={onHire}
+          </button>
+          <button
+            type="button"
+            onClick={() => requireAuth(`/messages/new?user=${user.id}`, true)}
             className="flex-1 text-center px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:brightness-110"
             style={{ backgroundColor: "#0F8BFF" }}
           >
             Hire Now
-          </Link>
+          </button>
         </div>
       </div>
+      <AuthPromptModal open={authOpen} onOpenChange={setAuthOpen} />
     </motion.div>
   );
 }

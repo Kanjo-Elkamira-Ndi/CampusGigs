@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Star, BadgeCheck, GraduationCap, Briefcase } from "lucide-react";
 import { Avatar } from "@/components/shared/Avatar";
+import { AuthPromptModal } from "@/components/shared/AuthPromptModal";
+import { useAuthStore } from "@/store/authStore";
 
 interface HeroCard {
   id: string;
@@ -97,6 +99,21 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 function HeroProfileCard({ card, index, total }: { card: HeroCard; index: number; total: number }) {
+  const navigate = useNavigate();
+  const currentUser = useAuthStore((s) => s.user);
+  const [authOpen, setAuthOpen] = useState(false);
+
+  const requireAuth = useCallback(
+    (to: string) => {
+      if (currentUser) {
+        navigate(to);
+      } else {
+        setAuthOpen(true);
+      }
+    },
+    [currentUser, navigate],
+  );
+
   return (
     <div
       className="w-full rounded-2xl overflow-hidden flex flex-col select-none"
@@ -193,8 +210,9 @@ function HeroProfileCard({ card, index, total }: { card: HeroCard; index: number
 
         {/* Buttons */}
         <div className="flex gap-2 mt-1">
-          <Link
-            to={`/profile/${card.id}`}
+          <button
+            type="button"
+            onClick={() => requireAuth(`/profile/${card.id}`)}
             className="flex-1 text-center px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-95"
             style={{
               backgroundColor: "var(--card-surface-sm)",
@@ -203,16 +221,18 @@ function HeroProfileCard({ card, index, total }: { card: HeroCard; index: number
             }}
           >
             View Profile
-          </Link>
-          <Link
-            to={`/messages/new?user=${card.id}`}
+          </button>
+          <button
+            type="button"
+            onClick={() => requireAuth(`/messages/new?user=${card.id}`)}
             className="flex-1 text-center px-3 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:brightness-110"
             style={{ backgroundColor: "#0F8BFF" }}
           >
             Hire Now
-          </Link>
+          </button>
         </div>
       </div>
+      <AuthPromptModal open={authOpen} onOpenChange={setAuthOpen} />
     </div>
   );
 }
