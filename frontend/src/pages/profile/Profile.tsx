@@ -40,7 +40,7 @@ export function Profile() {
         <div className="max-w-5xl mx-auto grid lg:grid-cols-[280px_1fr] gap-8">
         <aside className="space-y-4">
           <div className="rounded-xl border border-border bg-card p-5">
-            <Avatar id={user.id} name={user.fullName} size={80} />
+            <Avatar id={user.id} name={user.fullName} src={user.avatarUrl} size={80} />
             <h1 className="font-bold text-lg mt-3">{user.fullName}</h1>
             <p className="text-sm text-muted-foreground">{user.skills[0] ?? user.role.toLowerCase()}</p>
             <div className="mt-2"><UniversityBadge name={user.universityName} city={user.city} /></div>

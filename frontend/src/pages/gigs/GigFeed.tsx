@@ -139,7 +139,7 @@ export function GigFeed() {
           </div>
         </motion.div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {selectedCategory ? (
             /* ── Gig listing for selected category ── */
             <motion.div

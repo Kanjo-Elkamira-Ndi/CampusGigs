@@ -11,6 +11,7 @@ export const CAMEROON_UNIVERSITIES = [
   { id: "esstic", name: "ESSTIC", city: "Yaoundé", type: "public" },
   { id: "ensp", name: "ENSP", city: "Yaoundé", type: "public" },
   { id: "catholic", name: "Catholic University of Cameroon", city: "Bamenda", type: "private" },
+  { id: "other", name: "Other (suggest yours)", city: "", type: "public" },
 ] as const;
 
 export type UniversityId = (typeof CAMEROON_UNIVERSITIES)[number]["id"];
@@ -26,6 +27,10 @@ export const CATEGORY_META = {
   Photography: { bg: "bg-rose-50 dark:bg-rose-950", text: "text-rose-700 dark:text-rose-400" },
   Other: { bg: "bg-gray-50 dark:bg-gray-800", text: "text-gray-600 dark:text-gray-400" },
 } as const;
+
+export function getCategoryMeta(category: string): { bg: string; text: string } {
+  return CATEGORY_META[category as keyof typeof CATEGORY_META] ?? CATEGORY_META.Other;
+}
 
 export const ROUTES = {
   home: "/",

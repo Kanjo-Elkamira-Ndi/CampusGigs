@@ -316,19 +316,6 @@ export const acceptApplication = async (applicationId: string, posterId: string)
     [applicationId]
   )
 
-  const [{ count }] = await query<{ count: string }>(
-    `SELECT COUNT(*) FROM applications WHERE gig_id = $1 AND status = 'ACCEPTED'`,
-    [application.gig_id]
-  )
-
-  if (Number(count) >= application.gig_slots) {
-    await query(
-      `UPDATE applications SET status = 'REJECTED', updated_at = NOW()
-       WHERE gig_id = $1 AND status = 'PENDING' AND id != $2`,
-      [application.gig_id, applicationId]
-    )
-  }
-
   createNotification(application.worker_id, 'application', 'Application Accepted', `Your application for "${application.gig_title}" has been accepted`)
 
   return getFullApplication(applicationId)

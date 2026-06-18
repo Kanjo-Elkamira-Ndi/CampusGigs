@@ -213,7 +213,7 @@ export function DashboardShell({ role, children }: Props) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <Avatar id={user.id} name={user.fullName} size={32} />
+                  <Avatar id={user.id} name={user.fullName} src={user.avatarUrl} size={32} />
                   <div className="hidden sm:block text-left leading-tight">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.fullName}</p>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate max-w-[140px]">{user.email}</p>

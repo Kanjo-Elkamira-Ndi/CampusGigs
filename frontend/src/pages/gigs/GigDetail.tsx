@@ -96,6 +96,10 @@ export function GigDetail() {
                 <Button onClick={() => navigate("/dashboard/poster")} className="w-full mt-4">
                   Manage applicants
                 </Button>
+              ) : user.role !== "WORKER" ? (
+                <p className="mt-4 text-sm text-muted-foreground text-center">
+                  Only workers can apply to gigs.
+                </p>
               ) : (
                 <Button onClick={() => setApplyOpen(true)} className="w-full mt-4 bg-brand hover:bg-[color:var(--brand-dark)] text-white">
                   Apply to this gig ⚡

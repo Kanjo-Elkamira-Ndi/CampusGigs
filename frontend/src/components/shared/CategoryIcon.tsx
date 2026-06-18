@@ -24,7 +24,7 @@ const ICON_MAP: Record<GigCategory, LucideIcon> = {
   Other: Wrench,
 };
 
-export function CategoryIcon({ category, size = 16 }: { category: GigCategory; size?: number }) {
-  const Icon = ICON_MAP[category];
+export function CategoryIcon({ category, size = 16 }: { category: string; size?: number }) {
+  const Icon = ICON_MAP[category as GigCategory] ?? Wrench;
   return <Icon size={size} />;
 }

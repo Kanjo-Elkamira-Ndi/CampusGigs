@@ -16,6 +16,8 @@ import messagesRoutes from './routes/messagesRoutes'
 import superadminRoutes from './routes/superadminRoutes'
 import notificationsRoutes from './routes/notificationsRoutes'
 import dashboardRoutes from './routes/dashboardRoutes'
+import uploadRoutes from './routes/uploadRoutes'
+import universityRequestsRoutes from './routes/universityRequestsRoutes'
 
 export const createApp = () => {
   const app = express()
@@ -46,12 +48,14 @@ export const createApp = () => {
   app.use('/api/v1/categories', categoriesRoutes)
   app.use('/api/v1/freelancers', freelancersRoutes)
   app.use('/api/v1/gigs', gigsRoutes)
-  app.use('/api/v1/applications', myApplicationsRoutes)
+  app.use('/api/v1/my-applications', myApplicationsRoutes)
   app.use('/api/v1/reviews', reviewsRoutes)
   app.use('/api/v1/messages', messagesRoutes)
   app.use('/api/v1/superadmin', superadminRoutes)
   app.use('/api/v1/notifications', notificationsRoutes)
   app.use('/api/v1/dashboard', dashboardRoutes)
+  app.use('/api/v1/upload', uploadRoutes)
+  app.use('/api/v1/university-requests', universityRequestsRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, message: 'Route not found' })

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -11,13 +12,17 @@ import {
 } from "lucide-react";
 import type { Gig } from "@/types";
 import { formatBudget, getDeadlineLabel, timeAgo } from "@/lib/utils";
-import { CATEGORY_META } from "@/lib/constants";
+import { getCategoryMeta } from "@/lib/constants";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
+import { useAuthStore } from "@/store/authStore";
+import { ApplyModal } from "@/components/applications/ApplyModal";
 
 export function GigCard({ gig }: { gig: Gig }) {
-  const meta = CATEGORY_META[gig.category];
+  const meta = getCategoryMeta(gig.category);
   const deadline = getDeadlineLabel(gig.deadline);
   const d = new Date(gig.createdAt);
+  const user = useAuthStore((s) => s.user);
+  const [applyOpen, setApplyOpen] = useState(false);
 
   return (
     <motion.div
@@ -122,15 +127,23 @@ export function GigCard({ gig }: { gig: Gig }) {
             >
               <Bookmark size={14} />
             </button>
-            <span
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all hover:brightness-110"
-              style={{ backgroundColor: "var(--brand)" }}
-            >
-              Quick Apply <ArrowRight size={12} />
-            </span>
+            {user?.role === "WORKER" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setApplyOpen(true);
+                }}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all hover:brightness-110"
+                style={{ backgroundColor: "var(--brand)" }}
+              >
+                Quick Apply <ArrowRight size={12} />
+              </button>
+            )}
           </div>
         </div>
       </Link>
+      <ApplyModal gig={gig} open={applyOpen} onOpenChange={setApplyOpen} />
     </motion.div>
   );
 }

@@ -78,6 +78,16 @@ function mapBackendUser(u: BackendUser): User {
   };
 }
 
+export const uploadAvatar = (file: File) => {
+  const formData = new FormData();
+  formData.append("avatar", file);
+  return api
+    .post<{ success: boolean; data: { avatarUrl: string } }>("/upload/avatar", formData, {
+      headers: { "Content-Type": null },
+    })
+    .then(extractData<{ avatarUrl: string }>);
+};
+
 export const usersApi = {
   getMe: () =>
     api

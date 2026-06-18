@@ -78,7 +78,7 @@ function PosterGigsContent() {
           <motion.div {...FADE_IN} className="rounded-xl border border-border bg-card overflow-hidden">
             {gigs.map((g) => (
               <div key={g.id} className="flex items-center gap-4 p-4 border-b border-border last:border-b-0 hover:bg-muted/40 transition-colors">
-                  <CategoryIconCircle category={g.category as any} size={36} />
+                  <CategoryIconCircle category={g.category} size={36} />
                 <Link to={"/gigs/" + g.id} className="flex-1 min-w-0">
                   <div className="font-medium text-sm hover:text-primary transition-colors truncate">{g.title}</div>
                   <div className="text-xs text-muted-foreground mt-0.5">

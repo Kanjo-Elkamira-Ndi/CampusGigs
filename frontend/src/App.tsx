@@ -26,6 +26,7 @@ import { Messages } from "@/pages/messages/Messages";
 import { Profile } from "@/pages/profile/Profile";
 import { EditProfile } from "@/pages/profile/EditProfile";
 import { NotFound } from "@/pages/NotFound";
+import { ErrorPage } from "@/pages/ErrorPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <AppLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Landing /> },
       { path: "login", element: <Login /> },
