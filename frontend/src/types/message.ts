@@ -1,7 +1,7 @@
 import type { PublicUser } from "./user";
 
 export interface MessageAttachment {
-  type: "image" | "file";
+  type: "image" | "file" | "voice";
   url: string;
   fileName?: string;
   fileSize?: number;
@@ -16,11 +16,14 @@ export interface ChatMessage {
   text: string;
   sentAt: string;
   attachments?: MessageAttachment[];
+  isVoice?: boolean;
+  applicationId?: string;
 }
 
 export interface ChatThread {
   id: string;
-  otherUser: PublicUser;
+  otherUser: PublicUser & { lastSeen?: string };
   gigTitle: string;
   messages: ChatMessage[];
+  unreadCount?: number;
 }

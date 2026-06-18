@@ -7,10 +7,10 @@ cloudinary.config({
   api_secret: env.CLOUDINARY_API_SECRET,
 })
 
-export const uploadBuffer = (buffer: Buffer, folder: string): Promise<string> => {
+export const uploadBuffer = (buffer: Buffer, folder: string, resourceType: 'image' | 'video' | 'auto' = 'image'): Promise<string> => {
   return new Promise((resolve, reject) => {
     const upload = cloudinary.uploader.upload_stream(
-      { folder, resource_type: 'image' },
+      { folder, resource_type: resourceType },
       (error, result) => {
         if (error) reject(error)
         else resolve(result!.secure_url)
