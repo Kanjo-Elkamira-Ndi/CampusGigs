@@ -8,6 +8,8 @@ import Gigs from "./pages/Gigs";
 import Universities from "./pages/Universities";
 import AuditLogs from "./pages/AuditLogs";
 import Reviews from "./pages/Reviews";
+import SettingsPage from "./pages/Settings";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 function Protected({ children }: { children: React.ReactNode }) {
@@ -47,6 +49,8 @@ export default function App() {
         <Route path="/universities" element={<Universities />} />
         <Route path="/audit-logs" element={<AuditLogs />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -11,6 +11,8 @@ const titles: Record<string, string> = {
   "/universities": "Universities",
   "/audit-logs": "Audit Logs",
   "/reviews": "Reviews",
+  "/settings": "Settings",
+  "/notifications": "Notifications",
 };
 
 interface AdminTopbarProps {
