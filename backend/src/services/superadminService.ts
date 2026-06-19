@@ -20,6 +20,7 @@ interface DbUser {
   full_name: string
   role: string
   university_id: string | null
+  university_name: string | null
   avatar_url: string | null
   bio: string | null
   avg_rating: string
@@ -43,7 +44,9 @@ interface DbGig {
   poster_id: string
   poster_full_name: string
   poster_avatar_url: string | null
+  category_id: string
   category_name: string
+  category_slug: string
   university_id: string | null
   application_count: string
 }
@@ -52,6 +55,7 @@ interface DbAuditLog {
   id: string
   admin_id: string
   admin_name: string
+  admin_email: string
   action: string
   target_type: string
   target_id: string
@@ -60,9 +64,30 @@ interface DbAuditLog {
   created_at: string
 }
 
+interface DbReview {
+  id: string
+  reviewer_id: string
+  reviewer_name: string
+  reviewee_id: string
+  reviewee_name: string
+  gig_id: string
+  gig_title: string
+  rating: number
+  comment: string | null
+  created_at: string
+}
+
+interface DbCategory {
+  id: string
+  name: string
+  slug: string
+}
+
 interface DbUniversity {
   id: string
   name: string
+  city: string
+  type: string
   user_count: string
   gig_count: string
 }
@@ -74,6 +99,7 @@ const formatUser = (u: DbUser) => ({
   fullName: u.full_name,
   role: u.role,
   universityId: u.university_id,
+  university: u.university_name ? { id: u.university_id, name: u.university_name } : null,
   avatarUrl: u.avatar_url,
   bio: u.bio,
   avgRating: Number(u.avg_rating),
@@ -84,10 +110,25 @@ const formatUser = (u: DbUser) => ({
   updatedAt: u.updated_at,
 })
 
-function writeAuditLog(client: import('pg').PoolClient | null, adminId: string, action: string, targetType: string, targetId: string, meta?: unknown, ipAddress?: string) {
+function writeAuditLog(
+  client: import('pg').PoolClient | null,
+  adminId: string,
+  action: string,
+  targetType: string,
+  targetId: string,
+  meta?: unknown,
+  ipAddress?: string,
+) {
   const logQuery = `INSERT INTO audit_logs (admin_id, action, target_type, target_id, meta, ip_address)
      VALUES ($1, $2, $3, $4, $5, $6)`
-  const params = [adminId, action, targetType, targetId, meta ? JSON.stringify(meta) : null, ipAddress ?? null]
+  const params = [
+    adminId,
+    action,
+    targetType,
+    targetId,
+    meta ? JSON.stringify(meta) : null,
+    ipAddress ?? null,
+  ]
   if (client) {
     return client.query(logQuery, params)
   }
@@ -97,7 +138,7 @@ function writeAuditLog(client: import('pg').PoolClient | null, adminId: string, 
 export const login = async (email: string, password: string, ipAddress?: string) => {
   const admin = await queryOne<DbAdmin>(
     'SELECT id, email, password_hash, full_name, last_login_at, created_at FROM super_admins WHERE email = $1',
-    [email]
+    [email],
   )
   if (!admin) throw new ApiError(401, 'Invalid email or password')
 
@@ -109,7 +150,7 @@ export const login = async (email: string, password: string, ipAddress?: string)
   await query(
     `INSERT INTO audit_logs (admin_id, action, target_type, target_id, ip_address)
      VALUES ($1, 'LOGIN', 'super_admin', $2, $3)`,
-    [admin.id, admin.id, ipAddress ?? null]
+    [admin.id, admin.id, ipAddress ?? null],
   )
 
   return {
@@ -123,14 +164,14 @@ export const logout = async (adminId: string) => {
   await query(
     `INSERT INTO audit_logs (admin_id, action, target_type, target_id)
      VALUES ($1, 'LOGOUT', 'super_admin', $2)`,
-    [adminId, adminId]
+    [adminId, adminId],
   )
 }
 
 export const getMe = async (adminId: string) => {
   const admin = await queryOne<DbAdmin>(
     'SELECT id, email, full_name, last_login_at, created_at FROM super_admins WHERE id = $1',
-    [adminId]
+    [adminId],
   )
   if (!admin) throw new ApiError(404, 'Admin not found')
 
@@ -146,9 +187,23 @@ export const getMe = async (adminId: string) => {
 export const getDashboard = async () => {
   const [{ count: totalUsers }] = await query<{ count: string }>('SELECT COUNT(*) FROM users')
   const [{ count: totalGigs }] = await query<{ count: string }>('SELECT COUNT(*) FROM gigs')
-  const [{ count: totalApplications }] = await query<{ count: string }>('SELECT COUNT(*) FROM applications')
+  const [{ count: totalApplications }] = await query<{ count: string }>(
+    'SELECT COUNT(*) FROM applications',
+  )
   const [{ count: activeUniversities }] = await query<{ count: string }>(
-    'SELECT COUNT(DISTINCT university_id) FROM users WHERE university_id IS NOT NULL'
+    'SELECT COUNT(DISTINCT university_id) FROM users WHERE university_id IS NOT NULL',
+  )
+  const [{ count: bannedUsers }] = await query<{ count: string }>(
+    "SELECT COUNT(*) FROM users WHERE is_banned = true",
+  )
+  const [{ count: unverifiedUsers }] = await query<{ count: string }>(
+    "SELECT COUNT(*) FROM users WHERE email_verified = false",
+  )
+  const [{ count: openGigs }] = await query<{ count: string }>(
+    "SELECT COUNT(*) FROM gigs WHERE status = 'OPEN'",
+  )
+  const [{ count: completedGigs }] = await query<{ count: string }>(
+    "SELECT COUNT(*) FROM gigs WHERE status = 'COMPLETED'",
   )
 
   return {
@@ -156,6 +211,10 @@ export const getDashboard = async () => {
     totalGigs: Number(totalGigs),
     totalApplications: Number(totalApplications),
     activeUniversities: Number(activeUniversities),
+    bannedUsers: Number(bannedUsers),
+    unverifiedUsers: Number(unverifiedUsers),
+    openGigs: Number(openGigs),
+    completedGigs: Number(completedGigs),
   }
 }
 
@@ -164,10 +223,14 @@ export const listUsers = async (input: {
   universityId?: string
   isBanned?: string
   q?: string
+  search?: string
   page?: number
   limit?: number
 }) => {
-  const { page, limit, skip } = parsePagination({ page: String(input.page ?? 1), limit: String(input.limit ?? 10) })
+  const { page, limit, skip } = parsePagination({
+    page: String(input.page ?? 1),
+    limit: String(input.limit ?? 10),
+  })
 
   const conditions: string[] = []
   const params: unknown[] = []
@@ -175,64 +238,74 @@ export const listUsers = async (input: {
 
   if (input.role) {
     paramIndex++
-    conditions.push(`role = $${paramIndex}`)
+    conditions.push(`u.role = $${paramIndex}`)
     params.push(input.role)
   }
 
   if (input.universityId) {
     paramIndex++
-    conditions.push(`university_id = $${paramIndex}`)
+    conditions.push(`u.university_id = $${paramIndex}`)
     params.push(input.universityId)
   }
 
   if (input.isBanned !== undefined) {
     paramIndex++
-    conditions.push(`is_banned = $${paramIndex}`)
+    conditions.push(`u.is_banned = $${paramIndex}`)
     params.push(input.isBanned === 'true')
   }
 
-  if (input.q) {
+  const searchTerm = input.q ?? input.search
+  if (searchTerm) {
     paramIndex++
     conditions.push(
-      `to_tsvector('simple', coalesce(name, '') || ' ' || coalesce(full_name, '') || ' ' || coalesce(email, '')) @@ plainto_tsquery('simple', $${paramIndex})`
+      `to_tsvector('simple', coalesce(u.name, '') || ' ' || coalesce(u.full_name, '') || ' ' || coalesce(u.email, '')) @@ plainto_tsquery('simple', $${paramIndex})`,
     )
-    params.push(input.q)
+    params.push(searchTerm)
   }
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
   const [{ count }] = await query<{ count: string }>(
-    `SELECT COUNT(*) FROM users ${whereClause}`,
-    params
+    `SELECT COUNT(*) FROM users u ${whereClause}`,
+    params,
   )
   const total = Number(count)
 
   const rows = await query<DbUser>(
-    `SELECT id, email, name, full_name, role, university_id,
-            avatar_url, bio, avg_rating, review_count,
-            is_banned, email_verified, created_at, updated_at
-     FROM users
+    `SELECT u.id, u.email, u.name, u.full_name, u.role, u.university_id,
+            u.avatar_url, u.bio, u.avg_rating, u.review_count,
+            u.is_banned, u.email_verified, u.created_at, u.updated_at,
+            univ.name AS university_name
+     FROM users u
+     LEFT JOIN universities univ ON univ.id = u.university_id
      ${whereClause}
-     ORDER BY created_at DESC
+     ORDER BY u.created_at DESC
      LIMIT ${limit} OFFSET ${skip}`,
-    params
+    params,
   )
 
   const totalPages = Math.ceil(total / limit)
 
   return {
     data: rows.map(formatUser),
-    meta: { page, limit, total, totalPages },
+    total,
+    page,
+    limit,
+    totalPages,
   }
 }
 
-export const updateUser = async (userId: string, data: UpdateUserInput, adminId: string) => {
+export const updateUser = async (
+  userId: string,
+  data: UpdateUserInput,
+  adminId: string,
+) => {
   const user = await queryOne<DbUser>(
     `SELECT id, email, name, full_name, role, university_id,
             avatar_url, bio, avg_rating, review_count,
             is_banned, email_verified, created_at, updated_at
      FROM users WHERE id = $1`,
-    [userId]
+    [userId],
   )
   if (!user) throw new ApiError(404, 'User not found')
 
@@ -240,11 +313,26 @@ export const updateUser = async (userId: string, data: UpdateUserInput, adminId:
   const values: unknown[] = []
   let i = 1
 
-  if (data.fullName !== undefined) { fields.push(`full_name = $${i++}`); values.push(data.fullName) }
-  if (data.isBanned !== undefined) { fields.push(`is_banned = $${i++}`); values.push(data.isBanned) }
-  if (data.role !== undefined) { fields.push(`role = $${i++}`); values.push(data.role) }
-  if (data.emailVerified !== undefined) { fields.push(`email_verified = $${i++}`); values.push(data.emailVerified) }
-  if (data.universityId !== undefined) { fields.push(`university_id = $${i++}`); values.push(data.universityId) }
+  if (data.fullName !== undefined) {
+    fields.push(`full_name = $${i++}`)
+    values.push(data.fullName)
+  }
+  if (data.isBanned !== undefined) {
+    fields.push(`is_banned = $${i++}`)
+    values.push(data.isBanned)
+  }
+  if (data.role !== undefined) {
+    fields.push(`role = $${i++}`)
+    values.push(data.role)
+  }
+  if (data.emailVerified !== undefined) {
+    fields.push(`email_verified = $${i++}`)
+    values.push(data.emailVerified)
+  }
+  if (data.universityId !== undefined) {
+    fields.push(`university_id = $${i++}`)
+    values.push(data.universityId)
+  }
 
   if (fields.length === 0) throw new ApiError(400, 'No fields to update')
 
@@ -255,7 +343,7 @@ export const updateUser = async (userId: string, data: UpdateUserInput, adminId:
      RETURNING id, email, name, full_name, role, university_id,
                avatar_url, bio, avg_rating, review_count,
                is_banned, email_verified, created_at, updated_at`,
-    values
+    values,
   )
 
   const changedFields: Record<string, unknown> = {}
@@ -268,7 +356,7 @@ export const updateUser = async (userId: string, data: UpdateUserInput, adminId:
   await query(
     `INSERT INTO audit_logs (admin_id, action, target_type, target_id, meta)
      VALUES ($1, 'UPDATE_USER', 'user', $2, $3)`,
-    [adminId, userId, JSON.stringify(changedFields)]
+    [adminId, userId, JSON.stringify(changedFields)],
   )
 
   return formatUser(updated!)
@@ -283,7 +371,7 @@ export const deleteUser = async (userId: string, adminId: string) => {
     await client.query(
       `INSERT INTO audit_logs (admin_id, action, target_type, target_id)
        VALUES ($1, 'DELETE_USER', 'user', $2)`,
-      [adminId, userId]
+      [adminId, userId],
     )
   })
 }
@@ -291,13 +379,18 @@ export const deleteUser = async (userId: string, adminId: string) => {
 export const listGigs = async (input: {
   status?: string
   category?: string
+  categorySlug?: string
   universityId?: string
   posterId?: string
   q?: string
+  search?: string
   page?: number
   limit?: number
 }) => {
-  const { page, limit, skip } = parsePagination({ page: String(input.page ?? 1), limit: String(input.limit ?? 10) })
+  const { page, limit, skip } = parsePagination({
+    page: String(input.page ?? 1),
+    limit: String(input.limit ?? 10),
+  })
 
   const conditions: string[] = []
   const params: unknown[] = []
@@ -309,10 +402,11 @@ export const listGigs = async (input: {
     params.push(input.status)
   }
 
-  if (input.category) {
+  const lookupCategory = input.category ?? input.categorySlug
+  if (lookupCategory) {
     paramIndex++
     conditions.push(`c.slug = $${paramIndex}`)
-    params.push(input.category)
+    params.push(lookupCategory)
   }
 
   if (input.universityId) {
@@ -327,10 +421,13 @@ export const listGigs = async (input: {
     params.push(input.posterId)
   }
 
-  if (input.q) {
+  const gigSearchTerm = input.q ?? input.search
+  if (gigSearchTerm) {
     paramIndex++
-    conditions.push(`g.search_vector @@ plainto_tsquery('english', $${paramIndex})`)
-    params.push(input.q)
+    conditions.push(
+      `g.search_vector @@ plainto_tsquery('english', $${paramIndex})`,
+    )
+    params.push(gigSearchTerm)
   }
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
@@ -340,7 +437,7 @@ export const listGigs = async (input: {
      FROM gigs g
      LEFT JOIN categories c ON c.id = g.category_id
      ${whereClause}`,
-    params
+    params,
   )
   const total = Number(count)
 
@@ -349,7 +446,7 @@ export const listGigs = async (input: {
        g.id, g.title, g.description, g.budget, g.location,
        g.status, g.slots, g.deadline, g.created_at,
        g.poster_id, g.university_id,
-       c.name AS category_name,
+       c.id AS category_id, c.name AS category_name, c.slug AS category_slug,
        u.full_name AS poster_full_name,
        u.avatar_url AS poster_avatar_url,
        (SELECT COUNT(*) FROM applications a WHERE a.gig_id = g.id) AS application_count
@@ -359,13 +456,13 @@ export const listGigs = async (input: {
      ${whereClause}
      ORDER BY g.created_at DESC
      LIMIT ${limit} OFFSET ${skip}`,
-    params
+    params,
   )
 
   const totalPages = Math.ceil(total / limit)
 
   return {
-    data: rows.map(row => ({
+    data: rows.map((row) => ({
       id: row.id,
       title: row.title,
       description: row.description,
@@ -375,7 +472,9 @@ export const listGigs = async (input: {
       slots: row.slots,
       deadline: row.deadline,
       createdAt: row.created_at,
-      category: row.category_name,
+      category: row.category_id
+        ? { id: row.category_id, name: row.category_name, slug: row.category_slug }
+        : null,
       poster: {
         id: row.poster_id,
         fullName: row.poster_full_name,
@@ -384,7 +483,10 @@ export const listGigs = async (input: {
       applicationCount: Number(row.application_count),
       universityId: row.university_id,
     })),
-    meta: { page, limit, total, totalPages },
+    total,
+    page,
+    limit,
+    totalPages,
   }
 }
 
@@ -397,7 +499,7 @@ export const deleteGig = async (gigId: string, adminId: string) => {
     await client.query(
       `INSERT INTO audit_logs (admin_id, action, target_type, target_id)
        VALUES ($1, 'DELETE_GIG', 'gig', $2)`,
-      [adminId, gigId]
+      [adminId, gigId],
     )
   })
 }
@@ -407,10 +509,15 @@ export const listAuditLogs = async (input: {
   action?: string
   dateFrom?: string
   dateTo?: string
+  from?: string
+  to?: string
   page?: number
   limit?: number
 }) => {
-  const { page, limit, skip } = parsePagination({ page: String(input.page ?? 1), limit: String(input.limit ?? 10) })
+  const { page, limit, skip } = parsePagination({
+    page: String(input.page ?? 1),
+    limit: String(input.limit ?? 10),
+  })
 
   const conditions: string[] = []
   const params: unknown[] = []
@@ -428,78 +535,96 @@ export const listAuditLogs = async (input: {
     params.push(input.action)
   }
 
-  if (input.dateFrom) {
+  const dateFrom = input.dateFrom ?? input.from
+  if (dateFrom) {
     paramIndex++
     conditions.push(`al.created_at >= $${paramIndex}`)
-    params.push(input.dateFrom)
+    params.push(dateFrom)
   }
 
-  if (input.dateTo) {
+  const dateTo = input.dateTo ?? input.to
+  if (dateTo) {
     paramIndex++
     conditions.push(`al.created_at <= $${paramIndex}`)
-    params.push(input.dateTo)
+    params.push(dateTo)
   }
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
   const [{ count }] = await query<{ count: string }>(
     `SELECT COUNT(*) FROM audit_logs al ${whereClause}`,
-    params
+    params,
   )
   const total = Number(count)
 
   const rows = await query<DbAuditLog>(
     `SELECT al.id, al.admin_id, al.action, al.target_type, al.target_id,
             al.meta, al.ip_address, al.created_at,
-            sa.full_name AS admin_name
+            sa.full_name AS admin_name, sa.email AS admin_email
      FROM audit_logs al
      LEFT JOIN super_admins sa ON sa.id = al.admin_id
      ${whereClause}
      ORDER BY al.created_at DESC
      LIMIT ${limit} OFFSET ${skip}`,
-    params
+    params,
   )
 
   const totalPages = Math.ceil(total / limit)
 
   return {
-    data: rows.map(row => ({
+    data: rows.map((row) => ({
       id: row.id,
-      adminId: row.admin_id,
-      adminName: row.admin_name,
+      admin: row.admin_id
+        ? { id: row.admin_id, fullName: row.admin_name, email: row.admin_email }
+        : null,
       action: row.action,
       targetType: row.target_type,
       targetId: row.target_id,
       meta: row.meta,
-      ipAddress: row.ip_address,
+      ip: row.ip_address,
       createdAt: row.created_at,
     })),
-    meta: { page, limit, total, totalPages },
+    total,
+    page,
+    limit,
+    totalPages,
   }
 }
 
 export const listUniversities = async () => {
   const rows = await query<DbUniversity>(
     `SELECT
-       u.university_id AS id,
-       u.university_id AS name,
-       COUNT(DISTINCT u.id) AS user_count,
-       (SELECT COUNT(*) FROM gigs g WHERE g.university_id = u.university_id) AS gig_count
-     FROM users u
-     WHERE u.university_id IS NOT NULL
-     GROUP BY u.university_id
-     ORDER BY user_count DESC`
+       u.id, u.name, u.city, u.type,
+       COUNT(DISTINCT usr.id) AS user_count,
+       (SELECT COUNT(*) FROM gigs g WHERE g.university_id = u.id) AS gig_count
+     FROM universities u
+     LEFT JOIN users usr ON usr.university_id = u.id
+     GROUP BY u.id, u.name, u.city, u.type
+     ORDER BY user_count DESC`,
   )
 
-  return rows.map(row => ({
+  return rows.map((row) => ({
     id: row.id,
     name: row.name,
+    city: row.city,
+    type: row.type,
     userCount: Number(row.user_count),
     gigCount: Number(row.gig_count),
   }))
 }
 
 export const createUniversity = async (data: CreateUniversityInput) => {
+  const existing = await queryOne(
+    'SELECT id FROM universities WHERE id = $1',
+    [data.id],
+  )
+  if (existing) throw new ApiError(409, 'University with this ID already exists')
+
+  await query(
+    `INSERT INTO universities (id, name, city, type) VALUES ($1, $2, $3, $4)`,
+    [data.id, data.name, data.city, data.type],
+  )
+
   return {
     id: data.id,
     name: data.name,
@@ -508,10 +633,75 @@ export const createUniversity = async (data: CreateUniversityInput) => {
   }
 }
 
+export const listReviews = async (input: {
+  page?: number
+  limit?: number
+}) => {
+  const { page, limit, skip } = parsePagination({
+    page: String(input.page ?? 1),
+    limit: String(input.limit ?? 20),
+  })
+
+  const [{ count }] = await query<{ count: string }>(
+    'SELECT COUNT(*) FROM reviews',
+  )
+  const total = Number(count)
+
+  const rows = await query<DbReview>(
+    `SELECT
+       r.id, r.rating, r.comment, r.created_at,
+       r.reviewer_id,
+       rev.full_name AS reviewer_name,
+       r.reviewee_id,
+       revw.full_name AS reviewee_name,
+       r.gig_id,
+       g.title AS gig_title
+     FROM reviews r
+     LEFT JOIN users rev ON rev.id = r.reviewer_id
+     LEFT JOIN users revw ON revw.id = r.reviewee_id
+     LEFT JOIN gigs g ON g.id = r.gig_id
+     ORDER BY r.created_at DESC
+     LIMIT ${limit} OFFSET ${skip}`,
+  )
+
+  const totalPages = Math.ceil(total / limit)
+
+  return {
+    data: rows.map((row) => ({
+      id: row.id,
+      reviewer: row.reviewer_id
+        ? { id: row.reviewer_id, fullName: row.reviewer_name }
+        : null,
+      reviewee: row.reviewee_id
+        ? { id: row.reviewee_id, fullName: row.reviewee_name }
+        : null,
+      gig: row.gig_id ? { id: row.gig_id, title: row.gig_title } : null,
+      rating: row.rating,
+      comment: row.comment,
+      createdAt: row.created_at,
+    })),
+    total,
+    page,
+    limit,
+    totalPages,
+  }
+}
+
+export const listCategories = async () => {
+  const rows = await query<DbCategory>(
+    'SELECT id, name, slug FROM categories ORDER BY name',
+  )
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+  }))
+}
+
 export const deleteReview = async (reviewId: string, adminId: string) => {
   const review = await queryOne<{ id: string; reviewee_id: string }>(
     'SELECT id, reviewee_id FROM reviews WHERE id = $1',
-    [reviewId]
+    [reviewId],
   )
   if (!review) throw new ApiError(404, 'Review not found')
 
@@ -523,18 +713,18 @@ export const deleteReview = async (reviewId: string, adminId: string) => {
     const stats = await client.query<{ avg: string; count: string }>(
       `SELECT COALESCE(AVG(rating), 0) AS avg, COUNT(*) AS count
        FROM reviews WHERE reviewee_id = $1`,
-      [reviewee_id]
+      [reviewee_id],
     )
 
     await client.query(
       'UPDATE users SET avg_rating = $1, review_count = $2 WHERE id = $3',
-      [stats.rows[0].avg, Number(stats.rows[0].count), reviewee_id]
+      [stats.rows[0].avg, Number(stats.rows[0].count), reviewee_id],
     )
 
     await client.query(
       `INSERT INTO audit_logs (admin_id, action, target_type, target_id)
        VALUES ($1, 'DELETE_REVIEW', 'review', $2)`,
-      [adminId, reviewId]
+      [adminId, reviewId],
     )
   })
 }
