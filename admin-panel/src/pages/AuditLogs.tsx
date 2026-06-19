@@ -137,7 +137,7 @@ export default function AuditLogs() {
         <StatusBadge tone="neutral">Append-only — never edited</StatusBadge>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 bg-white border border-neutral-200 rounded-2xl p-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-white border border-neutral-200 rounded-2xl p-2 sm:p-3">
         <Select
           value={action}
           onValueChange={(v) => {
@@ -145,7 +145,7 @@ export default function AuditLogs() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

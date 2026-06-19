@@ -161,7 +161,7 @@ export default function Gigs() {
         {data && <StatusBadge tone="neutral">{data.total.toLocaleString()}</StatusBadge>}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 bg-white border border-neutral-200 rounded-2xl p-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-white border border-neutral-200 rounded-2xl p-2 sm:p-3">
         <SearchInput
           value={search}
           onChange={(v) => {
@@ -177,7 +177,7 @@ export default function Gigs() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-full sm:w-[150px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -195,7 +195,7 @@ export default function Gigs() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
