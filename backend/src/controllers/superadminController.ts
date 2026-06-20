@@ -39,7 +39,7 @@ export const getDashboard = asyncWrapper(async (_req: Request, res: Response) =>
 
 export const listUsers = asyncWrapper(async (req: Request, res: Response) => {
   const result = await superadminService.listUsers(req.query as never)
-  res.json(ApiResponse.success(result, `${result.meta.total} users retrieved`))
+  res.json(ApiResponse.success(result, `${result.total} users retrieved`))
 })
 
 export const updateUser = asyncWrapper(async (req: Request, res: Response) => {
@@ -56,7 +56,7 @@ export const deleteUser = asyncWrapper(async (req: Request, res: Response) => {
 
 export const listGigs = asyncWrapper(async (req: Request, res: Response) => {
   const result = await superadminService.listGigs(req.query as never)
-  res.json(ApiResponse.success(result, `${result.meta.total} gigs retrieved`))
+  res.json(ApiResponse.success(result, `${result.total} gigs retrieved`))
 })
 
 export const deleteGig = asyncWrapper(async (req: Request, res: Response) => {
@@ -67,7 +67,7 @@ export const deleteGig = asyncWrapper(async (req: Request, res: Response) => {
 
 export const listAuditLogs = asyncWrapper(async (req: Request, res: Response) => {
   const result = await superadminService.listAuditLogs(req.query as never)
-  res.json(ApiResponse.success(result, `${result.meta.total} audit logs retrieved`))
+  res.json(ApiResponse.success(result, `${result.total} audit logs retrieved`))
 })
 
 export const listUniversities = asyncWrapper(async (_req: Request, res: Response) => {
@@ -80,8 +80,18 @@ export const createUniversity = asyncWrapper(async (req: Request, res: Response)
   res.status(201).json(ApiResponse.success(data, 'University created'))
 })
 
+export const listReviews = asyncWrapper(async (req: Request, res: Response) => {
+  const result = await superadminService.listReviews(req.query as never)
+  res.json(ApiResponse.success(result, `${result.total} reviews retrieved`))
+})
+
 export const deleteReview = asyncWrapper(async (req: Request, res: Response) => {
   if (!req.admin) throw new ApiError(401, 'Unauthenticated')
   await superadminService.deleteReview(req.params.id as string, req.admin.id)
   res.json(ApiResponse.success(null, 'Review deleted'))
+})
+
+export const listCategories = asyncWrapper(async (_req: Request, res: Response) => {
+  const data = await superadminService.listCategories()
+  res.json(ApiResponse.success(data, `${data.length} categories retrieved`))
 })

@@ -19,6 +19,8 @@ router.delete('/gigs/:id', superadminGuard, superadminController.deleteGig)
 router.get('/audit-logs', superadminGuard, superadminController.listAuditLogs)
 router.get('/universities', superadminGuard, superadminController.listUniversities)
 router.post('/universities', superadminGuard, validate(CreateUniversitySchema), superadminController.createUniversity)
+router.get('/reviews', superadminGuard, superadminController.listReviews)
 router.delete('/reviews/:id', superadminGuard, superadminController.deleteReview)
+router.get('/categories', superadminGuard, superadminController.listCategories)
 
 export default router

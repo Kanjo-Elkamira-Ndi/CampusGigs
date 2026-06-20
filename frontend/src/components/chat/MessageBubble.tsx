@@ -1,7 +1,8 @@
-import type { MessageAttachment } from "@/types";
+import type { MessageAttachment, MessageStatus, ReplyToInfo } from "@/types";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { FileText, Download } from "lucide-react";
+import { FileText, Download, Play, Mic, Check } from "lucide-react";
+import { useState, useRef } from "react";
 
 interface Props {
   text: string;
@@ -9,6 +10,9 @@ interface Props {
   isMe: boolean;
   isConsecutive?: boolean;
   attachments?: MessageAttachment[];
+  isVoice?: boolean;
+  status?: MessageStatus;
+  replyTo?: ReplyToInfo;
 }
 
 function formatSize(bytes: number): string {
@@ -17,23 +21,45 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function StatusTicks({ status, isMe }: { status?: MessageStatus; isMe: boolean }) {
+  if (!isMe || !status) return null;
+
+  if (status === "sent") {
+    return <Check size={12} className="text-muted-foreground/50" />;
+  }
+  if (status === "delivered") {
+    return (
+      <span className="flex items-center">
+        <Check size={12} className="text-muted-foreground/60" />
+        <Check size={12} className="-ml-[5px] text-muted-foreground/60" />
+      </span>
+    );
+  }
+  if (status === "read") {
+    return (
+      <span className="flex items-center">
+        <Check size={12} className="text-blue-500" />
+        <Check size={12} className="-ml-[5px] text-blue-500" />
+      </span>
+    );
+  }
+  return null;
+}
+
 function ImageAttachment({ att }: { att: MessageAttachment }) {
   return (
     <div
       className="relative mt-1.5 overflow-hidden rounded-xl border border-foreground/10 bg-muted"
       style={{ aspectRatio: att.width && att.height ? `${att.width}/${att.height}` : "16/9" }}
     >
-      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">
-        <img
-          src={att.url}
-          alt={att.fileName ?? "image"}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-            (e.target as HTMLImageElement).parentElement!.classList.add("flex");
-          }}
-        />
-      </div>
+      <img
+        src={att.url}
+        alt={att.fileName ?? "image"}
+        className="w-full h-full object-cover"
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = "none";
+        }}
+      />
     </div>
   );
 }
@@ -64,14 +90,100 @@ function FileAttachment({ att, isMe }: { att: MessageAttachment; isMe: boolean }
   );
 }
 
-export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments }: Props) {
+function VoiceAttachment({ att, isMe }: { att: MessageAttachment; isMe: boolean }) {
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current.play();
+      setPlaying(true);
+      audioRef.current.onended = () => setPlaying(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 mt-1.5">
+      <button
+        type="button"
+        onClick={togglePlay}
+        className={cn(
+          "flex items-center justify-center w-8 h-8 rounded-full shrink-0 transition-colors",
+          isMe
+            ? "bg-indigo-400/30 hover:bg-indigo-400/50 text-white"
+            : "bg-muted hover:bg-muted/80 text-foreground",
+        )}
+      >
+        {playing ? <Mic size={14} /> : <Play size={14} />}
+      </button>
+      <div className="flex-1 h-1.5 rounded-full bg-muted-foreground/20 overflow-hidden">
+        <div
+          className={cn(
+            "h-full rounded-full transition-all duration-300",
+            playing ? "bg-indigo-500 animate-pulse" : "bg-muted-foreground/40",
+            isMe ? "bg-indigo-300" : "",
+          )}
+          style={{ width: playing ? "60%" : "30%" }}
+        />
+      </div>
+      <audio ref={audioRef} src={att.url} preload="none" />
+    </div>
+  );
+}
+
+function ReplyPreview({ replyTo, isMe }: { replyTo: ReplyToInfo; isMe: boolean }) {
+  return (
+    <div
+      className={cn(
+        "mb-1.5 pl-2.5 border-l-2 rounded-sm text-xs",
+        isMe
+          ? "border-indigo-300/60 text-indigo-200"
+          : "border-gray-400 dark:border-gray-500 text-gray-500 dark:text-gray-400",
+      )}
+    >
+      <div className="font-semibold text-[11px] mb-0.5">
+        {replyTo.isVoice ? "🎤 Voice message" : replyTo.text.slice(0, 80)}{replyTo.text.length > 80 ? "…" : ""}
+      </div>
+    </div>
+  );
+}
+
+export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments, isVoice, status, replyTo }: Props) {
   const hasAttachments = attachments && attachments.length > 0;
+
+  if (isVoice && !text) {
+    const voiceAtt = attachments?.[0];
+    return (
+      <div className={cn("flex group", isMe ? "justify-end" : "justify-start")}>
+        <div
+          className={cn(
+            "relative max-w-[65ch] px-3.5 py-2 text-sm leading-relaxed transition-shadow duration-200 border",
+            isMe
+              ? cn("bg-indigo-600 text-white border-indigo-500/20", isConsecutive ? "rounded-2xl" : "rounded-2xl rounded-br-md")
+              : cn("bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200/60 dark:border-gray-700/60", isConsecutive ? "rounded-2xl" : "rounded-2xl rounded-bl-md"),
+          )}
+        >
+          {voiceAtt && <VoiceAttachment att={voiceAtt} isMe={isMe} />}
+          <div className={cn("flex items-center gap-1 transition-opacity duration-200 mt-1")}>
+            <span className={cn("text-[10px] tabular-nums leading-none", isMe ? "text-indigo-200" : "text-gray-400 dark:text-gray-500")}>
+              {format(new Date(sentAt), "HH:mm")}
+            </span>
+            <StatusTicks status={status} isMe={isMe} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("flex group", isMe ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "relative max-w-[65ch] px-3.5 py-2 text-sm leading-relaxed transition-shadow duration-200",
-          "border",
+          "relative max-w-[65ch] px-3.5 py-2 text-sm leading-relaxed transition-shadow duration-200 border",
           isMe
             ? cn(
                 "bg-indigo-600 text-white border-indigo-500/20",
@@ -83,19 +195,21 @@ export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments }
               ),
         )}
       >
+        {replyTo && <ReplyPreview replyTo={replyTo} isMe={isMe} />}
         {text && <p className="text-pretty">{text}</p>}
         {hasAttachments &&
           attachments.map((att) =>
             att.type === "image" ? (
               <ImageAttachment key={att.url} att={att} />
+            ) : att.type === "voice" ? (
+              <VoiceAttachment key={att.url} att={att} isMe={isMe} />
             ) : (
               <FileAttachment key={att.url} att={att} isMe={isMe} />
             ),
           )}
         <div
           className={cn(
-            "flex items-center gap-1",
-            "transition-opacity duration-200",
+            "flex items-center gap-1 transition-opacity duration-200",
             text || hasAttachments ? "opacity-0 group-hover:opacity-100 mt-1" : "",
           )}
         >
@@ -107,6 +221,7 @@ export function MessageBubble({ text, sentAt, isMe, isConsecutive, attachments }
           >
             {format(new Date(sentAt), "HH:mm")}
           </span>
+          <StatusTicks status={status} isMe={isMe} />
         </div>
       </div>
     </div>

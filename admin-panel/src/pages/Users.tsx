@@ -169,7 +169,7 @@ export default function Users() {
         </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 bg-white border border-neutral-200 rounded-2xl p-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-white border border-neutral-200 rounded-2xl p-2 sm:p-3">
         <SearchInput
           value={search}
           onChange={(v) => {
@@ -185,7 +185,7 @@ export default function Users() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -202,7 +202,7 @@ export default function Users() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -218,7 +218,7 @@ export default function Users() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="University" />
           </SelectTrigger>
           <SelectContent>

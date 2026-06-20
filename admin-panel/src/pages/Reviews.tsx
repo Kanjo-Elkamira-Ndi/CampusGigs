@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Construction, MoreHorizontal, Star } from "lucide-react";
+import { MoreHorizontal, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,33 +38,6 @@ export default function Reviews() {
   const { data, isLoading, error, refetch } = useReviews({ page, limit: LIMIT });
   const deleteReview = useDeleteReview();
   const [deleteTarget, setDeleteTarget] = useState<AdminReviewRow | null>(null);
-
-  const is404 = (error as any)?.response?.status === 404;
-
-  if (is404) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-neutral-900">Reviews</h1>
-          <StatusBadge tone="amber">Moderation queue</StatusBadge>
-        </div>
-        <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/40 p-8 flex items-start gap-4">
-          <div className="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-            <Construction size={20} />
-          </div>
-          <div>
-            <h3 className="font-semibold text-neutral-900">
-              Reviews endpoint coming in Phase 6 of the API build
-            </h3>
-            <p className="text-sm text-neutral-600 mt-1">
-              Once the backend ships <code>/superadmin/reviews</code>, this page will list,
-              filter, and let you moderate reviews here.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const columns: DataTableColumn<AdminReviewRow>[] = [
     {

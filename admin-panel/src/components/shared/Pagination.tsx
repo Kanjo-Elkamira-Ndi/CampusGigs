@@ -14,8 +14,8 @@ export function Pagination({ page, limit, total, onPageChange }: PaginationProps
   const end = Math.min(page * limit, total);
 
   return (
-    <div className="flex items-center justify-between gap-3 py-3 text-sm text-neutral-600">
-      <div>
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-3 text-sm text-neutral-600">
+      <div className="text-xs sm:text-sm">
         Showing {start}–{end} of {total}
       </div>
       <div className="flex items-center gap-1">

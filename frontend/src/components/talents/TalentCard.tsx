@@ -1,9 +1,12 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Clock, Star, Briefcase, BadgeCheck, ArrowUpRight } from "lucide-react";
 import type { PublicUser } from "@/types";
 import { Avatar } from "@/components/shared/Avatar";
 import { UniversityBadge } from "@/components/shared/UniversityBadge";
+import { AuthPromptModal } from "@/components/shared/AuthPromptModal";
+import { useAuthStore } from "@/store/authStore";
 
 interface Props {
   user: PublicUser;
@@ -31,6 +34,17 @@ function roleTitle(skills: string[]): string {
 
 export function TalentCard({ user, index = 0 }: Props) {
   const role = roleTitle(user.skills);
+  const navigate = useNavigate();
+  const currentUser = useAuthStore((s) => s.user);
+  const [authOpen, setAuthOpen] = useState(false);
+
+  const requireAuth = (to: string) => {
+    if (currentUser) {
+      navigate(to);
+    } else {
+      setAuthOpen(true);
+    }
+  };
 
   return (
     <motion.div
@@ -52,6 +66,7 @@ export function TalentCard({ user, index = 0 }: Props) {
             <Avatar
               id={user.id}
               name={user.fullName}
+              src={user.avatarUrl}
               size={80}
               className="rounded-xl w-20 h-20 object-cover"
             />
@@ -169,27 +184,31 @@ export function TalentCard({ user, index = 0 }: Props) {
             )}
 
             <div className="flex items-center gap-2 ml-auto">
-              <Link
-                to={"/profile/" + user.id}
+              <button
+                type="button"
+                onClick={() => requireAuth("/profile/" + user.id)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-80"
                 style={{
                   border: "1px solid var(--card-border)",
                   color: "var(--foreground)",
+                  backgroundColor: "transparent",
                 }}
               >
                 View Profile
-              </Link>
-              <Link
-                to={"/profile/" + user.id}
+              </button>
+              <button
+                type="button"
+                onClick={() => requireAuth("/profile/" + user.id)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:opacity-90"
                 style={{ backgroundColor: "var(--brand)" }}
               >
                 Hire Now <ArrowUpRight size={14} />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <AuthPromptModal open={authOpen} onOpenChange={setAuthOpen} />
     </motion.div>
   );
 }

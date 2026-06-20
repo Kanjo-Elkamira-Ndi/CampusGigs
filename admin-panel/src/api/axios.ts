@@ -7,7 +7,12 @@ export const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (res.data && typeof res.data === "object" && "success" in res.data) {
+      res.data = res.data.data;
+    }
+    return res;
+  },
   (err) => {
     if (err.response?.status === 401 && !window.location.pathname.startsWith("/login")) {
       window.location.href = "/login";

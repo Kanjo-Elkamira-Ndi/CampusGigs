@@ -72,8 +72,8 @@ export default function Login() {
         </motion.div>
       </motion.div>
 
-      <div className="flex-1 flex items-center justify-center bg-white">
-        <div className="w-full max-w-md px-12">
+      <div className="flex-1 flex items-center justify-center bg-white px-4 sm:px-0">
+        <div className="w-full max-w-md px-4 sm:px-12">
           <h2 className="text-2xl font-bold text-neutral-900">Welcome back</h2>
           <p className="text-sm text-neutral-500 mt-1 mb-8">Super Admin access only</p>
 

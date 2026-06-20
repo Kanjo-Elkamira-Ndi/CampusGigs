@@ -1,19 +1,48 @@
 import { api, extractData } from "./axios";
-import type { ChatThread, ChatMessage } from "@/types";
+import type { ChatThread, ChatMessage, MessageAttachment, MessageStatus, ReplyToInfo } from "@/types";
+
+interface BackendReplyToInfo {
+  id: string;
+  fromUserId: string;
+  text: string;
+  isVoice?: boolean;
+}
+
+interface BackendMessageAttachment {
+  type: "image" | "file" | "voice";
+  url: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+  width?: number;
+  height?: number;
+}
 
 interface BackendThreadMessage {
   id: string;
   fromUserId: string;
   text: string;
   sentAt: string;
-  attachments: Array<{ type: "image" | "file"; url: string; fileName?: string }>;
+  attachments: BackendMessageAttachment[];
+  isVoice?: boolean;
+  status?: MessageStatus;
+  replyToId?: string;
+  replyTo?: BackendReplyToInfo;
+}
+
+interface BackendOtherUser {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+  lastSeen?: string | null;
 }
 
 interface BackendThread {
   id: string;
-  otherUser: { id: string; fullName: string; avatarUrl: string | null };
+  otherUser: BackendOtherUser;
   gigTitle: string;
   messages: BackendThreadMessage[];
+  unreadCount?: number;
 }
 
 function mapBackendThread(t: BackendThread): ChatThread {
@@ -25,6 +54,7 @@ function mapBackendThread(t: BackendThread): ChatThread {
       id: ou.id,
       fullName: ou.fullName,
       avatarUrl: ou.avatarUrl ?? undefined,
+      lastSeen: ou.lastSeen ?? undefined,
       universityName: "",
       city: "",
       avgRating: 0,
@@ -32,14 +62,31 @@ function mapBackendThread(t: BackendThread): ChatThread {
       hiredCount: 0,
       skills: [],
     } as ChatThread["otherUser"],
-    messages: t.messages.map((m) => ({
-      id: m.id,
-      fromUserId: m.fromUserId,
-      text: m.text,
-      sentAt: m.sentAt,
-      attachments: m.attachments,
-    })),
+    messages: t.messages.map(mapMessage),
+    unreadCount: t.unreadCount ?? 0,
   };
+}
+
+function mapMessage(m: BackendThreadMessage): ChatMessage {
+  const msg: ChatMessage = {
+    id: m.id,
+    fromUserId: m.fromUserId,
+    text: m.text,
+    sentAt: m.sentAt,
+    attachments: m.attachments as MessageAttachment[],
+    isVoice: m.isVoice ?? false,
+    status: m.status ?? "sent",
+    replyToId: m.replyToId,
+  };
+  if (m.replyTo) {
+    msg.replyTo = {
+      id: m.replyTo.id,
+      fromUserId: m.replyTo.fromUserId,
+      text: m.replyTo.text,
+      isVoice: m.replyTo.isVoice,
+    };
+  }
+  return msg;
 }
 
 export const messagesApi = {
@@ -55,8 +102,36 @@ export const messagesApi = {
       .then(extractData<BackendThread>)
       .then(mapBackendThread),
 
-  sendMessage: (threadId: string, text: string) =>
+  sendMessage: (
+    threadId: string,
+    payload: {
+      text: string;
+      attachments?: MessageAttachment[];
+      isVoice?: boolean;
+      replyToId?: string;
+    },
+  ) =>
     api
-      .post<{ success: boolean; data: ChatMessage }>(`/messages/${threadId}`, { text })
+      .post<{ success: boolean; data: ChatMessage }>(`/messages/${threadId}`, payload)
       .then(extractData<ChatMessage>),
+
+  uploadImage: (file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return api
+      .post<{ success: boolean; data: { url: string } }>("/upload/chat/image", fd, {
+        headers: { "Content-Type": null },
+      })
+      .then(extractData<{ url: string }>);
+  },
+
+  uploadVoice: (file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return api
+      .post<{ success: boolean; data: { url: string } }>("/upload/chat/voice", fd, {
+        headers: { "Content-Type": null },
+      })
+      .then(extractData<{ url: string }>);
+  },
 };

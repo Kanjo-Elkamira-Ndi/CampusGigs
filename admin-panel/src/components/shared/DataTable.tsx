@@ -64,7 +64,8 @@ export function DataTable<T>({
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[640px]">
         <thead>
           <tr className="text-xs uppercase tracking-wide text-neutral-500 bg-neutral-50">
             {columns.map((c) => (
@@ -116,6 +117,7 @@ export function DataTable<T>({
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
