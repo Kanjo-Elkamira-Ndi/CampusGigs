@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SecureStorage {
   SecureStorage._();
@@ -13,17 +15,62 @@ class SecureStorage {
   static const String userIdKey = 'user_id';
   static const String roleKey = 'active_role';
 
-  Future<void> saveToken(String token) => _storage.write(key: tokenKey, value: token);
-  Future<String?> getToken() => _storage.read(key: tokenKey);
-  Future<void> deleteToken() => _storage.delete(key: tokenKey);
+  Future<void> _write(String key, String value) async {
+    try {
+      if (kIsWeb) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(key, value);
+      } else {
+        await _storage.write(key: key, value: value);
+      }
+    } catch (_) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, value);
+    }
+  }
 
-  Future<void> saveUserId(String userId) => _storage.write(key: userIdKey, value: userId);
-  Future<String?> getUserId() => _storage.read(key: userIdKey);
+  Future<String?> _read(String key) async {
+    try {
+      if (kIsWeb) {
+        final prefs = await SharedPreferences.getInstance();
+        return prefs.getString(key);
+      }
+      return await _storage.read(key: key);
+    } catch (_) {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(key);
+    }
+  }
 
-  Future<void> saveRole(String role) => _storage.write(key: roleKey, value: role);
-  Future<String?> getRole() => _storage.read(key: roleKey);
+  Future<void> _deleteAll() async {
+    try {
+      if (kIsWeb) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(tokenKey);
+        await prefs.remove(userIdKey);
+        await prefs.remove(roleKey);
+      } else {
+        await _storage.deleteAll();
+      }
+    } catch (_) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(tokenKey);
+      await prefs.remove(userIdKey);
+      await prefs.remove(roleKey);
+    }
+  }
 
-  Future<void> clearAll() => _storage.deleteAll();
+  Future<void> saveToken(String token) => _write(tokenKey, token);
+  Future<String?> getToken() => _read(tokenKey);
+  Future<void> deleteToken() => _write(tokenKey, '');
+
+  Future<void> saveUserId(String userId) => _write(userIdKey, userId);
+  Future<String?> getUserId() => _read(userIdKey);
+
+  Future<void> saveRole(String role) => _write(roleKey, role);
+  Future<String?> getRole() => _read(roleKey);
+
+  Future<void> clearAll() => _deleteAll();
 }
 
 final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage.instance);
