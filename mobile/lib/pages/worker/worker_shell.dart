@@ -5,6 +5,7 @@ import '../../core/theme/app_dimensions.dart';
 import 'home/home_page.dart';
 import 'search/search_page.dart';
 import 'applications/my_applications_page.dart';
+import 'chat/chat_list_page.dart';
 
 class WorkerShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -142,7 +143,7 @@ class WorkerMessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _PlaceholderPage(title: 'Messages');
+    return const WorkerChatListPage();
   }
 }
 

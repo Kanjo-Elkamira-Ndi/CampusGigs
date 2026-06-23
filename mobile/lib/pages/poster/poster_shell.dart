@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
+import 'chat/chat_list_page.dart';
 
 class PosterShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -129,7 +130,7 @@ class PosterMessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Messages');
+    return const PosterChatListPage();
   }
 }
 
