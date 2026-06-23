@@ -22,8 +22,8 @@ class AuthMiddleware extends ChangeNotifier {
 
     if (isLoggedIn && authRoutes.contains(location) && location != RouteNames.splash) {
       final role = await SecureStorage.instance.getRole() ?? RoleConstants.worker;
-      if (role == RoleConstants.poster) return RouteNames.posterShell;
-      return RouteNames.workerShell;
+      if (role == RoleConstants.poster) return RouteNames.posterDashboard;
+      return RouteNames.workerHome;
     }
 
     return null;

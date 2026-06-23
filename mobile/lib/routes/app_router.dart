@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../middleware/auth_middleware.dart';
 import 'route_names.dart';
@@ -45,15 +44,95 @@ final GoRouter appRouter = GoRouter(
       name: 'role-selection',
       builder: (context, state) => const RoleSelectionPage(),
     ),
-    GoRoute(
-      path: RouteNames.workerShell,
-      name: 'worker-shell',
-      builder: (context, state) => const WorkerShell(child: Center(child: Text('Worker shell'))),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => WorkerShell(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.workerHome,
+              builder: (context, state) => const WorkerHomePage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.workerSearch,
+              builder: (context, state) => const WorkerSearchPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.workerApplications,
+              builder: (context, state) => const WorkerApplicationsPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.workerMessages,
+              builder: (context, state) => const WorkerMessagesPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.workerProfile,
+              builder: (context, state) => const WorkerProfilePage(),
+            ),
+          ],
+        ),
+      ],
     ),
-    GoRoute(
-      path: RouteNames.posterShell,
-      name: 'poster-shell',
-      builder: (context, state) => const PosterShell(child: Center(child: Text('Poster shell'))),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => PosterShell(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.posterDashboard,
+              builder: (context, state) => const PosterDashboardPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.posterGigs,
+              builder: (context, state) => const PosterGigsPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.posterPost,
+              builder: (context, state) => const PosterCreateGigPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.posterMessages,
+              builder: (context, state) => const PosterMessagesPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouteNames.posterProfile,
+              builder: (context, state) => const PosterProfilePage(),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );

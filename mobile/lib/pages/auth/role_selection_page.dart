@@ -37,9 +37,9 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
     await SecureStorage.instance.saveRole(_selectedRole!);
     if (mounted) {
       if (_selectedRole == 'POSTER') {
-        context.go(RouteNames.posterShell);
+        context.go(RouteNames.posterDashboard);
       } else {
-        context.go(RouteNames.workerShell);
+        context.go(RouteNames.workerHome);
       }
     }
   }
