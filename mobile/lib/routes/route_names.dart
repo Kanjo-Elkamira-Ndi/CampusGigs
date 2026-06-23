@@ -16,6 +16,12 @@ class RouteNames {
   static const String workerMessages = '/worker/messages';
   static const String workerProfile = '/worker/profile';
 
+  // Worker sub-routes
+  static const String workerGigDetail = '/worker/gig/:id';
+  static const String workerSearchFilter = '/worker/search/filter';
+  static const String workerSaved = '/worker/saved';
+  static const String workerDashboard = '/worker/dashboard';
+
   // Poster shell
   static const String posterShell = '/poster';
   static const String posterDashboard = '/poster/dashboard';

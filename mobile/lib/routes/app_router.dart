@@ -8,6 +8,10 @@ import '../pages/auth/register_page.dart';
 import '../pages/auth/forgot_password_page.dart';
 import '../pages/auth/role_selection_page.dart';
 import '../pages/worker/worker_shell.dart';
+import '../pages/worker/gig_detail/gig_detail_page.dart';
+import '../pages/worker/search/filter_page.dart';
+import '../pages/worker/saved/saved_gigs_page.dart';
+import '../pages/worker/dashboard/worker_dashboard_page.dart';
 import '../pages/poster/poster_shell.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -43,6 +47,25 @@ final GoRouter appRouter = GoRouter(
       path: RouteNames.roleSelection,
       name: 'role-selection',
       builder: (context, state) => const RoleSelectionPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerGigDetail,
+      builder: (context, state) {
+        final gigId = state.pathParameters['id']!;
+        return GigDetailPage(gigId: gigId);
+      },
+    ),
+    GoRoute(
+      path: RouteNames.workerSearchFilter,
+      builder: (context, state) => const FilterPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerSaved,
+      builder: (context, state) => const SavedGigsPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerDashboard,
+      builder: (context, state) => const WorkerDashboardPage(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => WorkerShell(navigationShell: navigationShell),

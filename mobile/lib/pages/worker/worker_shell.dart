@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
+import 'home/home_page.dart';
+import 'search/search_page.dart';
+import 'applications/my_applications_page.dart';
 
 class WorkerShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -112,7 +115,7 @@ class WorkerHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Home');
+    return const HomePage();
   }
 }
 
@@ -121,7 +124,7 @@ class WorkerSearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Search');
+    return const SearchPage();
   }
 }
 
@@ -130,7 +133,7 @@ class WorkerApplicationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Applications');
+    return const MyApplicationsPage();
   }
 }
 
@@ -139,7 +142,7 @@ class WorkerMessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Messages');
+    return const _PlaceholderPage(title: 'Messages');
   }
 }
 
