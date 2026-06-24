@@ -2,6 +2,7 @@ import '../../dto/gig/gig_dto.dart';
 import '../../dto/application/application_dto.dart';
 import '../../dto/message/conversation_dto.dart';
 import '../../dto/message/message_dto.dart';
+import '../../dto/notification/notification_dto.dart';
 
 class MockGig {
   final String id;
@@ -80,54 +81,6 @@ class MockWorkerStats {
     required this.acceptedApplications,
     required this.profileCompleteness,
     required this.weeklyActivity,
-  });
-}
-
-class MockConversation {
-  final String id;
-  final String participantId;
-  final String participantName;
-  final String? participantAvatar;
-  final String gigId;
-  final String gigTitle;
-  final String lastMessage;
-  final String lastMessageTime;
-  final int unreadCount;
-
-  const MockConversation({
-    required this.id,
-    required this.participantId,
-    required this.participantName,
-    this.participantAvatar,
-    required this.gigId,
-    required this.gigTitle,
-    required this.lastMessage,
-    required this.lastMessageTime,
-    this.unreadCount = 0,
-  });
-}
-
-class MockMessage {
-  final String id;
-  final String conversationId;
-  final String senderId;
-  final String senderName;
-  final String content;
-  final String type;
-  final String? imageUrl;
-  final bool isRead;
-  final String createdAt;
-
-  const MockMessage({
-    required this.id,
-    required this.conversationId,
-    required this.senderId,
-    required this.senderName,
-    required this.content,
-    this.type = 'text',
-    this.imageUrl,
-    this.isRead = false,
-    required this.createdAt,
   });
 }
 
@@ -398,151 +351,128 @@ class MockData {
     {'label': 'Other', 'amount': 8000, 'color': 0xFF9CA3AF},
   ];
 
-  // ── Worker Conversations ──
-  static const List<MockConversation> workerMockConversations = [
-    MockConversation(
-      id: '1',
-      participantId: '2',
-      participantName: 'Marie Edima',
-      participantAvatar: null,
-      gigId: '1',
-      gigTitle: 'Graphic Design for Student Association Poster',
-      lastMessage: 'I can start working on it tomorrow',
-      lastMessageTime: '2026-06-23T14:30:00.000Z',
-      unreadCount: 2,
-    ),
-    MockConversation(
-      id: '2',
-      participantId: '3',
-      participantName: 'Jean-Pierre Ndi',
-      participantAvatar: null,
-      gigId: '3',
-      gigTitle: 'Build a simple portfolio website',
-      lastMessage: 'Here is the first draft of the homepage',
-      lastMessageTime: '2026-06-22T09:15:00.000Z',
-      unreadCount: 0,
-    ),
+  // ── Notifications ──
+  static final List<NotificationDto> notifications = [
+    NotificationDto(id:'n1', title:'New applicant', body:'Amara Nkosi applied to your Design gig.',
+      type:'APPLICATION', isRead:false, createdAt:'2025-07-05T09:12:00Z', referenceId:'pg1'),
+    NotificationDto(id:'n2', title:'Application accepted', body:'Your application for "Logo Design" was accepted.',
+      type:'APPLICATION', isRead:false, createdAt:'2025-07-04T16:40:00Z', referenceId:'a1'),
+    NotificationDto(id:'n3', title:'New message', body:'Blessing Eze sent you a message.',
+      type:'MESSAGE', isRead:true, createdAt:'2025-07-04T11:00:00Z', referenceId:'conv1'),
+    NotificationDto(id:'n4', title:'Gig completed', body:'Build Landing Page has been marked complete.',
+      type:'GIG', isRead:true, createdAt:'2025-07-03T08:30:00Z', referenceId:'pg2'),
+    NotificationDto(id:'n5', title:'Review received', body:'You received a 5-star review from TechCo.',
+      type:'REVIEW', isRead:true, createdAt:'2025-07-02T14:00:00Z', referenceId:'r1'),
   ];
 
-  // ── Poster Conversations ──
-  static const List<MockConversation> posterMockConversations = [
-    MockConversation(
-      id: '1',
-      participantId: '1',
-      participantName: 'Kevin Nkeng',
-      participantAvatar: null,
-      gigId: '1',
-      gigTitle: 'Graphic Design for Student Association Poster',
-      lastMessage: 'I can start working on it tomorrow',
-      lastMessageTime: '2026-06-23T14:30:00.000Z',
-      unreadCount: 0,
-    ),
+  // ── Conversations ──
+  static final List<ConversationDto> conversations = [
+    ConversationDto(id:'conv1', otherUserId:'u2', otherUserName:'Blessing Eze',
+      otherUserAvatar:null, otherUserRole:'WORKER', gigTitle:'Design Social Media Graphics',
+      lastMessage:'Sure, I can start Monday.', lastMessageAt:'2025-07-05T10:30:00Z',
+      unreadCount:2, applicationId:'pa2'),
+    ConversationDto(id:'conv2', otherUserId:'u3', otherUserName:'Chidi Okafor',
+      otherUserAvatar:null, otherUserRole:'WORKER', gigTitle:'Build Landing Page in React',
+      lastMessage:'I have sent the first draft.', lastMessageAt:'2025-07-04T18:00:00Z',
+      unreadCount:0, applicationId:'pa3'),
+    ConversationDto(id:'conv3', otherUserId:'u4', otherUserName:'TechCo Solutions',
+      otherUserAvatar:null, otherUserRole:'POSTER', gigTitle:'Logo Design for Startup',
+      lastMessage:'When can you deliver?', lastMessageAt:'2025-07-03T09:15:00Z',
+      unreadCount:1, applicationId:'a1'),
   ];
 
-  // ── Messages ──
-  static const List<MockMessage> mockMessages = [
-    MockMessage(
-      id: '1', conversationId: '1', senderId: '2',
-      senderName: 'Marie Edima',
-      content: 'Hi! I saw your application for the flyer design gig.',
-      isRead: true,
-      createdAt: '2026-06-22T10:00:00.000Z',
-    ),
-    MockMessage(
-      id: '2', conversationId: '1', senderId: '1',
-      senderName: 'Kevin Nkeng',
-      content: 'Hello! Yes, I am very interested in this project.',
-      isRead: true,
-      createdAt: '2026-06-22T10:05:00.000Z',
-    ),
-    MockMessage(
-      id: '3', conversationId: '1', senderId: '2',
-      senderName: 'Marie Edima',
-      content: 'Great! Do you have any sample work I can see?',
-      isRead: true,
-      createdAt: '2026-06-22T10:10:00.000Z',
-    ),
-    MockMessage(
-      id: '4', conversationId: '1', senderId: '1',
-      senderName: 'Kevin Nkeng',
-      content: 'Yes, I can share my portfolio link with you.',
-      isRead: false,
-      createdAt: '2026-06-23T14:25:00.000Z',
-    ),
-    MockMessage(
-      id: '5', conversationId: '1', senderId: '1',
-      senderName: 'Kevin Nkeng',
-      content: 'I can start working on it tomorrow',
-      isRead: false,
-      createdAt: '2026-06-23T14:30:00.000Z',
-    ),
-    MockMessage(
-      id: '6', conversationId: '2', senderId: '3',
-      senderName: 'Jean-Pierre Ndi',
-      content: 'Hi Kevin, I need a portfolio website built. I have the design ready in Figma and need it coded in HTML, CSS, and JavaScript.',
-      isRead: true,
-      createdAt: '2026-06-20T09:00:00.000Z',
-    ),
-    MockMessage(
-      id: '7', conversationId: '2', senderId: '1',
-      senderName: 'Kevin Nkeng',
-      content: 'Hello Jean-Pierre! I can definitely help with that. I have built several responsive websites using HTML/CSS/JS. Could you share the Figma link so I can review it?',
-      isRead: true,
-      createdAt: '2026-06-20T09:30:00.000Z',
-    ),
-    MockMessage(
-      id: '8', conversationId: '2', senderId: '3',
-      senderName: 'Jean-Pierre Ndi',
-      content: 'Here is the first draft of the homepage',
-      isRead: true,
-      createdAt: '2026-06-22T09:15:00.000Z',
-    ),
+  // ── Messages (keyed by conversationId) ──
+  static final Map<String, List<MessageDto>> messages = {
+    'conv1': [
+      MessageDto(id:'m1', conversationId:'conv1', senderId:'currentUser',
+        content:'Hi! I saw your application, looks great.', sentAt:'2025-07-05T09:00:00Z', isOwn:true),
+      MessageDto(id:'m2', conversationId:'conv1', senderId:'u2',
+        content:'Thank you! I am very excited about this project.', sentAt:'2025-07-05T09:05:00Z', isOwn:false),
+      MessageDto(id:'m3', conversationId:'conv1', senderId:'currentUser',
+        content:'Can you start on Monday?', sentAt:'2025-07-05T10:25:00Z', isOwn:true),
+      MessageDto(id:'m4', conversationId:'conv1', senderId:'u2',
+        content:'Sure, I can start Monday.', sentAt:'2025-07-05T10:30:00Z', isOwn:false),
+    ],
+    'conv2': [
+      MessageDto(id:'m5', conversationId:'conv2', senderId:'u3',
+        content:'I have sent the first draft.', sentAt:'2025-07-04T18:00:00Z', isOwn:false),
+    ],
+    'conv3': [
+      MessageDto(id:'m6', conversationId:'conv3', senderId:'u4',
+        content:'When can you deliver?', sentAt:'2025-07-03T09:15:00Z', isOwn:false),
+    ],
+  };
+
+  // ── Freelancer Directory ──
+  static final List<Map<String, dynamic>> freelancers = [
+    {'id':'f1','name':'Amara Nkosi','university':'YIBS','skills':['Figma','Canva','Branding'],
+     'rating':4.8,'reviewCount':12,'completedGigs':9,'avatar':null,'bio':'Graphic designer with 2 years experience in brand identity.'},
+    {'id':'f2','name':'Blessing Eze','university':'UY1','skills':['React','JavaScript','Tailwind'],
+     'rating':4.9,'reviewCount':20,'completedGigs':15,'avatar':null,'bio':'Frontend dev building clean, fast web apps.'},
+    {'id':'f3','name':'Chidi Okafor','university':'YIBS','skills':['React','Node.js','PostgreSQL'],
+     'rating':4.7,'reviewCount':8,'completedGigs':6,'avatar':null,'bio':'Full-stack developer specialising in PERN stack.'},
+    {'id':'f4','name':'Diana Fon','university':'UB','skills':['Writing','SEO','Research'],
+     'rating':4.6,'reviewCount':15,'completedGigs':11,'avatar':null,'bio':'Content writer crafting SEO articles that rank.'},
+    {'id':'f5','name':'Eric Manga','university':'UDS','skills':['Python','Data Analysis','Excel'],
+     'rating':4.5,'reviewCount':6,'completedGigs':4,'avatar':null,'bio':'Data analyst turning raw numbers into insights.'},
   ];
 
-  // ── Typed DTO Lists ──
-  static final List<ConversationDto> workerConversations =
-      workerMockConversations
-          .map((c) => ConversationDto(
-                id: c.id,
-                participantId: c.participantId,
-                participantName: c.participantName,
-                participantAvatar: c.participantAvatar,
-                gigId: c.gigId,
-                gigTitle: c.gigTitle,
-                lastMessage: c.lastMessage,
-                lastMessageTime: c.lastMessageTime,
-                unreadCount: c.unreadCount,
-              ))
-          .toList();
+  // ── Poster Profile ──
+  static final Map<String, dynamic> posterProfile = {
+    'id':'currentPoster','name':'Alex Tchamba','email':'alex@techco.cm',
+    'phone':'+237 670 000 000','company':'TechCo Solutions','university':'YIBS',
+    'bio':'We build digital products for Cameroonian businesses.','avatar':null,
+    'totalGigsPosted':4,'totalSpent':73000,'memberSince':'2025-01-15',
+    'rating':4.7,'reviewCount':9,
+  };
 
-  static final List<ConversationDto> posterConversations =
-      posterMockConversations
-          .map((c) => ConversationDto(
-                id: c.id,
-                participantId: c.participantId,
-                participantName: c.participantName,
-                participantAvatar: c.participantAvatar,
-                gigId: c.gigId,
-                gigTitle: c.gigTitle,
-                lastMessage: c.lastMessage,
-                lastMessageTime: c.lastMessageTime,
-                unreadCount: c.unreadCount,
-              ))
-          .toList();
+  // ── Worker Profile ──
+  static final Map<String, dynamic> workerProfile = {
+    'id': 'currentWorker',
+    'name': 'Amara Nkosi',
+    'email': 'amara@student.yibs.cm',
+    'phone': '+237 655 000 000',
+    'university': 'YIBS',
+    'degree': 'BSc Computer Science',
+    'yearOfStudy': '3rd Year',
+    'bio': 'Passionate graphic designer and frontend developer. I love crafting clean, purposeful digital experiences.',
+    'avatar': null,
+    'skills': ['Figma', 'Canva', 'React', 'Flutter', 'Branding'],
+    'rating': 4.8,
+    'reviewCount': 12,
+    'completedGigs': 9,
+    'totalEarned': 87000,
+    'memberSince': '2025-02-10',
+    'profileStrength': 0.78,
+  };
 
-  static final List<MessageDto> messageDtos = mockMessages
-      .map((m) => MessageDto(
-            id: m.id,
-            conversationId: m.conversationId,
-            senderId: m.senderId,
-            senderName: m.senderName,
-            content: m.content,
-            type: m.type,
-            imageUrl: m.imageUrl,
-            isRead: m.isRead,
-            createdAt: m.createdAt,
-          ))
-      .toList();
+  // ── Worker Reviews (received) ──
+  static final List<Map<String, dynamic>> workerReviews = [
+    {
+      'id': 'wr1',
+      'reviewerName': 'TechCo Solutions',
+      'rating': 5,
+      'comment': 'Amara delivered exceptional work. Very professional and on time.',
+      'gigTitle': 'Design Social Media Graphics',
+      'createdAt': '2025-07-01',
+    },
+    {
+      'id': 'wr2',
+      'reviewerName': 'StartHub Cameroon',
+      'rating': 5,
+      'comment': 'Great attention to detail. Will definitely hire again.',
+      'gigTitle': 'Create Brand Identity Kit',
+      'createdAt': '2025-06-15',
+    },
+    {
+      'id': 'wr3',
+      'reviewerName': 'DevAgency YDE',
+      'rating': 4,
+      'comment': 'Good work overall. Minor revision needed but handled quickly.',
+      'gigTitle': 'Design App Icons',
+      'createdAt': '2025-06-01',
+    },
+  ];
 
   static String formatXAF(int amount) {
     if (amount >= 1000) {

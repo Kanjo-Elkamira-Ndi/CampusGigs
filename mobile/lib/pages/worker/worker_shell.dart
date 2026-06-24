@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_dimensions.dart';
 import 'home/home_page.dart';
 import 'search/search_page.dart';
 import 'applications/my_applications_page.dart';
 import 'chat/chat_list_page.dart';
+import 'profile/profile_page.dart' as profile;
+import 'settings/settings_page.dart' as settings;
 
 class WorkerShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -152,68 +153,16 @@ class WorkerProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Profile');
+    return const profile.WorkerProfilePage();
   }
 }
 
-class _PlaceholderPage extends StatelessWidget {
-  final String title;
-
-  const _PlaceholderPage({required this.title});
+class WorkerSettingsPage extends StatelessWidget {
+  const WorkerSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            border: Border(
-              bottom: BorderSide(color: AppColors.border, width: 0.8),
-            ),
-          ),
-          child: AppBar(
-            backgroundColor: AppColors.surface,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            title: Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.construction_outlined,
-              size: 48,
-              color: AppColors.textMuted,
-            ),
-            const SizedBox(height: AppDimensions.md),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-            const SizedBox(height: AppDimensions.sm),
-            Text(
-              'Coming in next phase',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const settings.WorkerSettingsPage();
   }
 }
+

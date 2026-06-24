@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_dimensions.dart';
 import 'chat/chat_list_page.dart';
+import 'profile/profile_page.dart' as profile;
+import 'profile/settings_page.dart' as settings;
+import '../shared/notifications_page.dart';
 
 class PosterShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -103,7 +105,7 @@ class PosterDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Dashboard');
+    return const Center(child: Text('Dashboard - coming soon'));
   }
 }
 
@@ -112,7 +114,7 @@ class PosterGigsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'My Gigs');
+    return const Center(child: Text('My Gigs - coming soon'));
   }
 }
 
@@ -121,7 +123,7 @@ class PosterCreateGigPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Post a Gig');
+    return const Center(child: Text('Post a Gig - coming soon'));
   }
 }
 
@@ -134,73 +136,30 @@ class PosterMessagesPage extends StatelessWidget {
   }
 }
 
+class PosterNotificationsPage extends StatelessWidget {
+  const PosterNotificationsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const NotificationsPage();
+  }
+}
+
 class PosterProfilePage extends StatelessWidget {
   const PosterProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceholderPage(title: 'Profile');
+    return const profile.PosterProfilePage();
   }
 }
 
-class _PlaceholderPage extends StatelessWidget {
-  final String title;
-
-  const _PlaceholderPage({required this.title});
+class PosterSettingsPage extends StatelessWidget {
+  const PosterSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            border: Border(
-              bottom: BorderSide(color: AppColors.border, width: 0.8),
-            ),
-          ),
-          child: AppBar(
-            backgroundColor: AppColors.surface,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            title: Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.construction_outlined,
-              size: 48,
-              color: AppColors.textMuted,
-            ),
-            const SizedBox(height: AppDimensions.md),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-            const SizedBox(height: AppDimensions.sm),
-            Text(
-              'Coming in next phase',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const settings.PosterSettingsPage();
   }
 }
+

@@ -13,6 +13,13 @@ import '../pages/worker/search/filter_page.dart';
 import '../pages/worker/saved/saved_gigs_page.dart';
 import '../pages/worker/dashboard/worker_dashboard_page.dart';
 import '../pages/poster/poster_shell.dart';
+import '../pages/shared/notifications_page.dart';
+import '../pages/shared/messages_page.dart';
+import '../pages/shared/freelancer_directory_page.dart';
+import '../pages/shared/freelancer_detail_page.dart';
+import '../pages/worker/profile/edit_profile_page.dart';
+import '../pages/worker/profile/reviews_page.dart';
+import '../pages/worker/settings/notification_preferences_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouteNames.splash,
@@ -156,6 +163,55 @@ final GoRouter appRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: RouteNames.workerNotifications,
+      builder: (context, state) => const NotificationsPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerMessagesDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return MessagesPage(conversationId: id);
+      },
+    ),
+    GoRoute(
+      path: RouteNames.workerFreelancers,
+      builder: (context, state) => const FreelancerDirectoryPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerFreelancerDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return FreelancerDetailPage(freelancerId: id);
+      },
+    ),
+    GoRoute(
+      path: RouteNames.posterNotifications,
+      builder: (context, state) => const NotificationsPage(),
+    ),
+    GoRoute(
+      path: RouteNames.posterMessagesDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return MessagesPage(conversationId: id);
+      },
+    ),
+    GoRoute(
+      path: RouteNames.posterSettings,
+      builder: (context, state) => const PosterSettingsPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerEditProfile,
+      builder: (context, state) => const WorkerEditProfilePage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerReviews,
+      builder: (context, state) => const WorkerReviewsPage(),
+    ),
+    GoRoute(
+      path: RouteNames.workerNotificationPrefs,
+      builder: (context, state) => const WorkerNotificationPreferencesPage(),
     ),
   ],
 );

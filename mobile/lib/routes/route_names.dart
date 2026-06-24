@@ -21,6 +21,13 @@ class RouteNames {
   static const String workerSearchFilter = '/worker/search/filter';
   static const String workerSaved = '/worker/saved';
   static const String workerDashboard = '/worker/dashboard';
+  static const String workerNotifications = '/worker/notifications';
+  static const String workerMessagesDetail = '/worker/messages/:id';
+  static const String workerFreelancers = '/worker/freelancers';
+  static const String workerFreelancerDetail = '/worker/freelancers/:id';
+  static const String workerEditProfile = '/worker/profile/edit';
+  static const String workerReviews = '/worker/profile/reviews';
+  static const String workerNotificationPrefs = '/worker/settings/notifications';
 
   // Poster shell
   static const String posterShell = '/poster';
@@ -29,4 +36,7 @@ class RouteNames {
   static const String posterPost = '/poster/post';
   static const String posterMessages = '/poster/messages';
   static const String posterProfile = '/poster/profile';
+  static const String posterNotifications = '/poster/notifications';
+  static const String posterMessagesDetail = '/poster/messages/:id';
+  static const String posterSettings = '/poster/settings';
 }
