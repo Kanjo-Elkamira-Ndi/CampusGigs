@@ -1,0 +1,84 @@
+name: campus-gigs
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: campus-gigs-db
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-campus_gigs}
+      POSTGRES_USER: ${POSTGRES_USER:-campusgigs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-campusgigs}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-campusgigs} -d ${POSTGRES_DB:-campus_gigs}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - campus-gigs-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: campus-gigs-api
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-campusgigs}:${POSTGRES_PASSWORD:-campusgigs}@postgres:5432/${POSTGRES_DB:-campus_gigs}
+      NODE_ENV: production
+      PORT: 5000
+      FRONTEND_URL: http://localhost
+      ADMIN_PANEL_URL: http://localhost:81
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - campus-gigs-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+    container_name: campus-gigs-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - campus-gigs-net
+
+  admin-panel:
+    build:
+      context: ./admin-panel
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+    container_name: campus-gigs-admin
+    restart: unless-stopped
+    ports:
+      - "81:80"
+    depends_on:
+      - backend
+    networks:
+      - campus-gigs-net
+
+volumes:
+  pgdata:
+
+networks:
+  campus-gigs-net:
+    driver: bridge
