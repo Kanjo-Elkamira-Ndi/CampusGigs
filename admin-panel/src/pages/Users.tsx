@@ -61,7 +61,7 @@ export default function Users() {
       header: "User",
       render: (u) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-brand-muted text-brand text-xs font-semibold flex items-center justify-center">
             {initials(u.fullName)}
           </div>
           <div className="min-w-0">
@@ -76,7 +76,7 @@ export default function Users() {
       header: "Role",
       render: (u) => (
         <StatusBadge
-          tone={u.role === "ADMIN" ? "amber" : u.role === "POSTER" ? "indigo" : "neutral"}
+          tone={u.role === "ADMIN" ? "amber" : u.role === "POSTER" ? "brand" : "neutral"}
         >
           {u.role}
         </StatusBadge>

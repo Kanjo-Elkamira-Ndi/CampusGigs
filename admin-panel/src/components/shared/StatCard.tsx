@@ -7,13 +7,13 @@ interface StatCardProps {
   label: string;
   value: number | string;
   icon: LucideIcon;
-  color?: "indigo" | "green" | "amber" | "rose";
+  color?: "brand" | "green" | "amber" | "rose";
   delta?: string;
   isLoading?: boolean;
 }
 
 const colors: Record<NonNullable<StatCardProps["color"]>, string> = {
-  indigo: "bg-indigo-50 text-indigo-600",
+  brand: "bg-brand-light text-brand",
   green: "bg-green-50 text-green-600",
   amber: "bg-amber-50 text-amber-600",
   rose: "bg-rose-50 text-rose-600",
@@ -23,7 +23,7 @@ export function StatCard({
   label,
   value,
   icon: Icon,
-  color = "indigo",
+  color = "brand",
   delta,
   isLoading,
 }: StatCardProps) {

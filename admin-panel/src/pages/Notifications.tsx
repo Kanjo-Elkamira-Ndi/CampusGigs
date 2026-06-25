@@ -166,7 +166,7 @@ export default function Notifications() {
                     onClick={() => markRead(log.id)}
                     className={cn(
                       "rounded-2xl border border-neutral-200 bg-white p-4 flex items-start gap-4 cursor-pointer transition-all hover:border-neutral-300",
-                      !isRead && "border-l-4 border-l-indigo-500 bg-indigo-50/30",
+                      !isRead && "border-l-4 border-l-brand bg-brand-light/30",
                     )}
                   >
                     <div
@@ -195,7 +195,7 @@ export default function Notifications() {
                       </div>
                     </div>
                     {!isRead && (
-                      <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 mt-2" />
+                      <span className="w-2 h-2 rounded-full bg-brand shrink-0 mt-2" />
                     )}
                   </motion.div>
                 );

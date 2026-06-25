@@ -86,7 +86,7 @@ export default function Universities() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-neutral-900">Universities</h1>
-        <Button onClick={() => setOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
+        <Button onClick={() => setOpen(true)} className="bg-brand hover:bg-brand-dark">
           <Plus size={16} className="mr-2" /> Add University
         </Button>
       </div>
@@ -143,7 +143,7 @@ export default function Universities() {
               <Button
                 type="submit"
                 disabled={create.isPending}
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className="bg-brand hover:bg-brand-dark"
               >
                 {create.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create

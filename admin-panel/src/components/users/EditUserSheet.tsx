@@ -160,7 +160,7 @@ export function EditUserSheet({ user, onClose }: EditUserSheetProps) {
           <Button
             onClick={submit}
             disabled={update.isPending}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            className="bg-brand hover:bg-brand-dark"
           >
             {update.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save changes

@@ -345,7 +345,7 @@ class MockData {
 
   // ── Poster: Earnings / Spend breakdown ──
   static final List<Map<String, dynamic>> earningsBreakdown = [
-    {'label': 'Design', 'amount': 25000, 'color': 0xFF4F46E5},
+    {'label': 'Design', 'amount': 25000, 'color': 0xFF0F8BFF},
     {'label': 'Development', 'amount': 50000, 'color': 0xFF10B981},
     {'label': 'Writing', 'amount': 23000, 'color': 0xFFF59E0B},
     {'label': 'Other', 'amount': 8000, 'color': 0xFF9CA3AF},

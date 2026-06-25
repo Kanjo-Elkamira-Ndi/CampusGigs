@@ -3,24 +3,34 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF4F46E5);
-  static const Color primaryLight = Color(0xFFEDE9FE);
+  // Primary brand — #0F8BFF (matches frontend --primary / --brand)
+  static const Color primary = Color(0xFF0F8BFF);
+  static const Color primaryDark = Color(0xFF0A7AE6);
+  static const Color primaryLight = Color(0x1A0F8BFF);
+  static const Color primaryMuted = Color(0x0D0F8BFF);
 
-  static const Color background = Color(0xFFF8F8FB);
+  // Surfaces
+  static const Color background = Color(0xFFF5F7FA);
   static const Color surface = Color(0xFFFFFFFF);
 
-  static const Color border = Color(0xFFE5E7EB);
+  // Borders
+  static const Color border = Color(0x14000000);
+  static const Color inputBorder = Color(0x1F000000);
 
-  static const Color textPrimary = Color(0xFF111827);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textMuted = Color(0xFF9CA3AF);
+  // Text
+  static const Color textPrimary = Color(0xFF1A1A2E);
+  static const Color textSecondary = Color(0xFF4B5563);
+  static const Color textMuted = Color(0xFF6B7280);
 
+  // Semantic
   static const Color success = Color(0xFF10B981);
   static const Color successLight = Color(0xFFD1FAE5);
   static const Color warning = Color(0xFFF59E0B);
   static const Color warningLight = Color(0xFFFEF3C7);
   static const Color error = Color(0xFFEF4444);
   static const Color errorLight = Color(0xFFFEE2E2);
-  static const Color amber = Color(0xFFF59E0B);
   static const Color offlineBg = Color(0xFF1F2937);
+
+  // Backward compat
+  static const Color amber = warning;
 }

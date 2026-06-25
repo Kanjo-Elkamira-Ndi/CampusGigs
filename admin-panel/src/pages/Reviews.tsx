@@ -46,7 +46,7 @@ export default function Reviews() {
       render: (r) =>
         r.reviewer ? (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-semibold flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-brand-muted text-brand text-[10px] font-semibold flex items-center justify-center">
               {initials(r.reviewer.fullName)}
             </div>
             <span className="text-sm">{r.reviewer.fullName}</span>
@@ -61,7 +61,7 @@ export default function Reviews() {
       render: (r) =>
         r.reviewee ? (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-semibold flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-brand-muted text-brand text-[10px] font-semibold flex items-center justify-center">
               {initials(r.reviewee.fullName)}
             </div>
             <span className="text-sm">{r.reviewee.fullName}</span>

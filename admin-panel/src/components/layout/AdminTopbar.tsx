@@ -48,7 +48,7 @@ export function AdminTopbar({ onToggleSidebar }: AdminTopbarProps) {
         >
           <Bell size={18} />
         </button>
-        <div className="w-9 h-9 rounded-full bg-indigo-600 text-white text-sm font-semibold flex items-center justify-center shrink-0">
+        <div className="w-9 h-9 rounded-full bg-brand text-white text-sm font-semibold flex items-center justify-center shrink-0">
           {initials(admin?.fullName ?? "A")}
         </div>
       </div>

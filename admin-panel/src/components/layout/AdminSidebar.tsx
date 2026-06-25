@@ -45,7 +45,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
     >
       <div className="px-4 pt-5 pb-2 flex items-center justify-between gap-2">
         <Link to="/dashboard" className="flex items-center gap-2" onClick={onClose}>
-          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="#4f46e5">
+          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="#0F8BFF">
             <path d="M12 1L3 6v12l9 5 9-5V6l-9-5z" />
           </svg>
           <span className="text-sm font-semibold text-neutral-500 uppercase tracking-widest">
@@ -72,10 +72,9 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
               cn(
                 "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors",
                 isActive
-                  ? "bg-indigo-50 text-indigo-600 font-medium"
+                  ? "bg-brand-light text-brand font-medium"
                   : "text-neutral-600 hover:bg-neutral-100",
-              )
-            }
+            )
           >
             <item.icon size={18} />
             <span>{item.label}</span>
@@ -92,7 +91,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
             cn(
               "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors w-[calc(100%-1rem)]",
               isActive
-                ? "bg-indigo-50 text-indigo-600 font-medium"
+                ? "bg-brand-light text-brand font-medium"
                 : "text-neutral-600 hover:bg-neutral-100",
             )
           }
@@ -107,7 +106,42 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
             cn(
               "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors w-[calc(100%-1rem)]",
               isActive
-                ? "bg-indigo-50 text-indigo-600 font-medium"
+                ? "bg-brand-light text-brand font-medium"
+                : "text-neutral-600 hover:bg-neutral-100",
+            )
+          }
+        >
+            <item.icon size={18} />
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
+
+        <div className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 px-4 mt-6 mb-1">
+          Account
+        </div>
+        <NavLink
+          to="/notifications"
+          onClick={onClose}
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors w-[calc(100%-1rem)]",
+              isActive
+                ? "bg-brand-light text-brand font-medium"
+                : "text-neutral-600 hover:bg-neutral-100",
+            )
+          }
+        >
+          <Bell size={18} />
+          <span>Notifications</span>
+        </NavLink>
+        <NavLink
+          to="/settings"
+          onClick={onClose}
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors w-[calc(100%-1rem)]",
+              isActive
+                ? "bg-brand-light text-brand font-medium"
                 : "text-neutral-600 hover:bg-neutral-100",
             )
           }
@@ -130,10 +164,10 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-xl bg-indigo-600 text-white p-3 mx-3 mb-4"
+          className="rounded-xl bg-brand text-white p-3 mx-3 mb-4"
         >
           <div className="text-sm font-medium truncate">{admin.fullName}</div>
-          <div className="text-xs text-indigo-200 truncate">{admin.email}</div>
+          <div className="text-xs text-blue-200 truncate">{admin.email}</div>
         </motion.div>
       )}
     </aside>

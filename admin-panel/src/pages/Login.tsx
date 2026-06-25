@@ -34,7 +34,7 @@ export default function Login() {
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-        className="hidden lg:flex w-[480px] shrink-0 bg-gradient-to-br from-indigo-600 to-indigo-800 flex-col justify-between p-12"
+        className="hidden lg:flex w-[480px] shrink-0 bg-gradient-to-br from-brand to-[#00152E] flex-col justify-between p-12"
       >
         <motion.div
           variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
@@ -52,7 +52,7 @@ export default function Login() {
           <h1 className="text-5xl font-bold text-white leading-tight whitespace-pre-line">
             {"Platform\nControl Center."}
           </h1>
-          <p className="text-indigo-200 text-sm mt-3">
+          <p className="text-blue-200 text-sm mt-3">
             Manage users, gigs, universities, and audit every action across the platform.
           </p>
         </motion.div>
@@ -133,7 +133,7 @@ export default function Login() {
             <Button
               type="submit"
               disabled={login.isPending}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 h-11"
+              className="w-full bg-brand hover:bg-brand-dark h-11"
             >
               {login.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
