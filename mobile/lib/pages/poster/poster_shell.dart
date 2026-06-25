@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../widgets/common/offline_banner.dart';
 import 'chat/chat_list_page.dart';
 import 'profile/profile_page.dart' as profile;
 import 'profile/settings_page.dart' as settings;
@@ -21,7 +22,12 @@ class PosterShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: navigationShell),
+        ],
+      ),
       bottomNavigationBar: Stack(
         children: [
           NavigationBar(

@@ -7,6 +7,7 @@ import '../../../core/theme/app_dimensions.dart';
 import '../../../controllers/poster/applicant_controller.dart';
 import '../../../widgets/poster/applicant_card.dart';
 import '../../../widgets/worker/category_chip.dart';
+import '../../../widgets/common/loaders/app_loader.dart';
 import '../../../widgets/common/empty_states/empty_state.dart';
 
 class ApplicantsPage extends ConsumerStatefulWidget {
@@ -48,8 +49,35 @@ class _ApplicantsPageState extends ConsumerState<ApplicantsPage> {
         ),
       ),
       body: appsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        loading: () => ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: 4,
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppShimmerBox(width: 48, height: 48, radius: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppShimmerBox(width: 160, height: 16),
+                      const SizedBox(height: 6),
+                      const AppShimmerBox(width: double.infinity, height: 14),
+                      const SizedBox(height: 6),
+                      const AppShimmerBox(width: 200, height: 32, radius: 16),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        error: (e, _) => EmptyState.error(
+          onRetry: () => ref.invalidate(applicantProvider),
+        ),
         data: (apps) {
           final filtered = _selectedFilter == 'All'
               ? apps

@@ -20,10 +20,17 @@ import '../pages/shared/freelancer_detail_page.dart';
 import '../pages/worker/profile/edit_profile_page.dart';
 import '../pages/worker/profile/reviews_page.dart';
 import '../pages/worker/settings/notification_preferences_page.dart';
+import '../pages/shared/error/not_found_page.dart';
+import '../middleware/role_guard_middleware.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouteNames.splash,
-  redirect: AuthMiddleware.instance.redirect,
+  errorBuilder: (context, state) => const NotFoundPage(),
+  redirect: (context, state) {
+    final authRedirect = AuthMiddleware.redirect(context, state);
+    if (authRedirect != null) return authRedirect;
+    return RoleGuardMiddleware.redirect(context, state);
+  },
   routes: [
     GoRoute(
       path: RouteNames.splash,

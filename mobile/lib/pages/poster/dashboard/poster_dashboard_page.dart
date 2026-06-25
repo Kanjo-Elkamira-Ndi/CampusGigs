@@ -9,6 +9,7 @@ import '../../../core/mocks/mock_data.dart';
 import '../../../controllers/poster/dashboard_controller.dart';
 import '../../../controllers/poster/gig_management_controller.dart';
 import '../../../widgets/poster/poster_gig_card.dart';
+import '../../../widgets/common/empty_states/empty_state.dart';
 
 class PosterDashboardPage extends ConsumerWidget {
   const PosterDashboardPage({super.key});
@@ -22,7 +23,9 @@ class PosterDashboardPage extends ConsumerWidget {
       backgroundColor: AppColors.background,
       body: statsAsync.when(
         loading: () => const _DashboardShimmer(),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => EmptyState.error(
+          onRetry: () => ref.invalidate(posterDashboardProvider),
+        ),
         data: (stats) {
           final recentGigs = gigsAsync.valueOrNull ?? MockData.posterGigs;
           final monthly = (stats['monthlySpend'] as List<dynamic>).cast<double>();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/shared/notification_controller.dart';
+import '../../widgets/common/loaders/app_loader.dart';
+import '../../widgets/common/empty_states/empty_state.dart';
 import '../../widgets/common/notification_tile.dart';
 
 class NotificationsPage extends ConsumerWidget {
@@ -20,10 +22,33 @@ class NotificationsPage extends ConsumerWidget {
         ],
       ),
       body: notifications.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
+        loading: () => ListView.builder(
+          itemCount: 4,
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const AppShimmerBox(width: 40, height: 40, radius: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppShimmerBox(width: double.infinity, height: 14),
+                      const SizedBox(height: 6),
+                      const AppShimmerBox(width: 200, height: 12),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        error: (e, _) => EmptyState.error(
+          onRetry: () => ref.invalidate(notificationProvider),
+        ),
         data: (list) => list.isEmpty
-            ? const Center(child: Text('No notifications'))
+            ? EmptyState.noNotifications()
             : RefreshIndicator(
                 onRefresh: () => ref.refresh(notificationProvider.future),
                 child: ListView.separated(

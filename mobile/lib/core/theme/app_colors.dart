@@ -22,4 +22,5 @@ class AppColors {
   static const Color error = Color(0xFFEF4444);
   static const Color errorLight = Color(0xFFFEE2E2);
   static const Color amber = Color(0xFFF59E0B);
+  static const Color offlineBg = Color(0xFF1F2937);
 }

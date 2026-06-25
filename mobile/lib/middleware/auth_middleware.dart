@@ -1,31 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../core/storage/secure_storage.dart';
-import '../core/constants/role_constants.dart';
+import '../controllers/shared/auth_controller.dart';
 import '../routes/route_names.dart';
 
-class AuthMiddleware extends ChangeNotifier {
-  AuthMiddleware._();
-  static final AuthMiddleware instance = AuthMiddleware._();
-
-  Future<String?> redirect(BuildContext context, GoRouterState state) async {
-    final token = await SecureStorage.instance.getToken();
-    final isLoggedIn = token != null && token.isNotEmpty;
+class AuthMiddleware {
+  static String? redirect(BuildContext context, GoRouterState state) {
+    final authState = ProviderScope.containerOf(context).read(authControllerProvider);
     final location = state.matchedLocation;
 
-    final authRoutes = [RouteNames.splash, RouteNames.onboarding, RouteNames.login,
-      RouteNames.register, RouteNames.forgotPassword, RouteNames.roleSelection];
+    final publicRoutes = [
+      RouteNames.splash,
+      RouteNames.onboarding,
+      RouteNames.login,
+      RouteNames.register,
+      RouteNames.forgotPassword,
+      RouteNames.roleSelection,
+    ];
 
-    if (!isLoggedIn && !authRoutes.contains(location)) {
-      return RouteNames.login;
-    }
+    final isAuthRoute = publicRoutes.contains(location);
 
-    if (isLoggedIn && authRoutes.contains(location) && location != RouteNames.splash) {
-      final role = await SecureStorage.instance.getRole() ?? RoleConstants.worker;
-      if (role == RoleConstants.poster) return RouteNames.posterDashboard;
-      return RouteNames.workerHome;
-    }
-
-    return null;
+    return authState.when(
+      loading: () => null,
+      error: (_, __) => isAuthRoute ? null : RouteNames.login,
+      data: (user) {
+        if (user != null && isAuthRoute && location != RouteNames.splash) {
+          return user.activeRole == 'POSTER' ? RouteNames.posterDashboard : RouteNames.workerHome;
+        }
+        if (user == null && !isAuthRoute) {
+          return RouteNames.login;
+        }
+        return null;
+      },
+    );
   }
 }

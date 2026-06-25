@@ -56,8 +56,10 @@ class _ManageGigsPageState extends ConsumerState<ManageGigsPage> {
         ),
       ),
       body: gigsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+        error: (e, _) => EmptyState.error(
+          onRetry: () => ref.invalidate(gigManagementProvider),
+        ),
         data: (gigs) {
           final filtered = _selectedStatus == 'ALL'
               ? gigs

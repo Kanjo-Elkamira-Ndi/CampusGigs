@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../widgets/common/offline_banner.dart';
 import 'home/home_page.dart';
 import 'search/search_page.dart';
 import 'applications/my_applications_page.dart';
@@ -23,7 +24,12 @@ class WorkerShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: navigationShell),
+        ],
+      ),
       bottomNavigationBar: Stack(
         children: [
           NavigationBar(

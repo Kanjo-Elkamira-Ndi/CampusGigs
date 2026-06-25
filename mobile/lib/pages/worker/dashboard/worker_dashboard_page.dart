@@ -6,6 +6,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/mocks/mock_data.dart';
 import '../../../widgets/worker/application_tile.dart';
 
+
 class WorkerDashboardPage extends StatelessWidget {
   const WorkerDashboardPage({super.key});
 
@@ -13,6 +14,7 @@ class WorkerDashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final stats = MockData.workerStats;
     final recentApps = MockData.applications.take(3).toList();
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -30,7 +32,7 @@ class WorkerDashboardPage extends StatelessWidget {
             elevation: 0,
             scrolledUnderElevation: 0,
             title: const Text('My Dashboard'),
-            titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            titleTextStyle: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
