@@ -31,9 +31,9 @@ class _SplashPageState extends State<SplashPage> {
     if (token != null && token.isNotEmpty) {
       final role = await SecureStorage.instance.getRole();
       if (role == 'POSTER') {
-        context.go(RouteNames.posterShell);
+        context.go(RouteNames.posterDashboard);
       } else {
-        context.go(RouteNames.workerShell);
+        context.go(RouteNames.workerHome);
       }
     } else if (!seenOnboarding) {
       context.go(RouteNames.onboarding);

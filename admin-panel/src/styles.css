@@ -2,33 +2,41 @@
 @import "tw-animate-css";
 
 @theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #0a0a0a;
+  --color-background: #f5f7fa;
+  --color-foreground: #1a1a2e;
   --color-card: #ffffff;
-  --color-card-foreground: #0a0a0a;
+  --color-card-foreground: #1a1a2e;
   --color-popover: #ffffff;
-  --color-popover-foreground: #0a0a0a;
-  --color-primary: #4f46e5;
+  --color-popover-foreground: #1a1a2e;
+  --color-primary: #0f8bff;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f5f5f5;
-  --color-secondary-foreground: #0a0a0a;
-  --color-muted: #f5f5f5;
-  --color-muted-foreground: #737373;
-  --color-accent: #eef2ff;
-  --color-accent-foreground: #4338ca;
+  --color-secondary: #e8ecf1;
+  --color-secondary-foreground: #4b5563;
+  --color-muted: #f0f2f5;
+  --color-muted-foreground: #6b7280;
+  --color-accent: #0f8bff;
+  --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
   --color-border: #e5e5e5;
   --color-input: #e5e5e5;
-  --color-ring: #4f46e5;
+  --color-ring: #0f8bff;
   --color-sidebar: #ffffff;
-  --color-sidebar-foreground: #0a0a0a;
-  --color-sidebar-primary: #4f46e5;
+  --color-sidebar-foreground: #1a1a2e;
+  --color-sidebar-primary: #0f8bff;
   --color-sidebar-primary-foreground: #ffffff;
-  --color-sidebar-accent: #f5f5f5;
-  --color-sidebar-accent-foreground: #0a0a0a;
+  --color-sidebar-accent: #f0f2f5;
+  --color-sidebar-accent-foreground: #1a1a2e;
   --color-sidebar-border: #e5e5e5;
-  --color-sidebar-ring: #4f46e5;
+  --color-sidebar-ring: #0f8bff;
+
+  /* Brand tokens - Blue CTA */
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-foreground: var(--brand-foreground);
+
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
@@ -37,6 +45,14 @@
   --radius-3xl: 1.5rem;
   --radius: 0.5rem;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  --brand: #0f8bff;
+  --brand-dark: #0a7ae6;
+  --brand-light: rgba(15, 139, 255, 0.10);
+  --brand-muted: rgba(15, 139, 255, 0.05);
+  --brand-foreground: #ffffff;
 }
 
 * {
@@ -50,7 +66,7 @@ body,
 }
 
 body {
-  background-color: #fafafa;
+  background-color: #f5f7fa;
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

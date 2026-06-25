@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "neutral" | "indigo" | "green" | "amber" | "red" | "blue" | "rose";
+type Tone = "neutral" | "brand" | "green" | "amber" | "red" | "blue" | "rose";
 
 const tones: Record<Tone, string> = {
   neutral: "bg-neutral-100 text-neutral-700",
-  indigo: "bg-indigo-50 text-indigo-700",
+  brand: "bg-brand-light text-brand",
   green: "bg-green-50 text-green-700",
   amber: "bg-amber-50 text-amber-700",
   red: "bg-red-50 text-red-700",

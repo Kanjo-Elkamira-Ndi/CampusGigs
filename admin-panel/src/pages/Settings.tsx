@@ -111,7 +111,7 @@ export default function Settings() {
               <Button
                 onClick={saveProfile}
                 disabled={saving}
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className="bg-brand hover:bg-brand-dark"
               >
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 <Save className="mr-2 h-4 w-4" />
@@ -160,7 +160,7 @@ export default function Settings() {
               <Button
                 onClick={changePassword}
                 disabled={changingPw}
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className="bg-brand hover:bg-brand-dark"
               >
                 {changingPw && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Update password
@@ -205,7 +205,7 @@ export default function Settings() {
               <Button
                 onClick={savePrefs}
                 disabled={savingPrefs}
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className="bg-brand hover:bg-brand-dark"
               >
                 {savingPrefs && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 <Save className="mr-2 h-4 w-4" />

@@ -44,9 +44,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     authState.when(data: (user) {
       if (user != null && mounted) {
         if (user.activeRole == 'POSTER') {
-          context.go(RouteNames.posterShell);
+          context.go(RouteNames.posterDashboard);
         } else {
-          context.go(RouteNames.workerShell);
+          context.go(RouteNames.workerHome);
         }
       }
     }, error: (error, _) {

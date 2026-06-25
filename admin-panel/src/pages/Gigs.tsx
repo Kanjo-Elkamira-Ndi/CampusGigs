@@ -74,7 +74,7 @@ export default function Gigs() {
       key: "budget",
       header: "Budget",
       render: (g) => (
-        <span className="font-semibold text-indigo-600">
+        <span className="font-semibold text-brand">
           {g.budget.toLocaleString()} XAF
         </span>
       ),
@@ -97,7 +97,7 @@ export default function Gigs() {
       render: (g) =>
         g.poster ? (
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-semibold flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full bg-brand-muted text-brand text-[10px] font-semibold flex items-center justify-center">
               {initials(g.poster.fullName)}
             </div>
             <span className="text-neutral-700 text-sm">{g.poster.fullName}</span>

@@ -92,7 +92,7 @@ export default function Dashboard() {
             label="Total Users"
             value={stats?.totalUsers ?? 0}
             icon={UsersIcon}
-            color="indigo"
+            color="brand"
             isLoading={isStatsLoading}
           />
           <StatCard
@@ -125,7 +125,7 @@ export default function Dashboard() {
             <h3 className="font-semibold text-neutral-900">Recent Activity</h3>
             <Link
               to="/audit-logs"
-              className="text-xs text-indigo-600 hover:text-indigo-700"
+              className="text-xs text-brand hover:text-brand-dark"
             >
               View all →
             </Link>
