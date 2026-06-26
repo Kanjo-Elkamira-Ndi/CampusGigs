@@ -79,7 +79,7 @@ class _SplashPageState extends State<SplashPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF07080B),
+      backgroundColor: const Color(0xFF0B1426),
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) => _SplashContent(
@@ -155,7 +155,7 @@ class _GlowRing extends StatelessWidget {
             height: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF07080B),
+              color: const Color(0xFF0B1426),
               border: Border.all(
                 color: AppColors.primary,
                 width: 1.5,
