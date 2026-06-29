@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 class AppTextField extends StatelessWidget {
@@ -12,6 +13,8 @@ class AppTextField extends StatelessWidget {
   final int? maxLines;
   final int? maxLength;
   final ValueChanged<String>? onChanged;
+  final bool filled;
+  final Color? fillColor;
 
   const AppTextField({
     super.key,
@@ -25,6 +28,8 @@ class AppTextField extends StatelessWidget {
     this.maxLines = 1,
     this.maxLength,
     this.onChanged,
+    this.filled = true,
+    this.fillColor,
   });
 
   @override
@@ -49,10 +54,24 @@ class AppTextField extends StatelessWidget {
           maxLength: maxLength,
           onChanged: onChanged,
           decoration: InputDecoration(
+            filled: filled,
+            fillColor: fillColor ?? const Color(0xFFFFF8E1),
             hintText: hint,
             hintStyle: AppTextStyles.bodyMedium,
             suffixIcon: suffixIcon,
             counterText: '',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            ),
           ),
         ),
       ],

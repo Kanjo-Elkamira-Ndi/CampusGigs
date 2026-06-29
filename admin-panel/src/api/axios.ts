@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAdminAuthStore } from "@/store/adminAuthStore";
 
 export const api = axios.create({
   baseURL: (import.meta.env.VITE_API_URL ?? "http://localhost:5000/api/v1") + "/superadmin",
@@ -14,8 +15,11 @@ api.interceptors.response.use(
     return res;
   },
   (err) => {
-    if (err.response?.status === 401 && !window.location.pathname.startsWith("/login")) {
-      window.location.href = "/login";
+    if (err.response?.status === 401) {
+      useAdminAuthStore.getState().clearAdmin();
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(err);
   }

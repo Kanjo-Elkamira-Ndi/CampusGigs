@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AdminLayout } from "./components/layout/AdminLayout";
 import { useAdminAuthStore } from "./store/adminAuthStore";
+import { authApi } from "@/api/auth.api";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
@@ -11,6 +13,28 @@ import Reviews from "./pages/Reviews";
 import SettingsPage from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
+
+function SessionGate({ children }: { children: React.ReactNode }) {
+  const { admin, isAuthenticated, setAdmin, clearAdmin } = useAdminAuthStore();
+  const [checking, setChecking] = useState(isAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    authApi
+      .me()
+      .then((data) => {
+        if (data.admin) setAdmin(data.admin);
+        setChecking(false);
+      })
+      .catch(() => {
+        clearAdmin();
+        setChecking(false);
+      });
+  }, []);
+
+  if (isAuthenticated && checking) return null;
+  return <>{children}</>;
+}
 
 function Protected({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAdminAuthStore((s) => s.isAuthenticated);
@@ -38,7 +62,9 @@ export default function App() {
       <Route
         element={
           <Protected>
-            <AdminLayout />
+            <SessionGate>
+              <AdminLayout />
+            </SessionGate>
           </Protected>
         }
       >

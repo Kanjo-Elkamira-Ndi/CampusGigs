@@ -74,43 +74,9 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
                 isActive
                   ? "bg-brand-light text-brand font-medium"
                   : "text-neutral-600 hover:bg-neutral-100",
-            )
+              )
+            }
           >
-            <item.icon size={18} />
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
-
-        <div className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 px-4 mt-6 mb-1">
-          Account
-        </div>
-        <NavLink
-          to="/notifications"
-          onClick={onClose}
-          className={({ isActive }) =>
-            cn(
-              "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors w-[calc(100%-1rem)]",
-              isActive
-                ? "bg-brand-light text-brand font-medium"
-                : "text-neutral-600 hover:bg-neutral-100",
-            )
-          }
-        >
-          <Bell size={18} />
-          <span>Notifications</span>
-        </NavLink>
-        <NavLink
-          to="/settings"
-          onClick={onClose}
-          className={({ isActive }) =>
-            cn(
-              "flex items-center gap-3 h-10 rounded-lg mx-2 px-3 text-sm transition-colors w-[calc(100%-1rem)]",
-              isActive
-                ? "bg-brand-light text-brand font-medium"
-                : "text-neutral-600 hover:bg-neutral-100",
-            )
-          }
-        >
             <item.icon size={18} />
             <span>{item.label}</span>
           </NavLink>
