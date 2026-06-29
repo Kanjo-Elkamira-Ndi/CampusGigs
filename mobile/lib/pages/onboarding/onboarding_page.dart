@@ -20,12 +20,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _SlideData(
       image: 'assets/images/onboarding_illustration_1.png',
       title: 'Find gigs at your university',
-      desc: 'Browse hundreds of student-friendly gigs posted by fellow students and local businesses',
+      desc:
+          'Browse hundreds of student-friendly gigs posted by fellow students and local businesses',
     ),
     _SlideData(
       image: 'assets/images/onboarding_illustration_2.png',
       title: 'Apply in seconds',
-      desc: 'Send your application with a single tap. No lengthy forms, no waiting rooms',
+      desc:
+          'Send your application with a single tap. No lengthy forms, no waiting rooms',
     ),
     _SlideData(
       image: 'assets/images/onboarding_illustration_3.jpg',
@@ -51,7 +53,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1426),
+      backgroundColor: Colors.white, // Changed from dark blue to white
       body: SafeArea(
         child: Column(
           children: [
@@ -118,7 +120,7 @@ class _ContentSlide extends StatelessWidget {
             style: const TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: Color(0xFF0B1426), // Dark blue color for text
               height: 1.15,
             ),
             textAlign: TextAlign.center,
@@ -129,7 +131,9 @@ class _ContentSlide extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withAlpha(153),
+              color: const Color(
+                0xFF0B1426,
+              ).withAlpha(179), // Dark blue with opacity
               height: 1.45,
             ),
             textAlign: TextAlign.center,
@@ -165,7 +169,7 @@ class _LastSlide extends StatelessWidget {
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: Color(0xFF0B1426), // Dark blue color for text
               height: 1.15,
             ),
             textAlign: TextAlign.center,
@@ -176,7 +180,9 @@ class _LastSlide extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withAlpha(153),
+              color: const Color(
+                0xFF0B1426,
+              ).withAlpha(179), // Dark blue with opacity
               height: 1.45,
             ),
             textAlign: TextAlign.center,
@@ -225,7 +231,9 @@ class _BottomBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   color: active
                       ? AppColors.primary
-                      : AppColors.primary.withAlpha(40),
+                      : const Color(
+                          0xFF0B1426,
+                        ).withAlpha(40), // Dark blue with lower opacity
                 ),
               );
             }),
@@ -242,7 +250,9 @@ class _BottomBar extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white.withAlpha(128),
+                      color: const Color(
+                        0xFF0B1426,
+                      ).withAlpha(128), // Dark blue with opacity
                     ),
                   ),
                 )
@@ -283,5 +293,9 @@ class _SlideData {
   final String image;
   final String title;
   final String desc;
-  const _SlideData({required this.image, required this.title, required this.desc});
+  const _SlideData({
+    required this.image,
+    required this.title,
+    required this.desc,
+  });
 }
